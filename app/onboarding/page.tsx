@@ -7,8 +7,9 @@ import { ArrowUpRight, User, Briefcase, Loader2 } from 'lucide-react'
 
 export default function OnboardingPage() {
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [savingRole, setSavingRole] = useState<'candidate' | 'employer' | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   
   const router = useRouter()
   const supabase = createClient()
@@ -43,7 +44,8 @@ export default function OnboardingPage() {
 
   const handleSelectRole = async (role: 'candidate' | 'employer') => {
     if (!userId) return
-    setSaving(true)
+    setSavingRole(role)
+    setErrorMsg(null)
 
     const { error } = await supabase
       .from('profiles')
@@ -51,7 +53,8 @@ export default function OnboardingPage() {
 
     if (error) {
       console.error(error)
-      setSaving(false)
+      setErrorMsg(error.message || 'Failed to save role. Make sure your profiles table exists in Supabase.')
+      setSavingRole(null)
       return
     }
 
@@ -85,6 +88,13 @@ export default function OnboardingPage() {
             <span className="text-2xl font-bold tracking-tight text-white">Up<span style={{ color: '#FF6F61' }}>N</span>Above</span>
           </div>
         </div>
+        
+        {errorMsg && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-sm text-center max-w-md mx-auto">
+            {errorMsg}
+          </div>
+        )}
+
         <h1 className="text-3xl font-bold text-center text-white mb-2">Welcome aboard!</h1>
         <p className="text-center text-gray-300">How do you plan to use UpNAbove?</p>
       </div>
@@ -94,12 +104,12 @@ export default function OnboardingPage() {
         {/* Candidate Option */}
         <button 
           onClick={() => handleSelectRole('candidate')}
-          disabled={saving}
+          disabled={savingRole !== null}
           className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/50 transition-all rounded-3xl p-8 flex flex-col items-center text-center group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <User className="w-8 h-8 text-primary-light" />
+            {savingRole === 'candidate' ? <Loader2 className="w-8 h-8 text-primary-light animate-spin" /> : <User className="w-8 h-8 text-primary-light" />}
           </div>
           <h3 className="text-xl font-bold text-white mb-2">I am a Candidate</h3>
           <p className="text-sm text-gray-400">I want to find a job, join The Forge, and level up my skills.</p>
@@ -108,12 +118,12 @@ export default function OnboardingPage() {
         {/* Employer Option */}
         <button 
           onClick={() => handleSelectRole('employer')}
-          disabled={saving}
+          disabled={savingRole !== null}
           className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#FF6F61]/50 transition-all rounded-3xl p-8 flex flex-col items-center text-center group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-[#FF6F61]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="w-16 h-16 rounded-2xl bg-[#FF6F61]/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Briefcase className="w-8 h-8 text-[#FF6F61]" />
+            {savingRole === 'employer' ? <Loader2 className="w-8 h-8 text-[#FF6F61] animate-spin" /> : <Briefcase className="w-8 h-8 text-[#FF6F61]" />}
           </div>
           <h3 className="text-xl font-bold text-white mb-2">I am an Employer</h3>
           <p className="text-sm text-gray-400">I want to hire top talent, post jobs, and sponsor challenges.</p>
