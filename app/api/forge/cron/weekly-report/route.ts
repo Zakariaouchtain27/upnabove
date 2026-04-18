@@ -64,7 +64,11 @@ export async function GET(req: Request) {
 
        const topId = Object.keys(groups).sort((a,b) => groups[b] - groups[a])[0];
        const topChal = weeklyChallenges.find(c => c.id === topId);
-       if (topChal) topChallengeName = `${topChal.title} by ${topChal.employers?.company_name}`;
+       if (topChal) {
+           const emp = topChal.employers as any;
+           const companyName = Array.isArray(emp) ? emp[0]?.company_name : emp?.company_name;
+           topChallengeName = `${topChal.title} by ${companyName || 'Unknown Company'}`;
+       }
     }
 
     // 3. Compile HTML
