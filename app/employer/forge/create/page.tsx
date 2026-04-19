@@ -46,8 +46,10 @@ export default function CreateChallengePage() {
   
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [claudeThinking, setClaudeThinking] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // AI Augmentation States
   const [improvedBrief, setImprovedBrief] = useState<ImprovedBriefData | null>(null);
@@ -159,6 +161,29 @@ export default function CreateChallengePage() {
     } finally {
       setIsValidating(false);
     }
+  };
+
+  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const supabase = createClient();
+
+    const { error } = await supabase.storage
+      .from('logos')
+      .upload(fileName, file, { upsert: true });
+
+    if (error) {
+      addToast("Failed to upload logo: " + error.message, "error");
+    } else {
+      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(fileName);
+      updateForm('sponsor_logo_url', urlData.publicUrl);
+      addToast("Logo uploaded!", "success");
+    }
+    setIsUploading(false);
   };
 
   const handleCheckout = async () => {
@@ -381,8 +406,9 @@ export default function CreateChallengePage() {
                                        </select>
                                     </div>
                                     <div className="md:col-span-2 flex items-center gap-4">
-                                       <div className="w-16 h-16 rounded-xl bg-white dark:bg-black border border-black/10 dark:border-white/10 flex items-center justify-center flex-shrink-0">
-                                          {formData.sponsor_logo_url ? <img src={formData.sponsor_logo_url} className="w-10 h-10 object-contain" alt="logo" /> : <UploadCloud className="w-6 h-6 text-muted-foreground" />}
+                                       <div onClick={() => fileInputRef.current?.click()} className="w-16 h-16 rounded-xl bg-white dark:bg-black border border-black/10 dark:border-white/10 flex items-center justify-center flex-shrink-0 cursor-pointer overflow-hidden relative">
+                                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleUploadLogo} />
+                                          {isUploading ? <Loader2 className="w-6 h-6 text-primary animate-spin" /> : formData.sponsor_logo_url ? <img src={formData.sponsor_logo_url} className="w-full h-full object-cover" alt="logo" /> : <UploadCloud className="w-6 h-6 text-muted-foreground" />}
                                        </div>
                                        <div className="flex-1">
                                           <label className="block text-xs font-bold uppercase tracking-widest text-zinc-700 dark:text-gray-300 mb-2">Logo URL</label>

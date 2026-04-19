@@ -59,8 +59,10 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/login');
+    setUser(null);
+    setProfile(null);
     setDropdownOpen(false);
+    router.push('/');
   };
 
   return (
@@ -85,7 +87,7 @@ export default function Navbar() {
           <Link href="/jobs" className="text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-1.5">
             <Search className="w-3.5 h-3.5" /> Find Jobs
           </Link>
-          <Link href="/employer" className="text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-1.5">
+          <Link href="/employer/jobs/create" className="text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-1.5">
             <Briefcase className="w-3.5 h-3.5" /> Post a Job
           </Link>
           <Link href="/forge" className="relative group text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
@@ -191,7 +193,7 @@ export default function Navbar() {
             <Link href="/jobs" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-white p-2 rounded-lg hover:bg-white/5 flex items-center gap-2">
               <Search className="w-4 h-4 text-violet-400" /> Find Jobs
             </Link>
-            <Link href="/employer" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-white p-2 rounded-lg hover:bg-white/5 flex items-center gap-2">
+            <Link href="/employer/jobs/create" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-white p-2 rounded-lg hover:bg-white/5 flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-violet-400" /> Post a Job
             </Link>
             <Link href="/forge" onClick={() => setMobileOpen(false)} className="text-sm font-bold text-white p-2 rounded-lg hover:bg-white/5 flex items-center justify-between">

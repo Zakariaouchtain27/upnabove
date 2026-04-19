@@ -57,10 +57,12 @@ export default async function EmployerPage() {
             Manage your job postings and candidates
           </p>
         </div>
-        <Button className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Post a Job
-        </Button>
+        <Link href="/employer/jobs/create">
+          <Button className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Post a Job
+          </Button>
+        </Link>
       </div>
 
       {/* Payment & Subscription Hub */}

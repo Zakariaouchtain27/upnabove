@@ -11,33 +11,10 @@ import {
   BarChart, Bar, PieChart, Pie, Cell
 } from 'recharts';
 
-// Data Mocks
-const volumeData = [
-  { time: "00:00", entries: 12 },
-  { time: "04:00", entries: 28 },
-  { time: "08:00", entries: 84 },
-  { time: "12:00", entries: 165 },
-  { time: "16:00", entries: 290 },
-  { time: "20:00", entries: 341 },
-];
-
-const scoreHistogram = [
-  { range: "< 50", count: 12 },
-  { range: "50-60", count: 45 },
-  { range: "60-70", count: 89 },
-  { range: "70-80", count: 124 },
-  { range: "80-90", count: 56 },
-  { range: "90+", count: 15 },
-];
-
-const voteShares = [
-  { name: "NeonPhantom", votes: 142 },
-  { name: "ByteWeaver", votes: 89 },
-  { name: "CipherWolf", votes: 310 },
-  { name: "GhostCoder", votes: 45 },
-  { name: "ZeroDay", votes: 12 },
-  { name: "Others", votes: 245 },
-];
+// To-do: Wire up actual queries to these
+const volumeData: any[] = [];
+const scoreHistogram: any[] = [];
+const voteShares: any[] = [];
 
 const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#F43F5E', '#10B981', '#4B5563'];
 
@@ -248,7 +225,7 @@ export default function EmployerAnalytics() {
                 </ResponsiveContainer>
                 {/* Center Label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-2">
-                   <span className="font-mono text-3xl font-bold text-zinc-900 dark:text-white">843</span>
+                   <span className="font-mono text-3xl font-bold text-zinc-900 dark:text-white">{voteShares.reduce((acc, curr) => acc + curr.votes, 0)}</span>
                    <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Total Votes</span>
                 </div>
              </div>

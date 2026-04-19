@@ -41,33 +41,30 @@ export default function Footer() {
             <div>
               <h4 className="text-white font-semibold mb-5 text-sm">Platform</h4>
               <ul className="space-y-3">
-                {["Find Jobs", "Browse Companies", "Salary Guide", "Career Paths"].map(link => (
-                  <li key={link}>
-                    <Link href="#" className="text-gray-400 hover:text-white text-sm transition-colors">{link}</Link>
-                  </li>
-                ))}
+                <li>
+                  <Link href="/jobs" className="text-gray-400 hover:text-white text-sm transition-colors">Find Jobs</Link>
+                </li>
+                <li>
+                  <Link href="/forge" className="text-gray-400 hover:text-white text-sm transition-colors">The Forge</Link>
+                </li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-white font-semibold mb-5 text-sm">For Employers</h4>
               <ul className="space-y-3">
-                {["Post a Job", "Search Resumes", "Pricing", "Customer Success"].map(link => (
-                  <li key={link}>
-                    <Link href="#" className="text-gray-400 hover:text-white text-sm transition-colors">{link}</Link>
-                  </li>
-                ))}
+                <li>
+                  <Link href="/employer" className="text-gray-400 hover:text-white text-sm transition-colors">Employer Hub</Link>
+                </li>
               </ul>
             </div>
             
             <div>
-              <h4 className="text-white font-semibold mb-5 text-sm">Company</h4>
+              <h4 className="text-white font-semibold mb-5 text-sm">Account</h4>
               <ul className="space-y-3">
-                {["About Us", "Contact", "Privacy Policy", "Terms of Service"].map(link => (
-                  <li key={link}>
-                    <Link href="#" className="text-gray-400 hover:text-white text-sm transition-colors">{link}</Link>
-                  </li>
-                ))}
+                <li>
+                  <Link href="/dashboard" className="text-gray-400 hover:text-white text-sm transition-colors">Candidate Dashboard</Link>
+                </li>
               </ul>
             </div>
           </div>

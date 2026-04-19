@@ -14,6 +14,11 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('submissions', 'submissions', false)
 ON CONFLICT (id) DO NOTHING;
 
+-- 3. Create the 'logos' bucket (public)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('logos', 'logos', true)
+ON CONFLICT (id) DO UPDATE SET public = excluded.public;
+
 -- 3. RLS Policies for 'cvs' bucket
 -- Users can upload their own CVs (path must start with their user ID)
 CREATE POLICY "Users can upload own CVs"
