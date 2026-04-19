@@ -26,16 +26,35 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError(error.message)
+      // Provide clean error messages
+      if (error.message.includes('Email not confirmed')) {
+        setError('Your email is not confirmed. Please check your inbox for the confirmation link.')
+      } else if (error.message.includes('Invalid login credentials')) {
+        setError('Incorrect email or password. Please try again.')
+      } else {
+        setError(error.message)
+      }
       setLoading(false)
       return
     }
 
     if (data.user) {
-      // Refresh router immediately so middleware catches logic
+      // Explicitly fetch profile so we don't rely only on middleware race conditions
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+        
       router.refresh()
-      // Fallback routing if refresh isn't enough
-      router.push('/dashboard') 
+      
+      if (!profile?.role) {
+        router.push('/onboarding')
+      } else if (profile.role === 'employer') {
+        router.push('/employer')
+      } else {
+        router.push('/dashboard')
+      }
     }
   }
 

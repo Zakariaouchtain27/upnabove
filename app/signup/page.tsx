@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   
   const router = useRouter()
   const supabase = createClient()
@@ -19,6 +20,7 @@ export default function SignupPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setSuccess(null)
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -36,9 +38,9 @@ export default function SignupPage() {
 
     if (data.user && data.session) {
       router.push('/onboarding')
-    } else {
-      // If email confirmation is required:
-      setError('Please check your email to confirm your account.')
+    } else if (data.user && !data.session) {
+      // Email confirmation is required
+      setSuccess('Success! Please check your email inbox to confirm your account.')
       setLoading(false)
     }
   }
@@ -76,6 +78,13 @@ export default function SignupPage() {
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm text-center">
+            <h3 className="font-bold text-green-300 mb-1">Check your email</h3>
+            <p>{success}</p>
           </div>
         )}
 
