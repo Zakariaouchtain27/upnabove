@@ -20,8 +20,10 @@ export default function SubmitForgePage() {
   const [formData, setFormData] = useState({
     submission_text: "",
     submission_url: "",
-    submission_file_url: "" // Usually a mock S3 link for this phase
+    submission_file_url: ""
   });
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -224,20 +226,47 @@ export default function SubmitForgePage() {
              </div>
              <div className="space-y-4">
                <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                 <UploadCloud className="w-4 h-4" /> Payload Upload (Mock)
-               </label>
-               <div className="w-full border-2 border-dashed border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-white/5 transition-colors cursor-pointer group">
-                  <UploadCloud className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors mb-3" />
-                  <span className="font-bold text-sm text-gray-300">Click to select raw payload</span>
-                  <span className="text-xs font-mono text-muted-foreground mt-1">Accepts .zip, .pdf (URL simulation mode)</span>
-               </div>
-               <input 
-                 type="text"
-                 value={formData.submission_file_url}
-                 onChange={e => setFormData({ ...formData, submission_file_url: e.target.value })}
-                 className="w-full bg-black/50 border border-white/5 rounded-xl px-4 py-3 text-muted-foreground text-xs font-mono outline-none"
-                 placeholder="Mock S3 Bucket String (paste a fake URL here if you want)"
-               />
+                 <UploadCloud className="w-4 h-4" /> Payload Upload
+              </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".zip,.pdf,.png,.jpg,.jpeg,.figma"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploadingFile(true);
+                    try {
+                      const supabase = createClient();
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) throw new Error('Not authenticated');
+                      const fileName = `${Date.now()}_${file.name}`;
+                      const path = `${user.id}/${id}/${fileName}`;
+                      const { error } = await supabase.storage.from('submissions').upload(path, file);
+                      if (error) throw error;
+                      const { data: urlData } = supabase.storage.from('submissions').getPublicUrl(path);
+                      setFormData({ ...formData, submission_file_url: urlData.publicUrl || path });
+                      addToast('File uploaded successfully.', 'success');
+                    } catch (err: any) {
+                      addToast(err.message || 'Upload failed', 'error');
+                    } finally {
+                      setUploadingFile(false);
+                    }
+                  }}
+                />
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-white/5 transition-colors cursor-pointer group"
+                >
+                   {uploadingFile ? (
+                     <><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" /><span className="font-bold text-sm text-gray-300">Uploading...</span></>
+                   ) : formData.submission_file_url ? (
+                     <><UploadCloud className="w-8 h-8 text-emerald-400 mb-3" /><span className="font-bold text-sm text-emerald-400">File uploaded ✓</span><span className="text-xs font-mono text-muted-foreground mt-1">Click to replace</span></>
+                   ) : (
+                     <><UploadCloud className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors mb-3" /><span className="font-bold text-sm text-gray-300">Click to select file</span><span className="text-xs font-mono text-muted-foreground mt-1">Accepts .zip, .pdf, .png, .jpg</span></>
+                   )}
+                </div>
              </div>
           </div>
        );

@@ -1,66 +1,61 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Plus, Eye, FileEdit, Copy, Trash2, ShieldAlert,
-  Trophy, Users, Activity, Target, Sparkles, MoreVertical
+  Trophy, Users, Activity, Target, Sparkles, MoreVertical, Loader2, Inbox
 } from "lucide-react";
-
-// Mock Stats
-const stats = [
-  { label: "Active Drops", value: "3", icon: <Activity className="w-5 h-5" />, color: "text-rose-500", bg: "bg-rose-500/10" },
-  { label: "Total Entries", value: "1,248", icon: <Users className="w-5 h-5" />, color: "text-blue-500", bg: "bg-blue-500/10" },
-  { label: "Hires Made", value: "12", icon: <Trophy className="w-5 h-5" />, color: "text-amber-500", bg: "bg-amber-500/10" },
-  { label: "Avg AI Score", value: "84.2", icon: <Sparkles className="w-5 h-5" />, color: "text-primary-light", bg: "bg-primary/10" },
-  { label: "Reveal Rate", value: "34%", icon: <Target className="w-5 h-5" />, color: "text-emerald-500", bg: "bg-emerald-500/10" }
-];
-
-// Mock Table Data referencing our specific required statuses
-const mockBounties = [
-  {
-    id: "drop-101",
-    title: "Build a High-Frequency Trading Interface",
-    status: "live",
-    drop_time: "Now",
-    entries: 142,
-    top_score: "98/100"
-  },
-  {
-    id: "drop-102",
-    title: "Redesign the Core Checkout Flow",
-    status: "scheduled",
-    drop_time: "Mar 30, 12:00 PM",
-    entries: 0,
-    top_score: "-"
-  },
-  {
-    id: "drop-103",
-    title: "Global Supply Chain Prediction Model",
-    status: "judging",
-    drop_time: "Mar 25, 2026",
-    entries: 341,
-    top_score: "94/100"
-  },
-  {
-    id: "drop-104",
-    title: "Draft Phase - Smart Contract Auditing",
-    status: "draft",
-    drop_time: "TBD",
-    entries: 0,
-    top_score: "-"
-  },
-  {
-    id: "drop-105",
-    title: "Design a Physical Hardware Wallet",
-    status: "completed",
-    drop_time: "Feb 14, 2026",
-    entries: 843,
-    top_score: "99/100"
-  }
-];
+import { createClient } from "@/lib/supabase/client";
 
 export default function EmployerForgeOverview() {
+  const [bounties, setBounties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ active: 0, entries: 0, hires: 0, avgScore: '—', revealRate: '—' });
+
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+
+      // Fetch real challenges by this employer
+      const { data: challenges } = await supabase
+        .from('forge_challenges')
+        .select('*')
+        .eq('employer_id', user.id)
+        .order('created_at', { ascending: false });
+
+      const realBounties = challenges || [];
+      setBounties(realBounties);
+
+      // Calculate stats
+      const active = realBounties.filter(b => b.status === 'live').length;
+      const { count: entryCount } = await supabase
+        .from('forge_entries')
+        .select('id', { count: 'exact', head: true })
+        .in('challenge_id', realBounties.map(b => b.id));
+
+      setStats({
+        active,
+        entries: entryCount || 0,
+        hires: 0,
+        avgScore: '—',
+        revealRate: '—',
+      });
+
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const statCards = [
+    { label: "Active Drops", value: stats.active.toString(), icon: <Activity className="w-5 h-5" />, color: "text-rose-500", bg: "bg-rose-500/10" },
+    { label: "Total Entries", value: stats.entries.toLocaleString(), icon: <Users className="w-5 h-5" />, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: "Hires Made", value: stats.hires.toString(), icon: <Trophy className="w-5 h-5" />, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: "Avg AI Score", value: stats.avgScore, icon: <Sparkles className="w-5 h-5" />, color: "text-primary-light", bg: "bg-primary/10" },
+    { label: "Reveal Rate", value: stats.revealRate, icon: <Target className="w-5 h-5" />, color: "text-emerald-500", bg: "bg-emerald-500/10" }
+  ];
 
   const StatusBadge = ({ status }: { status: string }) => {
     switch (status) {
@@ -81,6 +76,14 @@ export default function EmployerForgeOverview() {
         return <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-black/5 dark:bg-white/5 text-muted-foreground border border-black/10 dark:border-black/10 dark:border-white/10">Draft</span>;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="p-8 max-w-[1600px] mx-auto min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto min-h-screen text-foreground relative">
@@ -103,7 +106,7 @@ export default function EmployerForgeOverview() {
 
        {/* Matrix Stats */}
        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10 relative z-10">
-          {stats.map((stat) => (
+           {statCards.map((stat) => (
              <div key={stat.label} className="p-5 rounded-2xl border border-black/5 dark:border-black/5 dark:border-white/5 bg-white/40 dark:bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-xl hover:bg-black/5 dark:hover:bg-black/5 dark:bg-white/5 transition-colors">
                 <div className="flex items-center gap-3 mb-3">
                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
@@ -136,19 +139,19 @@ export default function EmployerForgeOverview() {
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-black/5 dark:divide-white/5">
-                   {mockBounties.map((bounty) => (
+                    {bounties.map((bounty) => (
                       <tr key={bounty.id} className="hover:bg-black/5 dark:hover:bg-black/5 dark:bg-white/5 transition-colors group">
                          <td className="px-6 py-5">
-                            <Link href={`/employer/forge/${bounty.id}`} className="font-bold text-base text-zinc-800 dark:text-zinc-800 dark:text-gray-200 group-hover:text-primary-light transition-colors line-clamp-1">
-                               {bounty.title}
-                            </Link>
-                         </td>
-                         <td className="px-6 py-5">
-                            <StatusBadge status={bounty.status} />
-                         </td>
-                         <td className="px-6 py-5 font-mono text-muted-foreground">
-                            {bounty.drop_time}
-                         </td>
+                             <Link href={`/employer/forge/${bounty.id}`} className="font-bold text-base text-zinc-800 dark:text-zinc-800 dark:text-gray-200 group-hover:text-primary-light transition-colors line-clamp-1">
+                                {bounty.title}
+                             </Link>
+                          </td>
+                          <td className="px-6 py-5">
+                             <StatusBadge status={bounty.status} />
+                          </td>
+                          <td className="px-6 py-5 font-mono text-muted-foreground">
+                             {bounty.drop_time ? new Date(bounty.drop_time).toLocaleDateString() : '—'}
+                          </td>
                          <td className="px-6 py-5 font-mono">
                             <span className="text-emerald-400 font-bold">{bounty.entries}</span>
                          </td>

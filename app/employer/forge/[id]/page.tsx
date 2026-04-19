@@ -1,31 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, BarChart3, Star, Mail, CheckCircle, 
-  X, Sparkles, BrainCircuit, ExternalLink, Trophy
+  X, Sparkles, BrainCircuit, ExternalLink, Trophy, Loader2, Inbox
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
-
-// Robust Unmasked Mock Data
-const mockEntries = [
-  { id: "e1", rank: 1, name: "Alexander Chen", codename: "NeonPhantom", score: 98, votes: 142, status: "shortlisted", ai_critique: "An absolute masterclass in architectural design. Alexander seamlessly implemented a highly scalable Redux paradigm. The code is modular, aggressively tested, and heavily optimized for the Next.js App router. Zero ESLint warnings.", repo: "github.com/alexc/trade-ui" },
-  { id: "e2", rank: 2, name: "Sarah Williams", codename: "ByteWeaver", score: 94, votes: 89, status: "pending", ai_critique: "Excellent adherence to the strict ESLint rules provided in the brief. Sarah utilized a clever custom hook for managing the socket connections. Minor performance degradation noticed in the heavy charting component, but otherwise an incredibly strong submission.", repo: "github.com/swilliams/forge-drop" },
-  { id: "e3", rank: 3, name: "Marcus Johnson", codename: "CipherWolf", score: 91, votes: 310, status: "pending", ai_critique: "A highly popular entry among spectators. Marcus built a radically beautiful UI using Framer Motion. The underlying logic is solid, though there are some slight security concerns regarding how the JWT token was stored in local storage instead of a secure cookie.", repo: "github.com/mjohnson/arena-task" },
-  { id: "e4", rank: 4, name: "Elena Rodriguez", codename: "GhostCoder", score: 88, votes: 45, status: "rejected", ai_critique: "Promising approach using Tailwind grids, but the submission failed 3 out of 10 automated CI/CD pipeline tests. The state-management architecture is unnecessarily complex for the scope of the brief.", repo: "github.com/elenar/bounty-1" },
-  { id: "e5", rank: 5, name: "David Kim", codename: "ZeroDay", score: 85, votes: 12, status: "pending", ai_critique: "Solid foundational work. David met the minimum requirements exactly. Lacks the premium polish of the elite contenders, but the backend integration was flawless and exceptionally well-documented.", repo: "github.com/dkim/hfws" },
-];
+import { createClient } from "@/lib/supabase/client";
 
 export default function EmployerWarRoom() {
   const params = useParams();
   const challengeId = params.id as string;
   const { addToast } = useToast();
 
-  const [entries, setEntries] = useState(mockEntries);
-  const [selectedEntry, setSelectedEntry] = useState<typeof mockEntries[0] | null>(null);
+  const [entries, setEntries] = useState<any[]>([]);
+  const [selectedEntry, setSelectedEntry] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadEntries() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('forge_entries')
+        .select('*, candidates(first_name, last_name, avatar_url, id)')
+        .eq('challenge_id', challengeId)
+        .order('rank', { ascending: true });
+
+      if (data) {
+        setEntries(data.map((e: any) => ({
+          id: e.id,
+          rank: e.rank || 0,
+          name: e.candidates ? `${e.candidates.first_name || ''} ${e.candidates.last_name || ''}`.trim() || e.codename : e.codename,
+          codename: e.codename,
+          score: e.ai_score || 0,
+          votes: e.vote_count || 0,
+          status: e.status || 'pending',
+          ai_critique: e.ai_feedback || 'No AI analysis available yet.',
+          repo: e.submission_url || '',
+        })));
+      }
+      setLoading(false);
+    }
+    loadEntries();
+  }, [challengeId]);
 
   const updateStatus = (id: string, newStatus: string) => {
     setEntries(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } : e));

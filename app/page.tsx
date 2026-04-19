@@ -5,8 +5,23 @@ import {
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
+import { createClient } from "@/lib/supabase/server";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  // Fetch real stats
+  const { count: jobCount } = await supabase.from('forge_challenges').select('id', { count: 'exact', head: true });
+  const { count: employerCount } = await supabase.from('employers').select('id', { count: 'exact', head: true }).catch(() => ({ count: 0 })) || { count: 0 };
+  const { count: entryCount } = await supabase.from('forge_entries').select('id', { count: 'exact', head: true });
+
+  const stats = [
+    { label: "Active Challenges", value: (jobCount || 0).toLocaleString(), icon: <Briefcase /> },
+    { label: "Verified Employers", value: (employerCount || 0).toLocaleString(), icon: <Shield /> },
+    { label: "Total Submissions", value: (entryCount || 0).toLocaleString(), icon: <Clock /> },
+    { label: "Platform Growth", value: "New", icon: <TrendingUp /> }
+  ];
+
   return (
     <div className="relative w-full flex flex-col items-center bg-transparent">
       
@@ -66,15 +81,10 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
             
-            {/* Trusted By - Minimalist Marquee */}
+            {/* Trusted By */}
             <ScrollReveal delay={0.6} direction="up" duration={1}>
               <div className="mt-20 pt-10 border-t border-border">
-                <p className="text-sm font-semibold text-muted uppercase tracking-widest mb-6">Trusted by industry leaders</p>
-                <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
-                  {["Acme Corp", "GlobalTech", "Innova", "Nexus", "Stellar", "Quantum"].map(company => (
-                    <span key={company} className="text-xl font-bold tracking-tight text-foreground">{company}</span>
-                  ))}
-                </div>
+                <p className="text-sm font-semibold text-muted uppercase tracking-widest mb-6">Powering the future of hiring</p>
               </div>
             </ScrollReveal>
             
@@ -249,16 +259,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== STATISTICS / HOW IT WORKS ===== */}
+      {/* ===== STATISTICS ===== */}
       <section className="w-full py-32 border-y border-border relative bg-transparent">
         <div className="section-container">
           <div className="grid md:grid-cols-4 gap-10 divide-y md:divide-y-0 md:divide-x divide-border text-center md:text-left">
-            {[
-              { label: "Active Opportunities", value: "24,000+", icon: <Briefcase /> },
-              { label: "Verified Companies", value: "8,500+", icon: <Shield /> },
-              { label: "Avg. Hiring Time", value: "18 Days", icon: <Clock /> },
-              { label: "Salary Increase", value: "+22%", icon: <TrendingUp /> }
-            ].map((stat, i) => (
+            {stats.map((stat, i) => (
               <ScrollReveal key={stat.label} delay={i * 0.1} direction="up" className={`pt-8 md:pt-0 ${i !== 0 ? 'md:pl-10' : ''}`}>
                 <div className="text-primary mb-4 flex justify-center md:justify-start">{stat.icon}</div>
                 <div className="text-4xl lg:text-5xl font-extrabold text-foreground tracking-tight mb-2">{stat.value}</div>

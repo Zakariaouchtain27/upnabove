@@ -49,21 +49,16 @@ export default function CandidateForgeDashboard() {
        if (user) {
           const { data } = await supabase.from('candidates').select('*').eq('user_id', user.id).single();
           c = data;
-       } else {
-          // Mock fetch first candidate for testing without auth
-          const { data } = await supabase.from('candidates').select('*').limit(1).single();
-          c = data;
        }
        
        if (!c) {
-          // Absolute fallback if database is totally empty 
-          // (prevents redirect back to /forge)
+          // No candidate profile — show empty state
           c = {
-            id: 'mock-uuid',
-            first_name: 'Ghost',
-            last_name: 'Protocol',
-            forge_streak: 2,
-            user_id: 'mock-user'
+            id: user?.id || '',
+            first_name: '',
+            last_name: '',
+            forge_streak: 0,
+            user_id: user?.id || ''
           };
        }
        

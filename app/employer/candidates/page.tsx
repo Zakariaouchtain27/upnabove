@@ -4,49 +4,8 @@ import React, { useState } from "react";
 import { Search, Filter, Mail, CheckCircle2, XCircle, MoreHorizontal, User, ShieldCheck } from "lucide-react";
 import { FORGE_BADGES } from "@/components/forge/BadgeDefinitions";
 
-// Mock Data representing Standard Job Applications enriched with Forge Badges
-const CANDIDATES = [
-  {
-    id: 1,
-    name: "Alex Vance",
-    role: "Senior Frontend Engineer",
-    status: "In Review",
-    applied: "2h ago",
-    match: 94,
-    avatar: "https://i.pravatar.cc/150?u=a",
-    unlockedBadges: ['champion', 'first_blood', 'streak_30', 'perfect_score'] // Elite candidate
-  },
-  {
-    id: 2,
-    name: "Sarah Jenkins",
-    role: "Product Designer",
-    status: "Shortlisted",
-    applied: "1d ago",
-    match: 88,
-    avatar: "https://i.pravatar.cc/150?u=b",
-    unlockedBadges: ['streak_7', 'recruiter'] // Mild Forge activity
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    role: "DevOps Engineer",
-    status: "Rejected",
-    applied: "3d ago",
-    match: 45,
-    avatar: "https://i.pravatar.cc/150?u=c",
-    unlockedBadges: [] // No Forge history
-  },
-  {
-    id: 4,
-    name: "Elena Rostova",
-    role: "Senior Frontend Engineer",
-    status: "New",
-    applied: "Just now",
-    match: 98,
-    avatar: "https://i.pravatar.cc/150?u=d",
-    unlockedBadges: ['top_3', 'squad_leader', 'streak_14', 'hired'] // High value
-  }
-];
+// Real candidates will come from job applications — empty until then
+const CANDIDATES: any[] = [];
 
 export default function EmployerCandidatesPage() {
   const [activeFilter, setActiveFilter] = useState("All");

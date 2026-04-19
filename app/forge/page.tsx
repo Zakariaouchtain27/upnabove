@@ -37,6 +37,21 @@ export default async function ForgePage() {
     .order("expires_at", { ascending: false })
     .limit(3);
 
+  // Fetch real stats
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { count: submissionsToday } = await supabase
+    .from('forge_entries')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', today.toISOString());
+
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const { count: hiresThisMonth } = await supabase
+    .from('forge_entries')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'hired')
+    .gte('created_at', monthStart.toISOString());
+
   // The 4 Animated Steps
   const howItWorks = [
     { icon: <Target className="w-8 h-8 text-rose-500" />, title: "1. Post (Employers)", desc: "Companies drop high-stakes design or tech bounties." },
@@ -76,12 +91,12 @@ export default async function ForgePage() {
               </div>
               <span className="text-gray-900/20 dark:text-white/20">|</span>
               <div className="flex items-center gap-2">
-                 <span className="text-gray-900 dark:text-white font-bold tracking-widest text-emerald-400">1,240</span>
+                 <span className="text-gray-900 dark:text-white font-bold tracking-widest text-emerald-400">{(submissionsToday || 0).toLocaleString()}</span>
                  <span className="text-muted-foreground uppercase opacity-80">Submissions Today</span>
               </div>
               <span className="text-gray-900/20 dark:text-white/20 hidden md:block">|</span>
               <div className="flex items-center gap-2 hidden md:flex">
-                 <span className="text-gray-900 dark:text-white font-bold tracking-widest text-amber-500">47</span>
+                 <span className="text-gray-900 dark:text-white font-bold tracking-widest text-amber-500">{hiresThisMonth || 0}</span>
                  <span className="text-muted-foreground uppercase opacity-80">Hires this month</span>
               </div>
            </div>

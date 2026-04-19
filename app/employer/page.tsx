@@ -1,38 +1,51 @@
 import type { Metadata } from "next";
-import { Plus, BarChart3, Users, Eye, Briefcase, Rocket } from "lucide-react";
+import { Plus, BarChart3, Users, Eye, Briefcase, Rocket, Inbox } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Employer Dashboard — UpnAbove",
   description: "Manage your job postings and candidates on UpnAbove.",
 };
 
-const mockPostings = [
-  {
-    title: "Senior Frontend Engineer",
-    applicants: 34,
-    views: 420,
-    status: "Active",
-    posted: "Mar 10, 2026",
-  },
-  {
-    title: "Product Designer",
-    applicants: 18,
-    views: 210,
-    status: "Active",
-    posted: "Mar 8, 2026",
-  },
-  {
-    title: "DevOps Engineer",
-    applicants: 12,
-    views: 156,
-    status: "Paused",
-    posted: "Mar 5, 2026",
-  },
-];
+export default async function EmployerPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export default function EmployerPage() {
+  // Fetch real employer data
+  let postings: any[] = [];
+  let stats = { active: 0, applicants: 0, views: 0 };
+
+  if (user) {
+    const { data: employer } = await supabase
+      .from('employers')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (employer) {
+      // Fetch real job postings
+      const { data: jobPostings } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('employer_id', employer.id)
+        .order('created_at', { ascending: false });
+
+      postings = jobPostings || [];
+      stats.active = postings.filter(p => p.status === 'active').length;
+    }
+
+    // Fetch forge challenges by this employer
+    const { count: challengeCount } = await supabase
+      .from('forge_challenges')
+      .select('id', { count: 'exact', head: true })
+      .eq('employer_id', user.id);
+
+    stats.active = stats.active + (challengeCount || 0);
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -55,19 +68,21 @@ export default function EmployerPage() {
          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
              <div>
                 <h3 className="font-bold text-emerald-500 flex items-center gap-2"><Rocket className="w-5 h-5" /> Your First Drop is on Us!</h3>
-                <p className="text-sm text-muted mt-1">We're investing in your hiring speed. Your first standard Forge Challenge check-out is 100% free. Additionally, Deep Analytics are now unconditionally unlocked for all active listings at no cost.</p>
+                <p className="text-sm text-muted mt-1">We&apos;re investing in your hiring speed. Your first standard Forge Challenge check-out is 100% free. Additionally, Deep Analytics are now unconditionally unlocked for all active listings at no cost.</p>
              </div>
-             <Button className="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]">Deploy Now</Button>
+             <Link href="/employer/forge/create">
+               <Button className="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]">Deploy Now</Button>
+             </Link>
          </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Active Postings", value: "3", icon: <Briefcase className="w-5 h-5" /> },
-          { label: "Total Applicants", value: "64", icon: <Users className="w-5 h-5" /> },
-          { label: "Total Views", value: "786", icon: <Eye className="w-5 h-5" /> },
-          { label: "Hire Rate", value: "23%", icon: <BarChart3 className="w-5 h-5" /> },
+          { label: "Active Listings", value: stats.active.toString(), icon: <Briefcase className="w-5 h-5" /> },
+          { label: "Total Applicants", value: stats.applicants.toString(), icon: <Users className="w-5 h-5" /> },
+          { label: "Total Views", value: stats.views.toString(), icon: <Eye className="w-5 h-5" /> },
+          { label: "Hire Rate", value: "—", icon: <BarChart3 className="w-5 h-5" /> },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -91,53 +106,39 @@ export default function EmployerPage() {
             Your Job Postings
           </h2>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">
-                  Position
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">
-                  Applicants
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">
-                  Views
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">
-                  Posted
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockPostings.map((posting) => (
-                <tr
-                  key={posting.title}
-                  className="border-b border-border last:border-0 hover:bg-surface-alt transition-colors"
-                >
-                  <td className="px-5 py-4 font-medium text-foreground">
-                    {posting.title}
-                  </td>
-                  <td className="px-5 py-4">
-                    <Badge
-                      variant={
-                        posting.status === "Active" ? "success" : "warning"
-                      }
-                    >
-                      {posting.status}
-                    </Badge>
-                  </td>
-                  <td className="px-5 py-4 text-muted">{posting.applicants}</td>
-                  <td className="px-5 py-4 text-muted">{posting.views}</td>
-                  <td className="px-5 py-4 text-muted">{posting.posted}</td>
+
+        {postings.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Inbox className="w-12 h-12 text-muted mb-4" />
+            <h3 className="text-lg font-bold text-foreground mb-1">No postings yet</h3>
+            <p className="text-sm text-muted max-w-sm">Create your first job posting or Forge challenge to start attracting top talent.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Position</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Status</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Posted</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {postings.map((posting: any) => (
+                  <tr key={posting.id} className="border-b border-border last:border-0 hover:bg-surface-alt transition-colors">
+                    <td className="px-5 py-4 font-medium text-foreground">{posting.title}</td>
+                    <td className="px-5 py-4">
+                      <Badge variant={posting.status === "active" ? "success" : "warning"}>
+                        {posting.status || 'draft'}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-4 text-muted">{new Date(posting.created_at).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
