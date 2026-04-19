@@ -10,32 +10,53 @@ export default function OnboardingPage() {
   const [savingRole, setSavingRole] = useState<'candidate' | 'employer' | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [debugInfo, setDebugInfo] = useState<string>('')
   
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      console.log('[Onboarding] Checking user session...')
+      
+      // Use getUser() instead of getSession() — more reliable with SSR
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        console.error('[Onboarding] Auth error:', userError)
+        setDebugInfo(`Auth error: ${userError.message}`)
+      }
+      
+      if (!user) {
+        console.log('[Onboarding] No user found, redirecting to login')
+        setDebugInfo('No user found — redirecting to login')
         router.push('/login')
         return
       }
 
-      setUserId(session.user.id)
+      console.log('[Onboarding] User found:', user.id, user.email)
+      setUserId(user.id)
+      setDebugInfo(`User: ${user.email} (${user.id})`)
 
       // Check if they already have a role
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single()
 
+      if (profileError) {
+        console.log('[Onboarding] Profile query error (this is OK if profile does not exist yet):', profileError.message)
+        // This is fine — profile may not exist yet, user needs to pick a role
+      }
+
       if (profile?.role) {
+        console.log('[Onboarding] User already has role:', profile.role, '— redirecting')
         router.push(profile.role === 'employer' ? '/employer' : '/dashboard')
         return
       }
 
+      console.log('[Onboarding] No role set — showing role selection')
       setLoading(false)
     }
 
@@ -43,30 +64,72 @@ export default function OnboardingPage() {
   }, [])
 
   const handleSelectRole = async (role: 'candidate' | 'employer') => {
-    if (!userId) return
+    console.log('[Onboarding] handleSelectRole called with:', role)
+    console.log('[Onboarding] Current userId:', userId)
+    
+    if (!userId) {
+      console.error('[Onboarding] userId is null! Cannot save role.')
+      setErrorMsg('User session not found. Please try logging in again.')
+      return
+    }
+    
     setSavingRole(role)
     setErrorMsg(null)
 
-    const { error } = await supabase
+    console.log('[Onboarding] Upserting profile...', { id: userId, role })
+
+    // Try upsert first
+    const { data, error } = await supabase
       .from('profiles')
-      .upsert({ id: userId, role })
+      .upsert({ id: userId, role }, { onConflict: 'id' })
+      .select()
+
+    console.log('[Onboarding] Upsert result:', { data, error })
 
     if (error) {
-      console.error(error)
-      setErrorMsg(error.message || 'Failed to save role. Make sure your profiles table exists in Supabase.')
-      setSavingRole(null)
-      return
+      console.error('[Onboarding] Upsert failed:', error)
+      
+      // If upsert fails, try insert as fallback
+      console.log('[Onboarding] Trying insert as fallback...')
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({ id: userId, role })
+
+      if (insertError) {
+        console.error('[Onboarding] Insert also failed:', insertError)
+        
+        // If insert also fails, try update as last resort
+        console.log('[Onboarding] Trying update as last resort...')
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role })
+          .eq('id', userId)
+
+        if (updateError) {
+          console.error('[Onboarding] Update also failed:', updateError)
+          setErrorMsg(`Failed to save role: ${updateError.message}. Please ensure the profiles table exists in Supabase with a 'role' column.`)
+          setSavingRole(null)
+          return
+        }
+      }
     }
 
-    // Refresh router to update middleware/session
+    console.log('[Onboarding] Role saved successfully! Redirecting to:', role === 'employer' ? '/employer' : '/dashboard')
+    
+    // Small delay to ensure DB write completes before middleware checks
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
     router.refresh()
     router.push(role === 'employer' ? '/employer' : '/dashboard')
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1B365D]">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#1B365D]">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        {debugInfo && (
+          <p className="mt-4 text-xs text-gray-500 font-mono">{debugInfo}</p>
+        )}
       </div>
     )
   }
@@ -97,6 +160,11 @@ export default function OnboardingPage() {
 
         <h1 className="text-3xl font-bold text-center text-white mb-2">Welcome aboard!</h1>
         <p className="text-center text-gray-300">How do you plan to use UpNAbove?</p>
+        
+        {/* Debug info - shows user ID to confirm session is active */}
+        {debugInfo && (
+          <p className="text-center text-[10px] text-gray-600 mt-2 font-mono">{debugInfo}</p>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-6 w-full max-w-3xl z-10">
