@@ -20,10 +20,10 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Applications", value: "12", icon: <Send className="w-5 h-5" />, color: "text-primary" },
-          { label: "Interviews", value: "3", icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
-          { label: "Saved Jobs", value: "8", icon: <Star className="w-5 h-5" />, color: "text-emerald-500" },
-          { label: "Profile Views", value: "47", icon: <TrendingUp className="w-5 h-5" />, color: "text-blue-500" },
+          { label: "Applications", value: "0", icon: <Send className="w-5 h-5" />, color: "text-primary" },
+          { label: "Interviews", value: "0", icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
+          { label: "Saved Jobs", value: "0", icon: <Star className="w-5 h-5" />, color: "text-emerald-500" },
+          { label: "Profile Views", value: "0", icon: <TrendingUp className="w-5 h-5" />, color: "text-blue-500" },
         ].map((stat) => (
           <div
             key={stat.label}

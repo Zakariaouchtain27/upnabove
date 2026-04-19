@@ -61,7 +61,7 @@ export default function CVsPage() {
 
     setUploading(true);
     const fileName = `${Date.now()}_${file.name}`;
-    const { error } = await supabase.storage
+    const { error, data } = await supabase.storage
       .from('cvs')
       .upload(`${userId}/${fileName}`, file);
 
@@ -69,6 +69,20 @@ export default function CVsPage() {
       console.error('Upload error:', error);
       alert(`Upload failed: ${error.message}`);
     } else {
+      const { data: urlData } = supabase.storage.from('cvs').getPublicUrl(`${userId}/${fileName}`);
+      
+      const { error: dbError } = await supabase
+        .from('candidates')
+        .update({ resume_url: urlData.publicUrl })
+        .eq('user_id', userId);
+
+      if (dbError) {
+         console.error('Failed to update candidate profile:', dbError);
+         alert(`CV uploaded, but failed to link to profile: ${dbError.message}`);
+      } else {
+         alert('CV uploaded and linked to your profile successfully! (Public URL saved)');
+      }
+      
       await loadCVs();
     }
     setUploading(false);

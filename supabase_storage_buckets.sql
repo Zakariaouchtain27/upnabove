@@ -3,9 +3,10 @@
 -- Run this in your Supabase SQL Editor
 -- ============================================
 
--- 1. Create the 'cvs' bucket (private)
+-- 1. Create the 'cvs' bucket (public)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('cvs', 'cvs', false)
+VALUES ('cvs', 'cvs', true)
+ON CONFLICT (id) DO UPDATE SET public = excluded.public;
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Create the 'submissions' bucket (private)
