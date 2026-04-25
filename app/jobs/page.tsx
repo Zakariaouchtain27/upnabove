@@ -7,6 +7,7 @@ import {
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";
+import { JobSearchForm } from "@/components/jobs/JobSearchForm";
 
 export default async function JobsPage({
   searchParams,
@@ -66,38 +67,7 @@ export default async function JobsPage({
 
           {/* Search and Filter Bar */}
           <ScrollReveal delay={0.2}>
-            <form action="/jobs" method="GET" className="w-full glass-surface rounded-2xl p-4 mb-10 flex flex-col lg:flex-row gap-4 ring-1 ring-border">
-              <div className="flex-1 flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1 flex items-center group">
-                  <Search className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors" />
-                  <input 
-                    type="text" 
-                    name="q"
-                    defaultValue={queryText}
-                    placeholder="Search by role, company, or keyword..." 
-                    className="w-full bg-surface text-foreground placeholder:text-muted pl-12 pr-4 py-3.5 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
-                  />
-                </div>
-                <div className="relative flex-1 flex items-center group">
-                  <MapPin className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors" />
-                  <input 
-                    type="text" 
-                    name="location"
-                    defaultValue={locationText}
-                    placeholder="City, state, or remote" 
-                    className="w-full bg-surface text-foreground placeholder:text-muted pl-12 pr-4 py-3.5 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <button type="button" className="flex items-center gap-2 px-6 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm">
-                  <Filter className="w-4 h-4" /> Filters
-                </button>
-                <button type="submit" className="px-8 py-3.5 bg-foreground text-background font-semibold rounded-xl hover:scale-105 transition-all shadow-sm">
-                  Search
-                </button>
-              </div>
-            </form>
+            <JobSearchForm initialQuery={queryText} initialLocation={locationText} />
           </ScrollReveal>
 
           {/* Job Listings */}
