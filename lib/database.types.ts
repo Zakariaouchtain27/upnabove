@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      applications: {
+        Row: {
+          candidate_id: string | null
+          created_at: string | null
+          id: string
+          job_id: string | null
+          motivation_letter_url: string | null
+          motivation_text: string | null
+          resume_url: string
+          status: string | null
+        }
+        Insert: {
+          candidate_id?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          motivation_letter_url?: string | null
+          motivation_text?: string | null
+          resume_url: string
+          status?: string | null
+        }
+        Update: {
+          candidate_id?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          motivation_letter_url?: string | null
+          motivation_text?: string | null
+          resume_url?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_skills: {
         Row: {
           candidate_id: string

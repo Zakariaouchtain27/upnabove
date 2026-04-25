@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Upload, FileText, Trash2, Download, Loader2, Inbox } from "lucide-react";
+import { Upload, FileText, Trash2, Download, Loader2, Inbox, Star } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/client";
@@ -11,6 +11,7 @@ interface CV {
   fullPath: string;
   size: number;
   created_at: string;
+  publicUrl: string;
 }
 
 export default function CVsPage() {
@@ -19,7 +20,9 @@ export default function CVsPage() {
   const [cvs, setCvs] = useState<CV[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [defaultCvUrl, setDefaultCvUrl] = useState<string | null>(null);
 
   useEffect(() => {
     loadCVs();
@@ -27,20 +30,45 @@ export default function CVsPage() {
 
   async function loadCVs() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+       setLoading(false);
+       return;
+    }
     setUserId(user.id);
+
+    // Fetch candidate's current default resume
+    const { data: candidate } = await supabase
+      .from('candidates')
+      .select('resume_url')
+      .eq('id', user.id)
+      .single();
+    
+    if (candidate?.resume_url) {
+       setDefaultCvUrl(candidate.resume_url);
+    }
 
     const { data: files, error } = await supabase.storage
       .from('cvs')
       .list(user.id, { sortBy: { column: 'created_at', order: 'desc' } });
 
     if (!error && files) {
-      setCvs(files.map(f => ({
-        name: f.name,
-        fullPath: `${user.id}/${f.name}`,
-        size: f.metadata?.size || 0,
-        created_at: f.created_at || '',
-      })));
+      const cvList = files.map(f => {
+        const fullPath = `${user.id}/${f.name}`;
+        const { data: urlData } = supabase.storage.from('cvs').getPublicUrl(fullPath);
+        return {
+          name: f.name,
+          fullPath,
+          size: f.metadata?.size || 0,
+          created_at: f.created_at || '',
+          publicUrl: urlData.publicUrl
+        };
+      });
+      setCvs(cvList);
+      
+      // Auto-set default if they only have 1 CV and no default is set
+      if (cvList.length === 1 && !candidate?.resume_url) {
+        handleSetDefault(cvList[0].publicUrl);
+      }
     }
     setLoading(false);
   }
@@ -49,48 +77,62 @@ export default function CVsPage() {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
 
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('Please upload a PDF, DOC, or DOCX file.');
+    if (file.type !== 'application/pdf') {
+      alert('Only PDF files are allowed.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File must be under 5MB.');
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File must be under 10MB.');
       return;
     }
 
     setUploading(true);
-    const fileName = `${Date.now()}_${file.name}`;
+    setUploadProgress(0);
+
+    // Simulate progress bar for better UX
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+         if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+         }
+         return prev + 10;
+      });
+    }, 200);
+
+    const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     const { error, data } = await supabase.storage
       .from('cvs')
       .upload(`${userId}/${fileName}`, file);
+      
+    clearInterval(progressInterval);
 
     if (error) {
       console.error('Upload error:', error);
       alert(`Upload failed: ${error.message}`);
     } else {
+      setUploadProgress(100);
       const { data: urlData } = supabase.storage.from('cvs').getPublicUrl(`${userId}/${fileName}`);
       
-      const { error: dbError } = await supabase
-        .from('candidates')
-        .update({ resume_url: urlData.publicUrl })
-        .eq('user_id', userId);
-
-      if (dbError) {
-         console.error('Failed to update candidate profile:', dbError);
-         alert(`CV uploaded, but failed to link to profile: ${dbError.message}`);
-      } else {
-         alert('CV uploaded and linked to your profile successfully! (Public URL saved)');
+      // Automatically make it the default if it's their first CV
+      if (cvs.length === 0) {
+        await handleSetDefault(urlData.publicUrl, false);
       }
       
-      await loadCVs();
+      setTimeout(() => {
+        alert(`Successfully uploaded ${file.name}`);
+        loadCVs();
+      }, 300);
     }
-    setUploading(false);
-    // Reset file input
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    
+    setTimeout(() => {
+       setUploading(false);
+       setUploadProgress(0);
+       if (fileInputRef.current) fileInputRef.current.value = '';
+    }, 1000);
   }
 
-  async function handleDelete(fullPath: string) {
+  async function handleDelete(fullPath: string, publicUrl: string) {
     if (!confirm('Are you sure you want to delete this CV?')) return;
 
     const { error } = await supabase.storage
@@ -99,7 +141,27 @@ export default function CVsPage() {
 
     if (!error) {
       setCvs(cvs.filter(cv => cv.fullPath !== fullPath));
+      // If deleted CV was default, clear default
+      if (defaultCvUrl === publicUrl) {
+         await supabase.from('candidates').update({ resume_url: null }).eq('id', userId!);
+         setDefaultCvUrl(null);
+      }
     }
+  }
+
+  async function handleSetDefault(publicUrl: string, showToast = true) {
+     if (!userId) return;
+     const { error } = await supabase
+        .from('candidates')
+        .update({ resume_url: publicUrl })
+        .eq('id', userId);
+     
+     if (!error) {
+        setDefaultCvUrl(publicUrl);
+        if (showToast) alert('Set as default CV.');
+     } else {
+        if (showToast) alert('Failed to set default.');
+     }
   }
 
   async function handleDownload(fullPath: string, name: string) {
@@ -145,27 +207,38 @@ export default function CVsPage() {
 
       {/* Upload area */}
       <div
-        onClick={() => fileInputRef.current?.click()}
-        className="mb-8 p-8 rounded-2xl border-2 border-dashed border-border bg-surface hover:border-primary/40 transition-colors text-center cursor-pointer"
+        onClick={() => !uploading && fileInputRef.current?.click()}
+        className={`mb-8 p-8 rounded-2xl border-2 border-dashed transition-colors text-center cursor-pointer relative overflow-hidden ${uploading ? 'border-primary/50 bg-primary/5 pointer-events-none' : 'border-border bg-surface hover:border-primary/40'}`}
       >
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,.doc,.docx"
+          accept=".pdf"
           onChange={handleUpload}
           className="hidden"
+          disabled={uploading}
         />
-        {uploading ? (
-          <Loader2 className="w-10 h-10 text-primary mx-auto mb-3 animate-spin" />
-        ) : (
-          <Upload className="w-10 h-10 text-muted mx-auto mb-3" />
+        
+        {uploading && (
+           <div className="absolute top-0 left-0 h-1 bg-primary transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
         )}
-        <p className="text-sm font-medium text-foreground">
-          {uploading ? 'Uploading...' : 'Drop your CV here, or click to browse'}
-        </p>
-        <p className="text-xs text-muted mt-1">
-          PDF, DOC, or DOCX (max 5MB)
-        </p>
+
+        {uploading ? (
+          <div className="flex flex-col items-center justify-center space-y-3">
+             <Loader2 className="w-10 h-10 text-primary animate-spin" />
+             <p className="text-sm font-bold text-primary">Uploading... {uploadProgress}%</p>
+          </div>
+        ) : (
+          <>
+             <Upload className="w-10 h-10 text-muted mx-auto mb-3" />
+             <p className="text-sm font-medium text-foreground">
+               Drop your CV here, or click to browse
+             </p>
+             <p className="text-xs text-muted mt-1">
+               PDF ONLY (max 10MB)
+             </p>
+          </>
+        )}
       </div>
 
       {/* CV list */}
@@ -177,39 +250,48 @@ export default function CVsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {cvs.map((cv, idx) => (
-            <div
-              key={cv.fullPath}
-              className="flex items-center justify-between p-4 rounded-xl border border-border bg-background"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center dark:bg-primary-900/30">
-                  <FileText className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-foreground">
-                      {cv.name}
-                    </p>
-                    {idx === 0 && (
-                      <Badge variant="primary">Latest</Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted">
-                    {cv.created_at ? new Date(cv.created_at).toLocaleDateString() : '—'} · {formatFileSize(cv.size)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => handleDownload(cv.fullPath, cv.name)}>
-                  <Download className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => handleDelete(cv.fullPath)}>
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </Button>
-              </div>
-            </div>
-          ))}
+          {cvs.map((cv) => {
+             const isDefault = defaultCvUrl === cv.publicUrl;
+             return (
+               <div
+                 key={cv.fullPath}
+                 className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border ${isDefault ? 'border-primary/50 bg-primary/5' : 'border-border bg-background'}`}
+               >
+                 <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${isDefault ? 'bg-primary text-white' : 'bg-primary-100 text-primary dark:bg-primary-900/30'}`}>
+                     <FileText className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <div className="flex items-center gap-2">
+                       <p className="text-sm font-bold text-foreground truncate max-w-[200px] sm:max-w-[300px]">
+                         {cv.name}
+                       </p>
+                       {isDefault && (
+                         <Badge variant="primary" className="flex items-center gap-1 px-2 py-0.5"><Star className="w-3 h-3 fill-current" /> Default</Badge>
+                       )}
+                     </div>
+                     <p className="text-xs text-muted mt-1">
+                       {cv.created_at ? new Date(cv.created_at).toLocaleDateString() : '—'} · {formatFileSize(cv.size)}
+                     </p>
+                   </div>
+                 </div>
+                 
+                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                   {!isDefault && (
+                      <Button variant="outline" size="sm" onClick={() => handleSetDefault(cv.publicUrl)}>
+                         Set Default
+                      </Button>
+                   )}
+                   <Button variant="ghost" size="sm" onClick={() => handleDownload(cv.fullPath, cv.name)} title="Download">
+                     <Download className="w-4 h-4" />
+                   </Button>
+                   <Button variant="ghost" size="sm" onClick={() => handleDelete(cv.fullPath, cv.publicUrl)} title="Delete">
+                     <Trash2 className="w-4 h-4 text-red-500" />
+                   </Button>
+                 </div>
+               </div>
+             )
+          })}
         </div>
       )}
     </div>

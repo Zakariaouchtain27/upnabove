@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   MapPin,
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import { createClient } from "@/lib/supabase/server";
+import JobApplyModal from "@/components/jobs/JobApplyModal";
 
 export const metadata: Metadata = {
   title: "Job Detail — UpnAbove",
@@ -25,6 +28,26 @@ export default async function JobDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: job, error } = await supabase
+    .from("jobs")
+    .select(`
+      *,
+      employers (
+        company_name,
+        company_logo_url,
+        industry
+      )
+    `)
+    .eq("id", id)
+    .single();
+
+  if (error || !job) {
+    notFound();
+  }
+
+  const employer = job.employers as any;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -43,43 +66,53 @@ export default async function JobDetailPage({
           {/* Header */}
           <div className="p-6 rounded-2xl border border-border bg-background">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center shrink-0 dark:bg-primary-900/30">
-                <Building2 className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center shrink-0 dark:bg-primary-900/30 overflow-hidden">
+                {employer?.company_logo_url ? (
+                   <img src={employer.company_logo_url} alt={employer.company_name} className="w-full h-full object-cover" />
+                ) : (
+                   <Building2 className="w-7 h-7 text-primary" />
+                )}
               </div>
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-foreground">
-                  Senior Frontend Engineer
+                  {job.title}
                 </h1>
-                <p className="text-muted mt-1">TechCorp Global</p>
+                <p className="text-muted mt-1">{employer?.company_name || 'Confidential Company'}</p>
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-muted">
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" /> San Francisco, CA
+                    <MapPin className="w-4 h-4" /> {job.location}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" /> Full-time
+                    <Clock className="w-4 h-4" /> {job.job_type}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign className="w-4 h-4" /> $140K – $180K
-                  </span>
+                  {job.salary_range && (
+                     <span className="flex items-center gap-1">
+                       <DollarSign className="w-4 h-4" /> {job.salary_range}
+                     </span>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <Badge variant="primary">React</Badge>
-                  <Badge variant="primary">TypeScript</Badge>
-                  <Badge variant="primary">Next.js</Badge>
+                  {job.requirements?.slice(0, 4).map((req, i) => (
+                    <Badge key={i} variant="primary">{req}</Badge>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 mt-6 pt-6 border-t border-border">
-              <Button size="lg" className="flex-1 sm:flex-none">
-                Apply Now
-              </Button>
-              <Button variant="outline" size="lg">
-                <Bookmark className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="lg">
-                <Share2 className="w-4 h-4" />
-              </Button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-border">
+              <JobApplyModal 
+                 jobId={job.id} 
+                 jobTitle={job.title} 
+                 companyName={employer?.company_name || 'Confidential Company'} 
+              />
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                 <Button variant="outline" size="lg" className="flex-1 sm:flex-none">
+                   <Bookmark className="w-4 h-4" />
+                 </Button>
+                 <Button variant="ghost" size="lg" className="flex-1 sm:flex-none">
+                   <Share2 className="w-4 h-4" />
+                 </Button>
+              </div>
             </div>
           </div>
 
@@ -89,26 +122,29 @@ export default async function JobDetailPage({
               About the Role
             </h2>
             <div className="prose prose-sm text-muted max-w-none space-y-4">
-              <p>
-                We are looking for a Senior Frontend Engineer to join our
-                team and help build the next generation of our platform.
-                You will work closely with designers and backend engineers
-                to create intuitive, performant user experiences.
-              </p>
-              <h3 className="text-foreground font-semibold text-base">Requirements</h3>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>5+ years of experience with React and TypeScript</li>
-                <li>Strong understanding of web performance optimization</li>
-                <li>Experience with Next.js and server-side rendering</li>
-                <li>Excellent communication and collaboration skills</li>
-              </ul>
-              <h3 className="text-foreground font-semibold text-base">Benefits</h3>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Competitive salary and equity package</li>
-                <li>Remote-first culture with annual retreats</li>
-                <li>Health, dental, and vision insurance</li>
-                <li>Unlimited PTO and flexible hours</li>
-              </ul>
+              <p className="whitespace-pre-line">{job.description}</p>
+              
+              {job.requirements && job.requirements.length > 0 && (
+                 <>
+                    <h3 className="text-foreground font-semibold text-base mt-6">Requirements</h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {job.requirements.map((req, i) => (
+                        <li key={i}>{req}</li>
+                      ))}
+                    </ul>
+                 </>
+              )}
+              
+              {job.benefits && job.benefits.length > 0 && (
+                 <>
+                    <h3 className="text-foreground font-semibold text-base mt-6">Benefits</h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {job.benefits.map((ben, i) => (
+                        <li key={i}>{ben}</li>
+                      ))}
+                    </ul>
+                 </>
+              )}
             </div>
           </div>
         </div>
@@ -122,19 +158,21 @@ export default async function JobDetailPage({
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Building2 className="w-4 h-4 text-muted" />
-                <span className="text-muted">TechCorp Global</span>
+                <span className="text-muted">{employer?.company_name || 'Confidential'}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm">
-                <Globe className="w-4 h-4 text-muted" />
-                <span className="text-muted">techcorp.com</span>
-              </div>
+              {employer?.industry && (
+                 <div className="flex items-center gap-3 text-sm">
+                   <Globe className="w-4 h-4 text-muted" />
+                   <span className="text-muted">{employer.industry}</span>
+                 </div>
+              )}
               <div className="flex items-center gap-3 text-sm">
                 <Briefcase className="w-4 h-4 text-muted" />
-                <span className="text-muted">501–1,000 employees</span>
+                <span className="text-muted">Growing Team</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-muted" />
-                <span className="text-muted">San Francisco, CA</span>
+                <span className="text-muted">{job.location}</span>
               </div>
             </div>
           </div>
@@ -143,7 +181,7 @@ export default async function JobDetailPage({
             <h3 className="text-sm font-semibold text-foreground mb-2">
               Job ID
             </h3>
-            <p className="text-sm text-muted font-mono">{id}</p>
+            <p className="text-sm text-muted font-mono">{id.slice(0, 8)}</p>
           </div>
         </div>
       </div>
