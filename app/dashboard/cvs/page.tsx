@@ -38,11 +38,11 @@ export default function CVsPage() {
       setUserId(user.id);
 
       // Fetch candidate's current default resume
-      const { data: candidate } = await supabase
+      const { data: candidate, error: candidateError } = await supabase
         .from('candidates')
         .select('resume_url')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (candidate?.resume_url) {
          setDefaultCvUrl(candidate.resume_url);
@@ -151,6 +151,8 @@ export default function CVsPage() {
          await supabase.from('candidates').update({ resume_url: null }).eq('id', userId!);
          setDefaultCvUrl(null);
       }
+    } else {
+      alert(`Failed to delete CV: ${error.message}`);
     }
   }
 
