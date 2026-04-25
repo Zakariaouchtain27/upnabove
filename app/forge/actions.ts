@@ -37,7 +37,7 @@ export async function getReferralLink(): Promise<{ url: string; code: string } |
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://upnabove.com';
   return {
-    code: candidate.referral_code,
+    code: candidate.referral_code || "",
     url: `${baseUrl}/forge?ref=${candidate.referral_code}`,
   };
 }
@@ -212,7 +212,7 @@ export async function voteEntry(entryId: string) {
       // Manual fallback if RPC doesn't exist
       const { data } = await supabase.from('forge_entries').select('vote_count').eq('id', entryId).single();
       if(data) {
-        await supabase.from('forge_entries').update({ vote_count: data.vote_count + 1 }).eq('id', entryId);
+        await supabase.from('forge_entries').update({ vote_count: (data.vote_count || 0) + 1 }).eq('id', entryId);
       }
     }
 

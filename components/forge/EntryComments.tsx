@@ -48,7 +48,7 @@ export function EntryComments({ entryId, currentUserId, entryCodename }: EntryCo
         .select('comment_id, vote')
         .eq('candidate_id', currentUserId)
         .in('comment_id', commentIds);
-      if (voteData) voteData.forEach(v => { myVotes[v.comment_id] = v.vote; });
+      if (voteData) voteData.forEach(v => { if (v.comment_id) myVotes[v.comment_id] = v.vote as 1 | -1; });
     }
 
     setComments(data.map(c => ({ ...c, myVote: myVotes[c.id] ?? null })) as unknown as Comment[]);

@@ -20,11 +20,12 @@ export default async function AdminLayout({
   }
 
   if (!isDev && user) {
-    // 2. Check if user is in 'admins' table
+    // 2. Check if user is an admin
     const { data: adminCheck } = await supabase
-      .from("admins")
+      .from("profiles")
       .select("id")
       .eq("id", user.id)
+      .eq("role", "admin")
       .single();
 
     if (!adminCheck) {

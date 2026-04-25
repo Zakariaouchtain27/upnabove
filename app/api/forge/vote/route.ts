@@ -56,7 +56,7 @@ export async function POST(request: Request) {
        // Assuming RPC returns the new vote count, or we fetch it
        const { data: updatedEntry } = await supabase.from('forge_entries').select('vote_count, candidate_id').eq('id', entryId).single();
        if (updatedEntry) {
-          currentVoteCount = updatedEntry.vote_count;
+          currentVoteCount = updatedEntry.vote_count || 0;
        }
     }
 

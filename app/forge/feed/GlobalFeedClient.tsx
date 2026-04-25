@@ -9,14 +9,15 @@ import { Send, Eye, Briefcase, Zap, Shield, Flame } from "lucide-react";
 
 type FilterType = 'all' | 'live' | 'reveals' | 'hires';
 
-interface FeedEntry {
-  id: string;
-  codename: string;
-  vote_count: number;
+import { Database } from "@/lib/database.types";
+
+type BaseFeedEntry = Database['public']['Tables']['forge_entries']['Row'];
+
+export interface FeedEntry extends Omit<BaseFeedEntry, 'is_revealed' | 'entered_at' | 'vote_count' | 'status'> {
   status: string;
   is_revealed: boolean;
   entered_at: string;
-  revealed_at: string | null;
+  vote_count: number;
   forge_challenges: { id: string; title: string; status: string; challenge_type: string; difficulty: string } | null;
   candidates: { first_name: string; last_name: string; avatar_url: string | null } | null;
 }

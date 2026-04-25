@@ -8,12 +8,9 @@ import { Users, Shield, Search, Plus, X, Loader2, ArrowRight } from "lucide-reac
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface CandidateResult {
-  id: string;
-  first_name: string;
-  last_name: string;
-  avatar_url: string;
-}
+import { Database } from "@/lib/database.types";
+
+type CandidateResult = Pick<Database['public']['Tables']['candidates']['Row'], "id" | "first_name" | "last_name" | "avatar_url">;
 
 export default function CreateSquadPage() {
   const router = useRouter();

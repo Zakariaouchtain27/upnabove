@@ -8,20 +8,13 @@ import type { ChallengeStatus } from "@/lib/forge";
 import { CountdownTimer } from "@/components/forge/CountdownTimer";
 import { LiveEntryCount } from "@/components/forge/LiveEntryCount";
 
-interface ForgeChallenge {
-  id: string;
-  title: string;
-  description: string;
-  challenge_type: string;
-  difficulty: "junior" | "mid" | "senior";
-  prize_description: string;
-  prize_value: number;
-  drop_time: string;
-  expires_at: string;
-  status: ChallengeStatus;
-  entry_count: number;
-  sponsor_name?: string | null;
-  is_sponsored?: boolean;
+import { Database } from "@/lib/database.types";
+
+type BaseChallenge = Database['public']['Tables']['forge_challenges']['Row'];
+
+export interface ForgeChallenge extends Omit<BaseChallenge, 'difficulty' | 'status'> {
+  difficulty: "junior" | "mid" | "senior" | string;
+  status: ChallengeStatus | string;
   sponsor_logo_url?: string | null;
   prize_type?: string;
 }
@@ -55,7 +48,7 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
                    {challenge.sponsor_name || "UpnAbove Origin"}
                  </span>
                  <div className="flex gap-2">
-                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border ${difficultyColors[challenge.difficulty]}`}>
+                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border ${difficultyColors[challenge.difficulty as keyof typeof difficultyColors] || difficultyColors.mid}`}>
                      {challenge.difficulty}
                    </span>
                    <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border bg-surface text-muted-foreground border-border">
@@ -104,14 +97,14 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
               <div className="flex items-center gap-2 text-sm">
                  <Trophy className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-400' : 'text-amber-500'}`} />
                  <span className={`font-bold ${challenge.is_sponsored ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-gray-900 dark:text-zinc-900 dark:text-white'}`}>
-                    {challenge.prize_type === 'Job Offer' ? 'Exclusive Job Offer' : "$" + challenge.prize_value + " " + (challenge.prize_type || 'Pool')}
+                    {challenge.prize_type === 'Job Offer' ? 'Exclusive Job Offer' : "$" + (challenge.prize_value || 0) + " " + (challenge.prize_type || 'Pool')}
                     <span className="text-muted-foreground font-normal sm:hidden lg:inline text-xs ml-1">Reward</span>
                  </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                  <Users className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-500/50' : 'text-primary'}`} />
                  <span className="font-medium text-gray-900 dark:text-zinc-900 dark:text-white flex items-center gap-1">
-                     <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count} />
+                     <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count || 0} />
                      <span className="font-normal text-muted-foreground">Total Entries</span>
                  </span>
               </div>

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. Mark them all as processing atomically before starting work
-  const entryIds = batch.map(b => b.entry_id);
+  const entryIds = batch.map(b => b.entry_id).filter(Boolean) as string[];
   await supabase
     .from("forge_scoring_queue")
     .update({ status: "processing", attempts: 99 }) // temporary sentinel
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
 
   // Reset attempts properly per row
   for (const item of batch) {
+    if (!item.entry_id) continue;
     await supabase
       .from("forge_scoring_queue")
       .update({ attempts: 1 })
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
   const results: { entryId: string; ok: boolean; score?: number; error?: string }[] = [];
 
   for (const item of batch) {
+    if (!item.entry_id) continue;
     try {
       const res = await fetch(`${BASE_URL}/api/forge/ai/score-entry`, {
         method: "POST",

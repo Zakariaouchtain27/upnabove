@@ -118,7 +118,7 @@ export async function GET(
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <span style={{ fontSize: '20px', color: '#52525b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>Rank</span>
               <span style={{ fontSize: '60px', color: 'white', fontWeight: 900, lineHeight: 1 }}>
-                {formatRank(entry.rank)}
+                {formatRank(entry.rank || 0)}
               </span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

@@ -46,7 +46,7 @@ export async function LeaderboardPreview() {
                       </span>
                       {!entry.is_revealed && <Shield className="w-3 h-3 text-primary-light" />}
                     </div>
-                    <span className="text-xs text-muted-foreground font-mono">Bounty ID: {entry.challenge_id.substring(0,6)}...</span>
+                    <span className="text-xs text-muted-foreground font-mono">Bounty ID: {entry.challenge_id ? entry.challenge_id.substring(0,6) : 'Unknown'}...</span>
                   </div>
                 </div>
 

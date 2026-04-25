@@ -38,13 +38,15 @@ export default function SubmitForgePage() {
       const { data: candidate } = await supabase.from('candidates').select('id').eq('user_id', user.id).single();
       if (!candidate) return router.push("/forge");
 
-      const { data: cData, error: cErr } = await supabase.from('forge_challenges').select('*').eq('id', id).single();
+      const challengeId = Array.isArray(id) ? id[0] : id as string;
+
+      const { data: cData, error: cErr } = await supabase.from('forge_challenges').select('*').eq('id', challengeId).single();
       if (cErr || !cData) return router.push("/forge");
       setChallenge(cData);
 
       const { data: eData, error: eErr } = await supabase.from('forge_entries')
         .select('*')
-        .eq('challenge_id', id)
+        .eq('challenge_id', challengeId)
         .eq('candidate_id', candidate.id)
         .single();
         

@@ -32,6 +32,7 @@ export async function GET(request: Request) {
   // 2. Group by candidate
   const candidateUpdates: Record<string, typeof recentNotifications> = {};
   for (const notif of recentNotifications) {
+     if (!notif.candidate_id) continue;
      if (!candidateUpdates[notif.candidate_id]) {
         candidateUpdates[notif.candidate_id] = [];
      }

@@ -63,8 +63,13 @@ export function NotificationBell() {
         .limit(20);
 
       if (data) {
-        setNotifications(data);
-        setUnreadCount(data.filter(n => !n.is_read).length);
+        const safeData = data.map(n => ({
+          ...n,
+          is_read: n.is_read || false,
+          created_at: n.created_at || new Date().toISOString()
+        })) as NotificationRecord[];
+        setNotifications(safeData);
+        setUnreadCount(safeData.filter(n => !n.is_read).length);
       }
 
       // 3. Subscribe to Realtime Insertion Events
@@ -79,7 +84,12 @@ export function NotificationBell() {
             filter: `candidate_id=eq.${userId}`
           },
           (payload) => {
-            const newNotif = payload.new as NotificationRecord;
+            const rawNotif = payload.new as any;
+            const newNotif: NotificationRecord = {
+               ...rawNotif,
+               is_read: rawNotif.is_read || false,
+               created_at: rawNotif.created_at || new Date().toISOString()
+            };
             setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
             setUnreadCount((count) => count + 1);
             
