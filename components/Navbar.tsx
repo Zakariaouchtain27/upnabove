@@ -58,11 +58,17 @@ export default function Navbar() {
   }, [supabase]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    setDropdownOpen(false);
-    router.push('/');
+    try {
+       await supabase.auth.signOut();
+    } catch (e) {
+       console.error(e);
+    } finally {
+       setUser(null);
+       setProfile(null);
+       setDropdownOpen(false);
+       router.push('/');
+       router.refresh();
+    }
   };
 
   return (
