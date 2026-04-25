@@ -29,48 +29,53 @@ export default function CVsPage() {
   }, []);
 
   async function loadCVs() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-       setLoading(false);
-       return;
-    }
-    setUserId(user.id);
-
-    // Fetch candidate's current default resume
-    const { data: candidate } = await supabase
-      .from('candidates')
-      .select('resume_url')
-      .eq('id', user.id)
-      .single();
-    
-    if (candidate?.resume_url) {
-       setDefaultCvUrl(candidate.resume_url);
-    }
-
-    const { data: files, error } = await supabase.storage
-      .from('cvs')
-      .list(user.id, { sortBy: { column: 'created_at', order: 'desc' } });
-
-    if (!error && files) {
-      const cvList = files.map(f => {
-        const fullPath = `${user.id}/${f.name}`;
-        const { data: urlData } = supabase.storage.from('cvs').getPublicUrl(fullPath);
-        return {
-          name: f.name,
-          fullPath,
-          size: f.metadata?.size || 0,
-          created_at: f.created_at || '',
-          publicUrl: urlData.publicUrl
-        };
-      });
-      setCvs(cvList);
-      
-      // Auto-set default if they only have 1 CV and no default is set
-      if (cvList.length === 1 && !candidate?.resume_url) {
-        handleSetDefault(cvList[0].publicUrl);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+         setLoading(false);
+         return;
       }
+      setUserId(user.id);
+
+      // Fetch candidate's current default resume
+      const { data: candidate } = await supabase
+        .from('candidates')
+        .select('resume_url')
+        .eq('id', user.id)
+        .single();
+      
+      if (candidate?.resume_url) {
+         setDefaultCvUrl(candidate.resume_url);
+      }
+
+      const { data: files, error } = await supabase.storage
+        .from('cvs')
+        .list(user.id, { sortBy: { column: 'created_at', order: 'desc' } });
+
+      if (!error && files) {
+        const cvList = files.map(f => {
+          const fullPath = `${user.id}/${f.name}`;
+          const { data: urlData } = supabase.storage.from('cvs').getPublicUrl(fullPath);
+          return {
+            name: f.name,
+            fullPath,
+            size: f.metadata?.size || 0,
+            created_at: f.created_at || '',
+            publicUrl: urlData.publicUrl
+          };
+        });
+        setCvs(cvList);
+        
+        // Auto-set default if they only have 1 CV and no default is set
+        if (cvList.length === 1 && !candidate?.resume_url) {
+          handleSetDefault(cvList[0].publicUrl);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading CVs:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
