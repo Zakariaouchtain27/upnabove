@@ -32,6 +32,11 @@ export function LeaderboardClient({ rawEntries, candidatesList, rawBadges, squad
     if (activeTab === 'week') cutoffDate = new Date(new Date().setDate(new Date().getDate() - 7));
 
     return candidatesList.map(candidate => {
+       // Transform nested join table data into a flat array of strings
+       const mySkills = candidate.candidate_skills 
+         ? candidate.candidate_skills.map((cs: any) => cs.skills?.name).filter(Boolean) 
+         : [];
+
        // Filter raw entries scoped specifically to this candidate AND inside the time window
        const myEntries = rawEntries.filter(e => 
           e.candidate_id === candidate.id && 
@@ -47,7 +52,7 @@ export function LeaderboardClient({ rawEntries, candidatesList, rawBadges, squad
 
        // Soft Filter strictly by Candidate Attributes
        if (filterCountry !== 'all' && candidate.country !== filterCountry) return null;
-       if (filterSkill !== 'all' && (!candidate.skills || !candidate.skills.includes(filterSkill))) return null;
+       if (filterSkill !== 'all' && !mySkills.includes(filterSkill)) return null;
 
        let totalVotes = 0;
        let totalWins = 0;
@@ -78,7 +83,7 @@ export function LeaderboardClient({ rawEntries, candidatesList, rawBadges, squad
           name: `${candidate.first_name} ${candidate.last_name}`,
           avatar_url: candidate.avatar_url,
           country: candidate.country,
-          skills: candidate.skills,
+          skills: mySkills,
           totalWins,
           top3Finishes,
           totalVotes,

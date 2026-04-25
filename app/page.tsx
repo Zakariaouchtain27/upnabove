@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   // Fetch real stats
   const { count: jobCount } = await supabase.from('forge_challenges').select('id', { count: 'exact', head: true });
-  const { count: employerCount } = await supabase.from('employers').select('id', { count: 'exact', head: true }).catch(() => ({ count: 0 })) || { count: 0 };
+  const { count: employerCount } = await supabase.from('employers').select('id', { count: 'exact', head: true });
   const { count: entryCount } = await supabase.from('forge_entries').select('id', { count: 'exact', head: true });
 
   const stats = [

@@ -17,6 +17,8 @@ CREATE TABLE forge_challenges (
     sponsor_name TEXT,
     entry_count INT DEFAULT 0,
     is_public BOOLEAN DEFAULT true,
+    vote_weight NUMERIC DEFAULT 0.4,
+    ai_weight NUMERIC DEFAULT 0.6,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

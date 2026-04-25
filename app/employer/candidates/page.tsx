@@ -70,7 +70,7 @@ export default function EmployerCandidatesPage() {
                     {candidate.unlockedBadges.length === 0 ? (
                        <span className="text-sm text-muted italic">No Arena deployments recorded.</span>
                     ) : (
-                       candidate.unlockedBadges.map(badgeId => {
+                       candidate.unlockedBadges.map((badgeId: string) => {
                           const badgeDef = FORGE_BADGES.find(b => b.id === badgeId);
                           if (!badgeDef) return null;
                           return (

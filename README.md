@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UpnAbove 🚀
 
-## Getting Started
+UpnAbove is the next-generation hiring platform designed to bypass the traditional résumé black hole. It connects top-tier candidates with forward-thinking employers through direct action, verified proof of work, and radical transparency.
 
-First, run the development server:
+## ⚔️ The Forge
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**The Forge** is the world's first public hiring arena and the core engine of UpnAbove. 
+Instead of submitting a standard CV and waiting for a response, candidates enter **The Forge** to compete in live, high-stakes challenges dropped by employers.
+
+- **Prove Your Skills:** Tackle real-world problems in Engineering, Design, Data, and Strategy.
+- **Win In Public:** Submissions are initially anonymous (codenames only), scored by an AI engine (Claude) and peer voting.
+- **Get Hired:** The top entries are revealed. Winners earn badges, build their "Streak", and secure direct interviews or offers from sponsoring employers.
+
+## 💻 Tech Stack
+
+UpnAbove is built with a modern, high-performance web stack:
+
+* **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+* **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, Row Level Security, Realtime, Storage)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/) with a custom design system & modern aesthetics (Glassmorphism, Dark Mode)
+* **Payments & Subscriptions:** [Lemon Squeezy](https://www.lemonsqueezy.com/) (For Employer sponsorships & premium features)
+* **AI Engine:** Anthropic Claude API (For automated Forge challenge scoring)
+
+## 🏗️ Architecture Diagram
+
+```text
+       ┌────────────────────────────────────────────────────────┐
+       │                 Client (Browser / User)                │
+       │    Next.js 15 (React Server Components + Client UI)    │
+       └──────┬─────────────────────────────┬─────────────┬─────┘
+              │                             │             │
+        (User Auth &               (App logic &        (Checkout &
+         Realtime Sync)              Data fetch)       Billing UI)
+              │                             │             │
+              ▼                             ▼             ▼
+       ┌───────────────┐           ┌────────────────┐   ┌───────────────┐
+       │   Supabase    │           │ Next.js API    │   │ Lemon Squeezy │
+       │   (Auth)      │           │ Routes (Edge)  │   │   (Payments)  │
+       └──────┬────────┘           └──────┬─────────┘   └──────┬────────┘
+              │                           │                    │
+              │                           │ (DB Read/Write     │ (Webhooks)
+              │                           │  & Server Actions) │
+              ▼                           ▼                    ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │                     Supabase (PostgreSQL)                     │
+       │                                                               │
+       │  • Profiles (Candidates/Employers)   • Jobs                   │
+       │  • Forge Challenges                  • Forge Entries & Votes  │
+       │  • Squads                            • Skills Schema          │
+       └───────────────────────────────────────────────────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Setup Guide
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Clone the repository
+```bash
+git clone https://github.com/Zakariaouchtain27/upnabove.git
+cd upnabove
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Install Dependencies
+Make sure you have Node.js installed (v18+ recommended).
+```bash
+npm install
+```
 
-## Learn More
+### 3. Environment Configuration
+Copy the sample environment file and fill in your keys.
+```bash
+cp .env.example .env.local
+```
+*(See the `.env.example` file for the exact variables required).*
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Database Setup (Supabase)
+Ensure you have the Supabase CLI installed, or run the provided SQL scripts in your remote Supabase SQL Editor to set up the database tables:
+- `base_tables.sql`
+- `forge_tables.sql`
+- `forge_functions.sql`
+- `migrate_skills.sql`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 5. Start Development Server
+```bash
+npm run dev
+```
+Navigate to `http://localhost:3000` to view the application.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Environment Variables
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application requires several third-party API keys to function fully. Refer to `.env.example` in the repository root for the full list of required variables, which includes keys for Supabase, Lemon Squeezy (Payments), Anthropic (AI), and other integrations.

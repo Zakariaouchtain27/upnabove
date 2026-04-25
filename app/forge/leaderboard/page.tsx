@@ -26,7 +26,7 @@ export default async function ForgeLeaderboardPage() {
      `).not('candidate_id', 'is', null), // Note: ignoring fully anonymous entries that aren't mapped
 
      // 2. Fetch candidates with skills/country
-     supabase.from("candidates").select("id, first_name, last_name, avatar_url, country, skills, created_at"),
+     supabase.from("candidates").select("id, first_name, last_name, avatar_url, country, created_at, candidate_skills(skills(name))"),
 
      // 3. Fetch badges
      supabase.from("forge_badges").select("candidate_id, badge_type"),

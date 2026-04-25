@@ -31,10 +31,15 @@ export default async function JobsPage({
     query = query.ilike('location', `%${locationText}%`);
   }
 
-  const { data: jobs, count: jobCount } = await query
-    .limit(20)
-    .then(res => res)
-    .catch(() => ({ data: null, count: 0 }));
+  let jobs: any = [];
+  let jobCount = 0;
+  try {
+    const res = await query.limit(20);
+    jobs = res.data;
+    jobCount = res.count || 0;
+  } catch (e) {
+    // 
+  }
 
   const displayJobs = jobs || [];
 
