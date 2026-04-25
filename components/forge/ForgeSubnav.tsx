@@ -24,7 +24,7 @@ function ForgeSubnavContent() {
     { name: "Live Arena", href: "/forge", icon: <Activity className="w-4 h-4" />, exact: true },
     { name: "Activity Feed", href: "/forge/feed", icon: <Flame className="w-4 h-4" />, exact: false },
     { name: "Global Leaderboard", href: "/forge/leaderboard", icon: <Trophy className="w-4 h-4" />, exact: false },
-    { name: "My Entries", href: "/forge/entries", icon: <Shield className="w-4 h-4" />, exact: false },
+    { name: "My Entries", href: "/dashboard/forge", icon: <Shield className="w-4 h-4" />, exact: false },
     { name: "My Squad", href: "/forge/squads", icon: <Users className="w-4 h-4" />, exact: false },
     { name: "Hall of Fame", href: "/forge?status=completed", icon: <CheckCircle2 className="w-4 h-4" />, exact: false, match: '/forge/completed' },
   ];
