@@ -68,7 +68,7 @@ export default async function JobDetailPage({
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center shrink-0 dark:bg-primary-900/30 overflow-hidden">
                 {employer?.company_logo_url ? (
-                   <img src={employer.company_logo_url} alt={employer.company_name} className="w-full h-full object-cover" />
+                   <img src={employer.company_logo_url} alt={employer?.company_name || job.company_name} className="w-full h-full object-cover" />
                 ) : (
                    <Building2 className="w-7 h-7 text-primary" />
                 )}
@@ -77,7 +77,7 @@ export default async function JobDetailPage({
                 <h1 className="text-2xl font-bold text-foreground">
                   {job.title}
                 </h1>
-                <p className="text-muted mt-1">{employer?.company_name || 'Confidential Company'}</p>
+                <p className="text-muted mt-1">{job.company_name || employer?.company_name || 'Confidential Company'}</p>
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-muted">
                   <span className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" /> {job.location}
@@ -92,7 +92,10 @@ export default async function JobDetailPage({
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {job.requirements?.slice(0, 4).map((req, i) => (
+                  {job.category && (
+                     <Badge variant="primary">{job.category}</Badge>
+                  )}
+                  {job.requirements?.slice(0, 4).map((req: string, i: number) => (
                     <Badge key={i} variant="primary">{req}</Badge>
                   ))}
                 </div>
@@ -100,11 +103,17 @@ export default async function JobDetailPage({
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-border">
-              <JobApplyModal 
-                 jobId={job.id} 
-                 jobTitle={job.title} 
-                 companyName={employer?.company_name || 'Confidential Company'} 
-              />
+              {job.source === 'adzuna' && job.external_apply_url ? (
+                 <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="w-full sm:w-auto px-6 py-3 bg-[#FF6F61] text-white text-center font-bold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.4)]">
+                    Apply on {job.company_name || 'External Site'} &rarr;
+                 </a>
+              ) : (
+                 <JobApplyModal 
+                    jobId={job.id} 
+                    jobTitle={job.title} 
+                    companyName={employer?.company_name || 'Confidential Company'} 
+                 />
+              )}
               <div className="flex items-center gap-3 w-full sm:w-auto">
                  <Button variant="outline" size="lg" className="flex-1 sm:flex-none">
                    <Bookmark className="w-4 h-4" />

@@ -822,46 +822,61 @@ export type Database = {
       jobs: {
         Row: {
           benefits: string[] | null
+          category: string | null
+          company_name: string | null
           created_at: string | null
           description: string
           employer_id: string | null
           expires_at: string | null
+          external_apply_url: string | null
+          external_id: string | null
           id: string
           is_active: boolean | null
           job_type: string
           location: string
           requirements: string[] | null
           salary_range: string | null
+          source: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
           benefits?: string[] | null
+          category?: string | null
+          company_name?: string | null
           created_at?: string | null
           description: string
           employer_id?: string | null
           expires_at?: string | null
+          external_apply_url?: string | null
+          external_id?: string | null
           id?: string
           is_active?: boolean | null
           job_type: string
           location: string
           requirements?: string[] | null
           salary_range?: string | null
+          source?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
           benefits?: string[] | null
+          category?: string | null
+          company_name?: string | null
           created_at?: string | null
           description?: string
           employer_id?: string | null
           expires_at?: string | null
+          external_apply_url?: string | null
+          external_id?: string | null
           id?: string
           is_active?: boolean | null
           job_type?: string
           location?: string
           requirements?: string[] | null
           salary_range?: string | null
+          source?: string | null
           title?: string
           updated_at?: string | null
         }

@@ -132,7 +132,7 @@ export default async function JobsPage({
             ) : (
               <div className="flex flex-col gap-4">
                 {displayJobs.map((job: any, i: number) => {
-                  const companyName = job.employers?.company_name || job.company || 'Company';
+                  const companyName = job.company_name || job.employers?.company_name || 'Confidential';
                   const logoUrl = job.employers?.company_logo_url;
                   
                   return (
@@ -150,13 +150,28 @@ export default async function JobsPage({
                         <div className="flex-1 flex flex-col justify-center">
                           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-2">
                             <div>
-                              <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
-                                {job.title}
-                              </h2>
+                              <Link href={`/jobs/${job.id}`}>
+                                <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors mb-1">
+                                  {job.title}
+                                </h2>
+                              </Link>
                               <div className="flex items-center gap-2 text-muted">
                                 <Building2 className="w-4 h-4" />
                                 <span className="font-medium text-foreground">{companyName}</span>
                               </div>
+                            </div>
+                            <div className="shrink-0 flex items-center">
+                               {job.source === 'adzuna' && job.external_apply_url ? (
+                                  <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-[#FF6F61] text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.3)] hover:shadow-[0_0_20px_rgba(255,111,97,0.5)]">
+                                     Apply on {companyName} &rarr;
+                                  </a>
+                               ) : (
+                                  <Link href={`/jobs/${job.id}`}>
+                                    <button className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-sm shadow-primary/20">
+                                       One Click Apply
+                                    </button>
+                                  </Link>
+                               )}
                             </div>
                           </div>
                           

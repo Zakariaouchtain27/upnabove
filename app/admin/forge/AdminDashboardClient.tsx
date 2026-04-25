@@ -215,6 +215,35 @@ export function AdminDashboardClient({
            </div>
        </div>
 
+       {/* 5. Job Seeding Management */}
+       <div className="p-8 bg-surface border border-border rounded-3xl">
+           <h3 className="text-xl font-bold uppercase tracking-tight text-white mb-6">Job Seeding Command</h3>
+           <div className="flex flex-col gap-4">
+             <p className="text-muted-foreground text-sm max-w-2xl">
+               Manually trigger the Adzuna job seeder API. This will fetch jobs for the configured countries and insert them into the global job board. Note: A pg_cron job already does this daily at 6:00 AM UTC.
+             </p>
+             <div className="flex items-center gap-4">
+               <Button 
+                 onClick={async () => {
+                    setLoadingAction('seed_jobs');
+                    try {
+                      const res = await fetch('/api/jobs/seed');
+                      const data = await res.json();
+                      alert(data.message || data.error);
+                    } catch (err) {
+                      alert('Failed to seed jobs.');
+                    }
+                    setLoadingAction(null);
+                 }}
+                 disabled={loadingAction === 'seed_jobs'}
+                 className="bg-primary text-white"
+               >
+                 {loadingAction === 'seed_jobs' ? 'Seeding...' : 'Seed Jobs via Adzuna'}
+               </Button>
+             </div>
+           </div>
+       </div>
+
     </div>
   );
 }
