@@ -9,6 +9,13 @@ export async function GET(req: Request) {
     const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
     const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
+    const CRON_SECRET = process.env.CRON_SECRET;
+
+    // Security Check
+    const authHeader = req.headers.get('authorization');
+    if (authHeader !== `Bearer ${CRON_SECRET}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({ error: 'Supabase Service Role Key is missing.' }, { status: 500 });

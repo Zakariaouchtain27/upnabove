@@ -81,3 +81,29 @@ export async function removeSubmission(entryId: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/forge");
 }
+
+export async function triggerJobSeed() {
+  const CRON_SECRET = process.env.CRON_SECRET;
+  if (!CRON_SECRET) throw new Error("CRON_SECRET is not configured on the server.");
+
+  // We use the production URL since this is a server-to-server call.
+  // In a local environment, you could switch this to http://localhost:3000
+  const baseUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000' 
+    : 'https://upnabove-zeta.vercel.app';
+
+  const res = await fetch(`${baseUrl}/api/jobs/seed`, {
+    headers: {
+      'Authorization': `Bearer ${CRON_SECRET}`
+    }
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || `Seeding failed with status: ${res.status}`);
+  }
+
+  const data = await res.json();
+  revalidatePath("/jobs"); // Revalidate the jobs page so the new jobs show up!
+  return data;
+}

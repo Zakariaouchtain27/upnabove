@@ -8,7 +8,8 @@ import {
   featureChallenge, 
   approveFlaggedEntry, 
   removeSubmission, 
-  banCandidate 
+  banCandidate,
+  triggerJobSeed
 } from "./actions";
 import Button from "@/components/ui/Button";
 import { DollarSign, Zap, Flag, CheckCircle, ShieldBan, Trash, Crown, Target, Users } from "lucide-react";
@@ -227,11 +228,10 @@ export function AdminDashboardClient({
                  onClick={async () => {
                     setLoadingAction('seed_jobs');
                     try {
-                      const res = await fetch('/api/jobs/seed');
-                      const data = await res.json();
+                      const data = await triggerJobSeed();
                       alert(data.message || data.error);
-                    } catch (err) {
-                      alert('Failed to seed jobs.');
+                    } catch (err: any) {
+                      alert(`Failed to seed jobs: ${err.message}`);
                     }
                     setLoadingAction(null);
                  }}
