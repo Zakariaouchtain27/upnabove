@@ -11,21 +11,22 @@ import { createClient } from "@/lib/supabase/server";
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const supabase = await createClient();
+  const resolvedParams = await searchParams;
 
-  const queryText = searchParams?.q || '';
-  const locationText = searchParams?.location || '';
+  const queryText = (resolvedParams?.q as string) || '';
+  const locationText = (resolvedParams?.location as string) || '';
 
   // Attempt to fetch real jobs
   let query = supabase
     .from('jobs')
-    .select('*, employers(company_name, company_logo_url)', { count: 'exact' })
+    .select('*, employers!inner(company_name, company_logo_url)', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (queryText) {
-    query = query.ilike('title', `%${queryText}%`);
+    query = query.or(`title.ilike.%${queryText}%,description.ilike.%${queryText}%`);
   }
   if (locationText) {
     query = query.ilike('location', `%${locationText}%`);
