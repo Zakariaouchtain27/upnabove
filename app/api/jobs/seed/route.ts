@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
-const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
+    const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
+
+    if (!SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json({ error: 'Supabase Service Role Key is missing.' }, { status: 500 });
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     if (!ADZUNA_APP_ID || !ADZUNA_APP_KEY) {
       return NextResponse.json({ error: 'Adzuna API keys are not configured.' }, { status: 500 });
     }
