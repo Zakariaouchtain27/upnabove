@@ -1,41 +1,35 @@
-import { MetadataRoute } from 'next';
-import { createClient } from "@/lib/supabase/server";
+import type { MetadataRoute } from 'next';
+import { createClient } from '@supabase/supabase-js';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://upnabove.work';
-  const supabase = await createClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
-  // 1. Fetch all publicly accessible and active/scheduled/completed challenges
-  const { data: challenges } = await supabase
-    .from('forge_challenges')
-    .select('id, created_at, updated_at')
-    .in('status', ['scheduled', 'live', 'judging', 'completed'])
-    .eq('is_public', true)
+  const BASE_URL = 'https://upnabove-zeta.vercel.app';
+
+  // Fetch all active jobs
+  const { data: jobs } = await supabase
+    .from('jobs')
+    .select('id, created_at')
+    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
-  const challengeUrls = (challenges || []).map((challenge) => ({
-    url: `${baseUrl}/forge/${challenge.id}`,
-    lastModified: new Date(challenge.updated_at || challenge.created_at || new Date()),
-    changeFrequency: 'hourly' as const,
+  const jobUrls: MetadataRoute.Sitemap = (jobs || []).map(job => ({
+    url: `${BASE_URL}/jobs/${job.id}`,
+    lastModified: new Date(job.created_at),
+    changeFrequency: 'weekly',
     priority: 0.8,
   }));
 
-  // 2. Map Static & Category Routes
-  const staticRoutes = [
-    '',
-    '/forge',
-    '/forge/leaderboard',
-    '/forge/press',
-    '/forge/design',
-    '/forge/code',
-    '/forge/strategy',
-    '/forge/writing'
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route.includes('/forge/press') ? 0.6 : (route === '' ? 1.0 : 0.9),
-  }));
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
+    { url: `${BASE_URL}/jobs`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
+    { url: `${BASE_URL}/forge`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${BASE_URL}/login`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${BASE_URL}/signup`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+  ];
 
-  return [...staticRoutes, ...challengeUrls];
+  return [...staticPages, ...jobUrls];
 }

@@ -17,10 +17,51 @@ import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
 import JobApplyModal from "@/components/jobs/JobApplyModal";
 
-export const metadata: Metadata = {
-  title: "Job Detail — UpnAbove",
-  description: "View job details on UpnAbove.",
-};
+const BASE_URL = 'https://upnabove-zeta.vercel.app';
+
+// ─── Dynamic SEO Metadata ────────────────────────────────────────────────────
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: job } = await supabase
+    .from('jobs')
+    .select('title, description, location, company_name, category, salary_range, job_type')
+    .eq('id', id)
+    .single();
+
+  if (!job) return { title: 'Job Not Found | UpnAbove' };
+
+  const companyName = job.company_name || 'Confidential Company';
+  const title = `${job.title} at ${companyName} | UpnAbove`;
+  const description = job.description
+    ? job.description.slice(0, 155).replace(/\s\S*$/, '…')
+    : `Apply for ${job.title} at ${companyName} in ${job.location} on UpnAbove.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/jobs/${id}`,
+      siteName: 'UpnAbove',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+    alternates: {
+      canonical: `${BASE_URL}/jobs/${id}`,
+    },
+  };
+}
 
 export default async function JobDetailPage({
   params,
@@ -49,7 +90,46 @@ export default async function JobDetailPage({
 
   const employer = job.employers as any;
 
+  // ─── JSON-LD JobPosting Schema (Google Rich Results) ────────────────────────
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description || `${job.title} position at ${job.company_name || 'a top company'}.`,
+    datePosted: job.created_at ? new Date(job.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.company_name || employer?.company_name || 'Confidential',
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: job.location || 'Remote',
+      },
+    },
+    employmentType: job.job_type === 'Part-time' ? 'PART_TIME' : 'FULL_TIME',
+    ...(job.salary_range && {
+      baseSalary: {
+        '@type': 'MonetaryAmount',
+        currency: 'USD',
+        value: {
+          '@type': 'QuantitativeValue',
+          description: job.salary_range,
+        },
+      },
+    }),
+    ...(job.external_apply_url && { url: job.external_apply_url }),
+  };
+
+
   return (
+    <>
+      {/* JSON-LD for Google Rich Results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Back */}
       <Link
@@ -213,5 +293,7 @@ export default async function JobDetailPage({
         </div>
       </div>
     </div>
+    </>
   );
 }
+
