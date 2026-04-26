@@ -5,13 +5,16 @@ import { Search, MapPin, Filter } from "lucide-react";
 
 export function JobSearchForm({ 
   initialQuery = "", 
-  initialLocation = "" 
+  initialLocation = "",
+  initialTime = "any"
 }: { 
   initialQuery?: string; 
   initialLocation?: string; 
+  initialTime?: string;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [location, setLocation] = useState(initialLocation);
+  const [time, setTime] = useState(initialTime);
   const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [titleFocused, setTitleFocused] = useState(false);
@@ -113,7 +116,19 @@ export function JobSearchForm({
       </div>
       
       <div className="flex gap-4">
-        <button type="button" className="flex items-center gap-2 px-6 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm shrink-0">
+        <select 
+          name="time"
+          value={time}
+          onChange={e => setTime(e.target.value)}
+          className="px-4 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm shrink-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary appearance-none pr-8"
+          style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
+        >
+          <option value="any">Any Time</option>
+          <option value="24h">Past 24 hours</option>
+          <option value="7d">Past Week</option>
+          <option value="30d">Past Month</option>
+        </select>
+        <button type="button" className="hidden sm:flex items-center gap-2 px-6 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm shrink-0">
           <Filter className="w-4 h-4" /> Filters
         </button>
         <button type="submit" className="px-8 py-3.5 bg-foreground text-background font-semibold rounded-xl hover:scale-105 transition-all shadow-sm shrink-0">

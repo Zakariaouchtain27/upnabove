@@ -8,6 +8,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";
 import { JobSearchForm } from "@/components/jobs/JobSearchForm";
+import { JobSortSelect } from "@/components/jobs/JobSortSelect";
 import OneClickApply from "@/components/jobs/OneClickApply";
 
 export default async function JobsPage({
@@ -20,18 +21,40 @@ export default async function JobsPage({
 
   const queryText = (resolvedParams?.q as string) || '';
   const locationText = (resolvedParams?.location as string) || '';
+  const timeText = (resolvedParams?.time as string) || 'any';
+  const sortText = (resolvedParams?.sort as string) || 'recent';
 
   // Attempt to fetch real jobs
   let query = supabase
     .from('jobs')
-    .select('*, employers(company_name, company_logo_url)', { count: 'exact' })
-    .order('created_at', { ascending: false });
+    .select('*, employers(company_name, company_logo_url)', { count: 'exact' });
 
+  // 1. Apply Filtering
   if (queryText) {
     query = query.or(`title.ilike.%${queryText}%,description.ilike.%${queryText}%`);
   }
   if (locationText) {
     query = query.ilike('location', `%${locationText}%`);
+  }
+  
+  if (timeText !== 'any') {
+    const now = new Date();
+    if (timeText === '24h') {
+      now.setHours(now.getHours() - 24);
+    } else if (timeText === '7d') {
+      now.setDate(now.getDate() - 7);
+    } else if (timeText === '30d') {
+      now.setDate(now.getDate() - 30);
+    }
+    query = query.gte('created_at', now.toISOString());
+  }
+
+  // 2. Apply Sorting
+  if (sortText === 'oldest') {
+    query = query.order('created_at', { ascending: true });
+  } else {
+    // Default to recent
+    query = query.order('created_at', { ascending: false });
   }
 
   let jobs: any = [];
@@ -83,7 +106,7 @@ export default async function JobsPage({
 
           {/* Search and Filter Bar */}
           <ScrollReveal delay={0.2}>
-            <JobSearchForm initialQuery={queryText} initialLocation={locationText} />
+            <JobSearchForm initialQuery={queryText} initialLocation={locationText} initialTime={timeText} />
           </ScrollReveal>
 
           {/* Job Listings */}
@@ -95,9 +118,7 @@ export default async function JobsPage({
                   : <span className="text-muted">No jobs posted yet</span>
                 }
               </p>
-              <div className="flex items-center gap-2 text-sm text-muted cursor-pointer hover:text-foreground transition-colors">
-                Sort by: <span className="text-foreground font-medium">Most Recent</span> <ChevronDown className="w-4 h-4" />
-              </div>
+              <JobSortSelect initialSort={sortText} />
             </div>
 
             {displayJobs.length === 0 ? (
