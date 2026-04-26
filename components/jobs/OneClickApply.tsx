@@ -64,7 +64,7 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
     }
     checkStatus();
     return () => { mounted = false; };
-  }, [jobId, supabase]);
+  }, [jobId]);
 
   const handleApply = async () => {
     setLoading(true);
