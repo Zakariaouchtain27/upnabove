@@ -34,8 +34,7 @@ export async function POST(
     const { error: appErr } = await supabase.from('applications').insert({
       job_id: jobId,
       candidate_id: candidate.id,
-      resume_url: candidate.resume_url,
-      status: 'applied'
+      resume_url: candidate.resume_url
     });
 
     if (appErr) {
