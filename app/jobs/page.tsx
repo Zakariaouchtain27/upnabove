@@ -8,6 +8,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";
 import { JobSearchForm } from "@/components/jobs/JobSearchForm";
+import OneClickApply from "@/components/jobs/OneClickApply";
 
 export default async function JobsPage({
   searchParams,
@@ -130,19 +131,18 @@ export default async function JobsPage({
                                 <span className="font-medium text-foreground">{companyName}</span>
                               </div>
                             </div>
-                            <div className="shrink-0 flex items-center">
-                               {job.source === 'adzuna' && job.external_apply_url ? (
-                                  <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-[#FF6F61] text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.3)] hover:shadow-[0_0_20px_rgba(255,111,97,0.5)]">
-                                     Apply on {companyName} &rarr;
-                                  </a>
-                               ) : (
-                                  <Link href={`/jobs/${job.id}`}>
-                                    <button className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-sm shadow-primary/20">
-                                       One Click Apply
-                                    </button>
-                                  </Link>
-                               )}
-                            </div>
+                             <div className="shrink-0 flex items-center">
+                                {job.source === 'adzuna' && job.external_apply_url ? (
+                                   <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-[#FF6F61] text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.3)] hover:shadow-[0_0_20px_rgba(255,111,97,0.5)]">
+                                      Apply on {companyName} &rarr;
+                                   </a>
+                                ) : (
+                                   <OneClickApply 
+                                      jobId={job.id} 
+                                      jobTitle={job.title} 
+                                   />
+                                )}
+                             </div>
                           </div>
                           
                           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4 mb-5 text-sm">

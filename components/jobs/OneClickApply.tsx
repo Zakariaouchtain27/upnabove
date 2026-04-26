@@ -22,38 +22,48 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
   const supabase = createClient();
 
   useEffect(() => {
+    let mounted = true;
     async function checkStatus() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setVerifying(false);
-        return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+        
+        if (!session?.user) {
+          setVerifying(false);
+          return;
+        }
+
+        const user = session.user;
+
+        // Check if already applied
+        const { data: existing } = await supabase
+          .from('applications')
+          .select('id')
+          .eq('job_id', jobId)
+          .eq('candidate_id', user.id)
+          .maybeSingle();
+
+        if (existing && mounted) setApplied(true);
+
+        // Check profile and resume
+        const { data: candidate } = await supabase
+          .from('candidates')
+          .select('id, resume_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (candidate && mounted) {
+          setHasProfile(true);
+          if (candidate.resume_url) setHasResume(true);
+        }
+      } catch (e) {
+        console.error("Initialization error:", e);
+      } finally {
+        if (mounted) setVerifying(false);
       }
-
-      // Check if already applied
-      const { data: existing } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('job_id', jobId)
-        .eq('candidate_id', user.id)
-        .single();
-
-      if (existing) setApplied(true);
-
-      // Check profile and resume
-      const { data: candidate } = await supabase
-        .from('candidates')
-        .select('id, resume_url')
-        .eq('id', user.id)
-        .single();
-
-      if (candidate) {
-        setHasProfile(true);
-        if (candidate.resume_url) setHasResume(true);
-      }
-      
-      setVerifying(false);
     }
     checkStatus();
+    return () => { mounted = false; };
   }, [jobId, supabase]);
 
   const handleApply = async () => {
