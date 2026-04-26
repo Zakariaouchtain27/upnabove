@@ -3,168 +3,155 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { ArrowLeft, Briefcase, MapPin, DollarSign, UploadCloud, Loader2, CheckCircle2 } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Briefcase, 
+  MapPin, 
+  DollarSign, 
+  Loader2, 
+  CheckCircle2,
+  Globe,
+  Navigation,
+  Clock,
+  Coins
+} from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+
+// Curated data for the demo - In production this could come from an API
+const COUNTRY_DATA: Record<string, string[]> = {
+  "United States": ["New York", "San Francisco", "Austin", "Chicago", "Seattle", "Los Angeles", "Miami"],
+  "United Kingdom": ["London", "Manchester", "Birmingham", "Edinburgh", "Bristol", "Leeds"],
+  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
+  "Canada": ["Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa"],
+  "France": ["Paris", "Lyon", "Marseille", "Bordeaux", "Toulouse"],
+  "Germany": ["Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"],
+  "Morocco": ["Casablanca", "Rabat", "Marrakech", "Tangier", "Agadir"],
+  "South Africa": ["Johannesburg", "Cape Town", "Durban", "Pretoria"],
+  "Other": ["Remote / Global"]
+};
+
+const CURRENCIES = ["USD", "EUR", "GBP", "AED", "MAD", "ZAR", "CAD"];
 
 export default function CreateJobPage() {
   const router = useRouter();
   const supabase = createClient();
   const { addToast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
+  
   const [formData, setFormData] = useState({
     title: "",
     job_type: "full-time",
-    location: "",
-    salary_range: "",
+    country: "United States",
+    city: "New York",
+    work_mode: "on-site",
+    salary_amount: "",
+    salary_currency: "USD",
+    salary_period: "yearly",
     description: "",
     requirements: "",
     benefits: ""
   });
 
   useEffect(() => {
-    async function loadEmployer() {
+    async function checkEmployer() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (!user) return router.push("/login");
+
+      const { data: employer } = await supabase.from('employers').select('id').eq('id', user.id).single();
+      if (!employer) {
         setEmployerId(user.id);
-        const { data: emp } = await supabase.from('employers').select('company_logo_url').eq('id', user.id).single();
-        if (emp?.company_logo_url) {
-          setLogoUrl(emp.company_logo_url);
-        }
       } else {
-        router.push("/login");
+        setEmployerId(employer.id);
       }
     }
-    loadEmployer();
-  }, [router, supabase]);
-
-  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !employerId) return;
-
-    setIsUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${employerId}-${Date.now()}.${fileExt}`;
-
-    const { error, data } = await supabase.storage
-      .from('logos')
-      .upload(fileName, file, { upsert: true });
-
-    if (error) {
-      addToast("Failed to upload logo: " + error.message, "error");
-    } else {
-      const { data: urlData } = supabase.storage.from('logos').getPublicUrl(fileName);
-      setLogoUrl(urlData.publicUrl);
-
-      // Update employer profile implicitly
-      await supabase.from('employers').update({ company_logo_url: urlData.publicUrl }).eq('id', employerId);
-      addToast("Logo updated successfully!", "success");
-    }
-    setIsUploading(false);
-  };
+    checkEmployer();
+  }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!employerId) return;
-
-    const allowedJobTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
-    if (!allowedJobTypes.includes(formData.job_type)) {
-      addToast(`Invalid job type: ${formData.job_type}. Please select from the list.`, "error");
-      setIsLoading(false);
+    if (!employerId) {
+      addToast("Authentication error. Please refresh.", "error");
       return;
     }
 
+    setIsLoading(true);
+
     const reqs = formData.requirements.split('\n').filter(r => r.trim() !== '');
     const bens = formData.benefits.split('\n').filter(b => b.trim() !== '');
+
+    // Construct human-readable strings for legacy columns
+    const locationString = `${formData.city}, ${formData.country} (${formData.work_mode})`;
+    const salaryString = `${formData.salary_currency} ${formData.salary_amount}/${formData.salary_period === 'yearly' ? 'yr' : formData.salary_period === 'monthly' ? 'mo' : 'hr'}`;
 
     const payload = {
       employer_id: employerId,
       title: formData.title,
       job_type: formData.job_type,
-      location: formData.location,
-      salary_range: formData.salary_range || null,
+      location: locationString, // Legacy support
+      salary_range: salaryString, // Legacy support
       description: formData.description,
       requirements: reqs,
       benefits: bens,
-      is_active: true
+      is_active: true,
+      // Structured data (new columns)
+      country: formData.country,
+      city: formData.city,
+      work_mode: formData.work_mode,
+      salary_amount: parseFloat(formData.salary_amount) || 0,
+      salary_currency: formData.salary_currency,
+      salary_period: formData.salary_period
     };
 
     const { error } = await supabase.from('jobs').insert([payload]);
 
     if(error){
-       console.error("Job posting error:", error);
-       if (error.message.includes('jobs_job_type_check') || error.message.includes('check constraint')) {
-         addToast("Database error: Invalid job type selection. Please try re-selecting the job type.", "error");
-       } else {
-         addToast("Error posting job: " + error.message, "error");
-       }
+       console.error("Job post error:", error);
+       addToast("Error posting job: " + error.message, "error");
        setIsLoading(false);
     } else {
-       addToast("Job posted successfully!", "success");
-       router.push("/employer"); // Redirect back to dashboard instead of public jobs
+       addToast("Job launched successfully!", "success");
+       router.push("/employer");
     }
   };
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-20">
-      <div className="max-w-3xl mx-auto px-4">
-        <Link href="/employer" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+    <div className="min-h-screen bg-background relative pt-12 pb-32 px-6">
+      <div className="max-w-3xl mx-auto">
+        <Link href="/employer" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-primary transition-all mb-8 group">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-foreground uppercase tracking-tight">Post a New Job</h1>
-          <p className="text-muted mt-2">Publish an open role to the global network.</p>
+        <div className="mb-10">
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tight mb-2">Launch New Bounty</h1>
+          <p className="text-muted">Fill the specs to deploy your job to the UpnAbove network.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8 bg-surface border border-border p-8 rounded-3xl shadow-sm">
           
-          {/* Company Logo Widget */}
-          <div className="flex items-center gap-6 pb-6 border-b border-border">
-             <div 
-               className="w-20 h-20 rounded-2xl border-2 border-dashed border-border bg-background flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
-               onClick={() => fileInputRef.current?.click()}
-             >
-               <input type="file" className="hidden" accept="image/*" ref={fileInputRef} onChange={handleUploadLogo} />
-               {isUploading ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-               ) : logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
-               ) : (
-                  <>
-                     <UploadCloud className="w-6 h-6 text-muted mb-1" />
-                     <span className="text-[10px] text-muted font-bold uppercase">Upload</span>
-                  </>
-               )}
-             </div>
-             <div>
-                <h3 className="text-foreground font-bold text-lg leading-tight">Company Logo</h3>
-                <p className="text-muted text-sm">Upload your brand mark. This carries over to all your jobs.</p>
-             </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title & Type */}
             <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground">Job Title</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Navigation className="w-3.5 h-3.5" /> Job Title
+              </label>
               <input 
                 type="text" 
                 required
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-foreground"
-                placeholder="e.g. Senior Frontend Engineer"
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
+                placeholder="e.g. Lead Combat Architect"
                 value={formData.title}
                 onChange={e => setFormData({ ...formData, title: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2"><Briefcase className="w-4 h-4"/> Job Type</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Briefcase className="w-3.5 h-3.5" /> Engagement Type
+              </label>
               <select 
                 className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
                 value={formData.job_type}
@@ -179,33 +166,102 @@ export default function CreateJobPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2"><MapPin className="w-4 h-4"/> Location</label>
-              <input 
-                type="text" 
-                required
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
-                placeholder="e.g. Remote, Global"
-                value={formData.location}
-                onChange={e => setFormData({ ...formData, location: e.target.value })}
-              />
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5" /> Work Mode
+              </label>
+              <select 
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
+                value={formData.work_mode}
+                onChange={e => setFormData({ ...formData, work_mode: e.target.value })}
+              >
+                <option value="on-site">On-site</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+              </select>
             </div>
 
-            <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2"><DollarSign className="w-4 h-4"/> Salary Range</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
-                placeholder="e.g. $120k - $150k (Optional)"
-                value={formData.salary_range}
-                onChange={e => setFormData({ ...formData, salary_range: e.target.value })}
-              />
+            {/* Location Section */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Globe className="w-3.5 h-3.5" /> Country
+              </label>
+              <select 
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
+                value={formData.country}
+                onChange={e => {
+                  const country = e.target.value;
+                  setFormData({ ...formData, country, city: COUNTRY_DATA[country][0] });
+                }}
+              >
+                {Object.keys(COUNTRY_DATA).map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
 
-            <div className="space-y-2 col-span-1 md:col-span-2 border-t border-border pt-6">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground">Role Description</label>
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5" /> City
+              </label>
+              <select 
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
+                value={formData.city}
+                onChange={e => setFormData({ ...formData, city: e.target.value })}
+              >
+                {(COUNTRY_DATA[formData.country] || []).map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Salary Section */}
+            <div className="space-y-2 col-span-1 md:col-span-2 pt-4 border-t border-border">
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 block">Compensation Payload</label>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-shrink-0 w-full sm:w-32">
+                  <select 
+                    className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
+                    value={formData.salary_currency}
+                    onChange={e => setFormData({ ...formData, salary_currency: e.target.value })}
+                  >
+                    {CURRENCIES.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex-grow">
+                  <div className="relative">
+                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+                    <input 
+                      type="number" 
+                      required
+                      className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
+                      placeholder="e.g. 120000"
+                      value={formData.salary_amount}
+                      onChange={e => setFormData({ ...formData, salary_amount: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="flex-shrink-0 w-full sm:w-40">
+                  <select 
+                    className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
+                    value={formData.salary_period}
+                    onChange={e => setFormData({ ...formData, salary_period: e.target.value })}
+                  >
+                    <option value="yearly">Per Year</option>
+                    <option value="monthly">Per Month</option>
+                    <option value="hourly">Per Hour</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Description & Requirements */}
+            <div className="space-y-2 col-span-1 md:col-span-2 pt-4 border-t border-border">
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Mission Specs (Role Description)</label>
               <textarea 
                 required
-                rows={5}
+                rows={6}
                 className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground resize-none"
                 placeholder="Describe the day-to-day responsibilities and impact..."
                 value={formData.description}
@@ -214,10 +270,10 @@ export default function CreateJobPage() {
             </div>
 
             <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground">Requirements (One per line)</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Required Combat Skills (One per line)</label>
               <textarea 
-                rows={5}
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground resize-none"
+                rows={4}
+                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground resize-none font-mono text-sm"
                 placeholder="5+ years of React experience&#10;Strong understanding of UI/UX"
                 value={formData.requirements}
                 onChange={e => setFormData({ ...formData, requirements: e.target.value })}
@@ -225,7 +281,7 @@ export default function CreateJobPage() {
             </div>
 
             <div className="space-y-2 col-span-1 md:col-span-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-foreground">Benefits (One per line)</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Perks & Armor (Benefits)</label>
               <textarea 
                 rows={3}
                 className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground resize-none"
@@ -236,10 +292,10 @@ export default function CreateJobPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-border flex justify-end">
-             <Button type="submit" disabled={isLoading} className="gap-2">
+          <div className="pt-8 border-t border-border flex justify-end">
+             <Button type="submit" disabled={isLoading} className="gap-2 px-12 py-5 text-sm uppercase tracking-widest font-black">
                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-               {isLoading ? "Publishing..." : "Launch Job Post"}
+               {isLoading ? "Publishing..." : "Deploy Job Posting"}
              </Button>
           </div>
         </form>

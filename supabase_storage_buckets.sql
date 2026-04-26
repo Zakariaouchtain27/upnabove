@@ -74,3 +74,21 @@ USING (
   bucket_id = 'submissions' AND
   (storage.foldername(name))[1] = auth.uid()::text
 );
+
+-- 5. RLS Policies for 'logos' bucket
+-- Public can view logos
+CREATE POLICY "Public can view logos"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'logos');
+
+-- Authenticated employers can upload logos
+CREATE POLICY "Employers can upload logos"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'logos');
+
+-- Employers can update/delete their own logos
+CREATE POLICY "Employers can update logos"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'logos');
