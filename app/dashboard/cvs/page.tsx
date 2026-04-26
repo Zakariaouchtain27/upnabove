@@ -23,18 +23,14 @@ export default function CVsPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [defaultCvUrl, setDefaultCvUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadCVs();
-  }, []);
-
-  async function loadCVs() {
+  const loadCVs = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
          setLoading(false);
          return;
       }
+      const user = session.user;
       setUserId(user.id);
 
       // Fetch candidate's current default resume
@@ -76,7 +72,11 @@ export default function CVsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    loadCVs();
+  }, [supabase]);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
