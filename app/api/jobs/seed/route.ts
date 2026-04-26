@@ -53,19 +53,28 @@ export async function GET(req: Request) {
              salaryRange = `$${Math.round(job.salary_min / 1000)}k+`;
           }
 
-          const { error } = await supabase.from('jobs').upsert({
-            external_id: job.id, // We use external_id as unique to prevent duplicates
+          const jobToUpsert = {
+            external_id: job.id,
             title: job.title,
             description: job.description,
             location: job.location?.display_name || 'Remote',
-            job_type: job.contract_time === 'part_time' ? 'part-time' : 'full-time',
+            job_type: (() => {
+              const time = job.contract_time;
+              if (time === 'part_time') return 'part-time';
+              if (time === 'contract') return 'contract';
+              return 'full-time'; // Default to full-time for permanent or unspecified
+            })(),
             salary_range: salaryRange,
             category: job.category?.label,
             company_name: job.company?.display_name || 'Confidential',
             external_apply_url: job.redirect_url,
             source: 'adzuna',
             is_active: true
-          }, { onConflict: 'external_id' });
+          };
+
+          console.log(`[Seed] Upserting job: ${jobToUpsert.title} with type: ${jobToUpsert.job_type}`);
+
+          const { error } = await supabase.from('jobs').upsert(jobToUpsert, { onConflict: 'external_id' });
 
           if (!error) {
             totalInserted++;

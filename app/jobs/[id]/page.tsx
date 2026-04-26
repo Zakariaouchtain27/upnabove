@@ -108,7 +108,7 @@ export default async function JobDetailPage({
         addressLocality: job.location || 'Remote',
       },
     },
-    employmentType: job.job_type === 'Part-time' ? 'PART_TIME' : 'FULL_TIME',
+    employmentType: job.job_type === 'part-time' ? 'PART_TIME' : 'FULL_TIME',
     ...(job.salary_range && {
       baseSalary: {
         '@type': 'MonetaryAmount',
