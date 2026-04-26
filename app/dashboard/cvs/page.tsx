@@ -158,17 +158,25 @@ export default function CVsPage() {
 
   async function handleSetDefault(publicUrl: string, showToast = true) {
      if (!userId) return;
-     const { error } = await supabase
+     
+     const { data, error } = await supabase
         .from('candidates')
         .update({ resume_url: publicUrl })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select('id');
      
-     if (!error) {
-        setDefaultCvUrl(publicUrl);
-        if (showToast) alert('Set as default CV.');
-     } else {
-        if (showToast) alert('Failed to set default.');
+     if (error) {
+        if (showToast) alert('Failed to set default: ' + error.message);
+        return;
      }
+
+     if (!data || data.length === 0) {
+        if (showToast) alert('You must complete your candidate profile in the settings before you can set a default CV.');
+        return;
+     }
+
+     setDefaultCvUrl(publicUrl);
+     if (showToast) alert('Set as default CV.');
   }
 
   async function handleDownload(fullPath: string, name: string) {
@@ -258,7 +266,8 @@ export default function CVsPage() {
       ) : (
         <div className="space-y-3">
           {cvs.map((cv) => {
-             const isDefault = defaultCvUrl === cv.publicUrl;
+             // Compare using fullPath to avoid localhost vs production domain mismatches
+             const isDefault = defaultCvUrl && defaultCvUrl.includes(cv.fullPath);
              return (
                <div
                  key={cv.fullPath}
