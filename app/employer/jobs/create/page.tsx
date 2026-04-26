@@ -250,10 +250,16 @@ export default function CreateJobPage() {
                   >
                     {ALL_CURRENCIES.map(code => {
                       const currencyInfo = cc.code(code);
-                      const countries = currencyInfo ? (Array.isArray(currencyInfo.countries) ? currencyInfo.countries.join(', ') : currencyInfo.countries) : '';
+                      let countries = currencyInfo ? (Array.isArray(currencyInfo.countries) ? currencyInfo.countries : [currencyInfo.countries]) : [];
+                      
+                      // Filter out Western Sahara from the country list
+                      countries = countries.filter(c => c !== "Western Sahara");
+                      
+                      const countriesLabel = countries.join(', ');
+                      
                       return (
                         <option key={code} value={code}>
-                          {code} - {countries}
+                          {code} - {countriesLabel}
                         </option>
                       );
                     })}
