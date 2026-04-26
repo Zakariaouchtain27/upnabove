@@ -1,3 +1,4 @@
+"use no memo";
 import { createClient } from "@/lib/supabase/server";
 import { GlobalFeedClient } from "./GlobalFeedClient";
 import type { Metadata } from "next";
@@ -9,11 +10,13 @@ export const metadata: Metadata = {
   description: "Follow every submission, reveal, and hire happening across all active Forge challenges in real-time.",
 };
 
+const getSinceDate = () => new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
 export default async function ForgeFeedPage() {
   const supabase = await createClient();
 
   // Fetch recent entries (last 48hrs, max 100)
-  const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+  const since = getSinceDate();
 
   const { data: entries } = await supabase
     .from("forge_entries")

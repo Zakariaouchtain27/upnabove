@@ -23,54 +23,6 @@ export function RevealClient({ challenge, entries }: RevealClientProps) {
   
   const supabase = createClient();
 
-  useEffect(() => {
-    // 1. Listen for Supabase Broadcast Event on "reveal-channel"
-    const channel = supabase.channel(`challenge-${challenge.id}`);
-    
-    channel
-      .on("broadcast", { event: "trigger-reveal" }, (payload) => {
-         console.log("REVEAL INITIATED VIA BROADCAST!", payload);
-         startRevealSequence();
-      })
-      .on(
-        "postgres_changes", 
-        { event: "UPDATE", schema: "public", table: "forge_challenges", filter: `id=eq.${challenge.id}` }, 
-        (payload: any) => {
-          if (payload.new.status === "completed" && revealState === "PRE_REVEAL") {
-             console.log("REVEAL INITIATED VIA DB TRIGGER!");
-             startRevealSequence();
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [challenge.id, revealState, supabase]);
-
-  const startRevealSequence = () => {
-    // Prevent double triggers
-    if (revealState !== "PRE_REVEAL") return;
-    
-    setRevealState("REVEALING");
-    
-    // State Machine Timing
-    setTimeout(() => {
-      setRevealState("SHOW_3");
-      setTimeout(() => {
-        setRevealState("SHOW_2");
-        setTimeout(() => {
-          setRevealState("SHOW_1_DRAMA");
-          setTimeout(() => {
-            setRevealState("POST_REVEAL");
-            triggerConfetti();
-          }, 3000); // 3 seconds dark drama
-        }, 4000); // 4 seconds looking at #2
-      }, 4000); // 4 seconds looking at #3
-    }, 4000); // 4 seconds scanning REVEALING screen
-  };
-
   const triggerConfetti = () => {
     const duration = 3000;
     const end = Date.now() + duration;
@@ -97,6 +49,54 @@ export function RevealClient({ challenge, entries }: RevealClientProps) {
     };
     frame();
   };
+
+  const startRevealSequence = () => {
+    // Prevent double triggers
+    if (revealState !== "PRE_REVEAL") return;
+    
+    setRevealState("REVEALING");
+    
+    // State Machine Timing
+    setTimeout(() => {
+      setRevealState("SHOW_3");
+      setTimeout(() => {
+        setRevealState("SHOW_2");
+        setTimeout(() => {
+          setRevealState("SHOW_1_DRAMA");
+          setTimeout(() => {
+            setRevealState("POST_REVEAL");
+            triggerConfetti();
+          }, 3000); // 3 seconds dark drama
+        }, 4000); // 4 seconds looking at #2
+      }, 4000); // 4 seconds looking at #3
+    }, 4000); // 4 seconds scanning REVEALING screen
+  };
+
+  useEffect(() => {
+    // 1. Listen for Supabase Broadcast Event on "reveal-channel"
+    const channel = supabase.channel(`challenge-${challenge.id}`);
+    
+    channel
+      .on("broadcast", { event: "trigger-reveal" }, (payload) => {
+         console.log("REVEAL INITIATED VIA BROADCAST!", payload);
+         startRevealSequence();
+      })
+      .on(
+        "postgres_changes", 
+        { event: "UPDATE", schema: "public", table: "forge_challenges", filter: `id=eq.${challenge.id}` }, 
+        (payload: any) => {
+          if (payload.new.status === "completed" && revealState === "PRE_REVEAL") {
+             console.log("REVEAL INITIATED VIA DB TRIGGER!");
+             startRevealSequence();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [challenge.id, revealState, supabase]);
 
   // Safe checks for arrays
   const rank1 = entries[0];
