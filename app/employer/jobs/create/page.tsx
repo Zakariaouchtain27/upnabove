@@ -4,12 +4,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ArrowLeft, Briefcase, MapPin, DollarSign, UploadCloud, Loader2, CheckCircle2 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 
 export default function CreateJobPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -56,13 +58,14 @@ export default function CreateJobPage() {
       .upload(fileName, file, { upsert: true });
 
     if (error) {
-      alert("Failed to upload logo: " + error.message);
+      addToast("Failed to upload logo: " + error.message, "error");
     } else {
       const { data: urlData } = supabase.storage.from('logos').getPublicUrl(fileName);
       setLogoUrl(urlData.publicUrl);
 
       // Update employer profile implicitly
       await supabase.from('employers').update({ company_logo_url: urlData.publicUrl }).eq('id', employerId);
+      addToast("Logo updated successfully!", "success");
     }
     setIsUploading(false);
   };
@@ -71,10 +74,15 @@ export default function CreateJobPage() {
     e.preventDefault();
     if (!employerId) return;
 
-    setIsLoading(true);
+    const allowedJobTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
+    if (!allowedJobTypes.includes(formData.job_type)) {
+      addToast(`Invalid job type: ${formData.job_type}. Please select from the list.`, "error");
+      setIsLoading(false);
+      return;
+    }
 
-    const reqs = formData.requirements.split('\\n').filter(r => r.trim() !== '');
-    const bens = formData.benefits.split('\\n').filter(b => b.trim() !== '');
+    const reqs = formData.requirements.split('\n').filter(r => r.trim() !== '');
+    const bens = formData.benefits.split('\n').filter(b => b.trim() !== '');
 
     const payload = {
       employer_id: employerId,
@@ -91,11 +99,16 @@ export default function CreateJobPage() {
     const { error } = await supabase.from('jobs').insert([payload]);
 
     if(error){
-       alert("Error posting job: " + error.message);
+       console.error("Job posting error:", error);
+       if (error.message.includes('jobs_job_type_check') || error.message.includes('check constraint')) {
+         addToast("Database error: Invalid job type selection. Please try re-selecting the job type.", "error");
+       } else {
+         addToast("Error posting job: " + error.message, "error");
+       }
        setIsLoading(false);
     } else {
-       alert("Job posted successfully!");
-       router.push("/jobs");
+       addToast("Job posted successfully!", "success");
+       router.push("/employer"); // Redirect back to dashboard instead of public jobs
     }
   };
 

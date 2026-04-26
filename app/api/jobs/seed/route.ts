@@ -58,7 +58,7 @@ export async function GET(req: Request) {
             title: job.title,
             description: job.description,
             location: job.location?.display_name || 'Remote',
-            job_type: job.contract_time === 'part_time' ? 'Part-time' : 'Full-time',
+            job_type: job.contract_time === 'part_time' ? 'part-time' : 'full-time',
             salary_range: salaryRange,
             category: job.category?.label,
             company_name: job.company?.display_name || 'Confidential',
