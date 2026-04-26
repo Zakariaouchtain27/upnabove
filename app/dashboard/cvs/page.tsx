@@ -171,8 +171,32 @@ export default function CVsPage() {
      }
 
      if (!data || data.length === 0) {
-        if (showToast) alert('You must complete your candidate profile in the settings before you can set a default CV.');
-        return;
+        // Automatically create a base candidate profile if one doesn't exist
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
+        
+        if (user) {
+           const email = user.email || `user_${userId}@placeholder.com`;
+           const fullName = user.user_metadata?.full_name || 'Anonymous User';
+           const firstName = fullName.split(' ')[0] || 'Anonymous';
+           const lastName = fullName.split(' ').slice(1).join(' ') || 'User';
+
+           const { error: insertError } = await supabase.from('candidates').insert({
+              id: userId,
+              first_name: firstName,
+              last_name: lastName,
+              email: email,
+              resume_url: publicUrl
+           });
+           
+           if (insertError) {
+              if (showToast) alert('Failed to create profile and set default CV: ' + insertError.message);
+              return;
+           }
+        } else {
+           if (showToast) alert('You must complete your candidate profile in the settings before you can set a default CV.');
+           return;
+        }
      }
 
      setDefaultCvUrl(publicUrl);
