@@ -16,6 +16,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
 import OneClickApply from "@/components/jobs/OneClickApply";
+import JobViewTracker from "@/components/jobs/JobViewTracker";
 
 const BASE_URL = 'https://upnabove-zeta.vercel.app';
 
@@ -130,6 +131,7 @@ export default async function JobDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <JobViewTracker jobId={id} />
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Back */}
       <Link

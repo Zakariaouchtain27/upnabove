@@ -27,15 +27,17 @@ export default async function EmployerPage() {
         .single();
 
       if (employer) {
-        // Fetch real job postings
+        // Fetch real job postings with application count
         const { data: jobPostings } = await supabase
           .from('jobs')
-          .select('*')
+          .select('id, title, status, location, job_type, created_at, views, is_active, applications(count)')
           .eq('employer_id', employer.id)
           .order('created_at', { ascending: false });
 
         postings = jobPostings || [];
-        stats.active = postings.filter(p => p.status === 'active').length;
+        stats.active = postings.filter(p => p.is_active || p.status === 'active').length;
+        stats.views = postings.reduce((sum, job) => sum + (job.views || 0), 0);
+        stats.applicants = postings.reduce((sum, job) => sum + (job.applications?.[0]?.count || 0), 0);
       } else if (empError && empError.code !== 'PGRST116') {
         console.error('Error fetching employer:', empError);
       }
@@ -92,7 +94,7 @@ export default async function EmployerPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Active Listings", value: stats.active.toString(), icon: <Briefcase className="w-5 h-5" /> },
+          { label: "Active Jobs", value: stats.active.toString(), icon: <Briefcase className="w-5 h-5" /> },
           { label: "Total Applicants", value: stats.applicants.toString(), icon: <Users className="w-5 h-5" /> },
           { label: "Total Views", value: stats.views.toString(), icon: <Eye className="w-5 h-5" /> },
           { label: "Hire Rate", value: "—", icon: <BarChart3 className="w-5 h-5" /> },
@@ -133,7 +135,10 @@ export default async function EmployerPage() {
                 <tr className="border-b border-border">
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Position</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Status</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Views</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Applicants</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Posted</th>
+                  <th className="text-right px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,7 +150,16 @@ export default async function EmployerPage() {
                         {posting.status || 'draft'}
                       </Badge>
                     </td>
+                    <td className="px-5 py-4 font-medium text-foreground">{posting.views || 0}</td>
+                    <td className="px-5 py-4 font-medium text-foreground">{posting.applications?.[0]?.count || 0}</td>
                     <td className="px-5 py-4 text-muted">{new Date(posting.created_at).toLocaleDateString()}</td>
+                    <td className="px-5 py-4 text-right">
+                      <Link href={`/employer/jobs/${posting.id}/applications`}>
+                        <Button variant="outline" size="sm">
+                          View Applications
+                        </Button>
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
