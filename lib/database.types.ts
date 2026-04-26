@@ -24,6 +24,7 @@ export type Database = {
           motivation_text: string | null
           resume_url: string
           status: string | null
+          employer_viewed: boolean | null
         }
         Insert: {
           candidate_id?: string | null
@@ -34,6 +35,7 @@ export type Database = {
           motivation_text?: string | null
           resume_url: string
           status?: string | null
+          employer_viewed?: boolean | null
         }
         Update: {
           candidate_id?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           motivation_text?: string | null
           resume_url?: string
           status?: string | null
+          employer_viewed?: boolean | null
         }
         Relationships: [
           {
@@ -839,6 +842,7 @@ export type Database = {
           source: string | null
           title: string
           updated_at: string | null
+          views: number | null
         }
         Insert: {
           benefits?: string[] | null
@@ -859,6 +863,7 @@ export type Database = {
           source?: string | null
           title: string
           updated_at?: string | null
+          views?: number | null
         }
         Update: {
           benefits?: string[] | null
@@ -879,6 +884,7 @@ export type Database = {
           source?: string | null
           title?: string
           updated_at?: string | null
+          views?: number | null
         }
         Relationships: [
           {

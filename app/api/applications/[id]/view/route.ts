@@ -46,7 +46,7 @@ export async function POST(
       .eq('id', user.id)
       .single();
 
-    if (!employer || employer.id !== app.jobs.employer_id) {
+    if (!employer || !app.jobs || employer.id !== app.jobs.employer_id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -64,7 +64,7 @@ export async function POST(
     if (updateError) throw updateError;
 
     // 5. Send Email via Resend
-    if (process.env.RESEND_API_KEY) {
+    if (process.env.RESEND_API_KEY && app.candidates && app.jobs) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const companyName = app.jobs.company_name || 'An employer';
       
@@ -85,7 +85,7 @@ export async function POST(
         `
       });
     } else {
-      console.warn("RESEND_API_KEY is not set. Skipping email notification.");
+      console.warn("RESEND_API_KEY is not set or missing candidate/job info. Skipping email notification.");
     }
 
     return NextResponse.json({ success: true });

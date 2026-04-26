@@ -58,7 +58,7 @@ export default function ApplicationViewerPage({ params }: { params: Promise<{ id
           .eq('id', session.user.id)
           .single();
 
-        if (!employer || employer.id !== application.jobs.employer_id) {
+        if (!employer || !application.jobs || employer.id !== application.jobs.employer_id) {
           setError("You do not have permission to view this application.");
           setLoading(false);
           return;
