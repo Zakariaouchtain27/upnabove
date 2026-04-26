@@ -1,13 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, Send, Briefcase, Clock, TrendingUp, Star, Flame } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Dashboard — UpnAbove",
   description: "Your UpnAbove candidate dashboard.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let applicationCount = 0;
+
+  if (user) {
+    const { count } = await supabase
+      .from('applications')
+      .select('*', { count: 'exact', head: true })
+      .eq('candidate_id', user.id);
+      
+    if (count) applicationCount = count;
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -20,7 +35,7 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Applications", value: "0", icon: <Send className="w-5 h-5" />, color: "text-primary" },
+          { label: "Applications", value: applicationCount.toString(), icon: <Send className="w-5 h-5" />, color: "text-primary" },
           { label: "Interviews", value: "0", icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
           { label: "Saved Jobs", value: "0", icon: <Star className="w-5 h-5" />, color: "text-emerald-500" },
           { label: "Profile Views", value: "0", icon: <TrendingUp className="w-5 h-5" />, color: "text-blue-500" },
