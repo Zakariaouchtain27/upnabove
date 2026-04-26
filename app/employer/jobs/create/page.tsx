@@ -23,7 +23,7 @@ import { Country, City } from 'country-state-city';
 // Import currency-codes
 import cc from 'currency-codes';
 
-const ALL_COUNTRIES = Country.getAllCountries();
+const ALL_COUNTRIES = Country.getAllCountries().filter(c => c.name !== "Western Sahara");
 const ALL_CURRENCIES = cc.codes().sort();
 
 export default function CreateJobPage() {
