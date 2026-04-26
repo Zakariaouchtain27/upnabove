@@ -130,8 +130,8 @@ export default async function JobDetailPage({
             <h2 className="text-lg font-semibold text-foreground mb-4">
               About the Role
             </h2>
-            <div className="prose prose-sm text-muted max-w-none space-y-4">
-              <p className="whitespace-pre-line">{job.description}</p>
+            <div className="prose prose-sm text-muted max-w-none space-y-4 overflow-visible">
+              <p className="whitespace-pre-wrap leading-relaxed">{job.description}</p>
               
               {job.requirements && job.requirements.length > 0 && (
                  <>
