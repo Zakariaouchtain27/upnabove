@@ -47,7 +47,7 @@ export default function CandidateForgeDashboard() {
 
        let c;
        if (user) {
-          const { data } = await supabase.from('candidates').select('*').eq('user_id', user.id).single();
+          const { data } = await supabase.from('candidates').select('*').eq('id', user.id).single();
           c = data;
        }
        
@@ -57,8 +57,7 @@ export default function CandidateForgeDashboard() {
             id: user?.id || '',
             first_name: '',
             last_name: '',
-            forge_streak: 0,
-            user_id: user?.id || ''
+            forge_streak: 0
           };
        }
        

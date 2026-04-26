@@ -68,7 +68,7 @@ export default function CVsPage() {
         
         // Auto-set default if they only have 1 CV and no default is set
         if (cvList.length === 1 && !candidate?.resume_url) {
-          handleSetDefault(cvList[0].publicUrl);
+          handleSetDefault(cvList[0].publicUrl, false);
         }
       }
     } catch (err) {
