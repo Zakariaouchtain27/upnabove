@@ -13,11 +13,14 @@ export const metadata: Metadata = {
   description:
     "UpnAbove is a global job marketplace connecting top talent with the world's best employers. Search jobs, build your career, and go above.",
   keywords: ["jobs", "careers", "hiring", "remote work", "job marketplace"],
-  metadataBase: new URL("https://upnabove.work"),
+  metadataBase: new URL("https://upnabove-zeta.vercel.app"),
+  verification: {
+    google: "_6ky2YebI_Uhfek75-H0VrlreE9bXYm4eEQtraGcasU",
+  },
   openGraph: {
     title: "UpnAbove — Rise up. Find work. Go above.",
     description: "A global job marketplace connecting talent with opportunity.",
-    url: "https://upnabove.work",
+    url: "https://upnabove-zeta.vercel.app",
     siteName: "UpnAbove",
     type: "website",
   },
