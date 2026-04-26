@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Adzuna API keys are not configured.' }, { status: 500 });
     }
 
-    const countries = ['gb', 'us', 'ae', 'ma'];
+    const countries = ['gb', 'us', 'ca', 'au'];
     let totalInserted = 0;
     const errors = [];
 
