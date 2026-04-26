@@ -23,7 +23,7 @@ export default async function JobsPage({
   // Attempt to fetch real jobs
   let query = supabase
     .from('jobs')
-    .select('*, employers!inner(company_name, company_logo_url)', { count: 'exact' })
+    .select('*, employers(company_name, company_logo_url)', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (queryText) {
