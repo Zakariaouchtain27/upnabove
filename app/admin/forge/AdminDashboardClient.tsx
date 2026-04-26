@@ -229,7 +229,11 @@ export function AdminDashboardClient({
                     setLoadingAction('seed_jobs');
                     try {
                       const data = await triggerJobSeed();
-                      alert(data.message || data.error);
+                      let msg = data.message || data.error || 'Done.';
+                      if (data.errors && data.errors.length > 0) {
+                         msg += '\n\nErrors:\n' + data.errors.join('\n');
+                      }
+                      alert(msg);
                     } catch (err: any) {
                       alert(`Failed to seed jobs: ${err.message}`);
                     }
