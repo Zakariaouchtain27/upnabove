@@ -132,6 +132,24 @@ export default async function JobDetailPage({
             </h2>
             <div className="prose prose-sm text-muted max-w-none space-y-4 overflow-visible">
               <p className="whitespace-pre-wrap leading-relaxed">{job.description}</p>
+
+              {/* Adzuna jobs: prompt user to view full description externally */}
+              {job.source === 'adzuna' && job.external_apply_url && (
+                <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">Want the full job description?</p>
+                    <p className="text-xs text-muted mt-0.5">This is a preview. View the complete posting on the employer's site.</p>
+                  </div>
+                  <a
+                    href={job.external_apply_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    View Full Description →
+                  </a>
+                </div>
+              )}
               
               {job.requirements && job.requirements.length > 0 && (
                  <>
