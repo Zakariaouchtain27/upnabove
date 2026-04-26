@@ -87,8 +87,62 @@ export async function GET(req: Request) {
       }
     }
 
+    // --- REMOTIVE API INTEGRATION ---
+    let remotiveInserted = 0;
+    try {
+      const remotiveUrl = 'https://remotive.com/api/remote-jobs?limit=50';
+      const remotiveRes = await fetch(remotiveUrl);
+      if (!remotiveRes.ok) {
+         console.warn(`Remotive API failed with status ${remotiveRes.status}`);
+         errors.push(`Remotive failed: ${remotiveRes.statusText}`);
+      } else {
+         const remotiveData = await remotiveRes.json();
+         const remotiveJobs = remotiveData.jobs || [];
+
+         for (const job of remotiveJobs) {
+           // Basic HTML stripper: replaces block tags with newlines, then strips all tags.
+           let cleanDesc = job.description || '';
+           cleanDesc = cleanDesc.replace(/<\/?(p|div|li|br|h[1-6])[^>]*>/gi, '\n');
+           cleanDesc = cleanDesc.replace(/<[^>]+>/g, '');
+           cleanDesc = cleanDesc.replace(/\n\s*\n/g, '\n\n').trim(); // Collapse excessive newlines
+
+           const jobToUpsert = {
+             external_id: job.id.toString(),
+             title: job.title,
+             description: cleanDesc,
+             location: job.candidate_required_location || 'Remote',
+             job_type: (() => {
+               const type = job.job_type;
+               if (type === 'part_time') return 'part-time';
+               if (type === 'contract') return 'contract';
+               if (type === 'freelance') return 'contract';
+               return 'full-time'; // Default
+             })(),
+             salary_range: job.salary || null,
+             category: job.category,
+             company_name: job.company_name || 'Confidential',
+             external_apply_url: job.url,
+             source: 'remotive',
+             is_active: true
+           };
+
+           console.log(`[Seed] Upserting Remotive job: ${jobToUpsert.title}`);
+
+           const { error } = await supabase.from('jobs').upsert(jobToUpsert, { onConflict: 'external_id' });
+
+           if (!error) {
+             remotiveInserted++;
+           } else {
+             errors.push(`Supabase Upsert Error for Remotive: ${error.message} (Code: ${error.code})`);
+           }
+         }
+      }
+    } catch (err: any) {
+       errors.push(`Remotive sync threw error: ${err.message}`);
+    }
+
     return NextResponse.json({ 
-       message: `Seeded ${totalInserted} jobs from Adzuna.`,
+       message: `Seeded ${totalInserted} jobs from Adzuna and ${remotiveInserted} jobs from Remotive.`,
        errors 
     });
   } catch (error: any) {
@@ -96,3 +150,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
