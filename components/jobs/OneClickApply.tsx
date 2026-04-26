@@ -103,7 +103,7 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
 
   if (!hasResume) {
     return (
-       <Link href="/dashboard/profile" className="w-full sm:w-auto">
+       <Link href="/dashboard/cvs" className="w-full sm:w-auto">
           <Button size="lg" className="w-full sm:w-auto" variant="outline">
              Complete Profile to Apply
           </Button>
