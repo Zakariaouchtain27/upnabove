@@ -15,7 +15,7 @@ import {
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
-import JobApplyModal from "@/components/jobs/JobApplyModal";
+import OneClickApply from "@/components/jobs/OneClickApply";
 
 const BASE_URL = 'https://upnabove-zeta.vercel.app';
 
@@ -188,10 +188,9 @@ export default async function JobDetailPage({
                     Apply on {job.company_name || 'External Site'} &rarr;
                  </a>
               ) : (
-                 <JobApplyModal 
+                 <OneClickApply 
                     jobId={job.id} 
                     jobTitle={job.title} 
-                    companyName={employer?.company_name || 'Confidential Company'} 
                  />
               )}
               <div className="flex items-center gap-3 w-full sm:w-auto">
