@@ -24,7 +24,13 @@ import { Country, City } from 'country-state-city';
 import cc from 'currency-codes';
 
 const ALL_COUNTRIES = Country.getAllCountries().filter(c => c.name !== "Western Sahara");
-const ALL_CURRENCIES = cc.codes().sort();
+const ALL_CURRENCIES = cc.codes()
+  .filter(code => {
+    const info = cc.code(code);
+    // Exclude commodity codes (usually start with X) and those with no countries
+    return !code.startsWith('X') && info && info.countries && info.countries.length > 0;
+  })
+  .sort();
 
 export default function CreateJobPage() {
   const router = useRouter();
