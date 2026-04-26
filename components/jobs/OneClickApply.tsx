@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Loader2, CheckCircle2, Zap } from "lucide-react";
+import Link from "next/link"; // <-- Use the official Next.js Link
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -13,58 +14,71 @@ interface OneClickApplyProps {
 
 export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
   const { addToast } = useToast();
+  
+  // State Management
   const [loading, setLoading] = useState(false);
-  const [applied, setApplied] = useState(false);
-  const [hasProfile, setHasProfile] = useState(false);
-  const [hasResume, setHasResume] = useState(false);
   const [verifying, setVerifying] = useState(true);
   
-  const supabase = createClient();
+  // User Status Flags
+  const[isLoggedIn, setIsLoggedIn] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [hasResume, setHasResume] = useState(false);
 
   useEffect(() => {
     let mounted = true;
+    // Instantiate client inside the effect or move it outside the component if it doesn't rely on props
+    const supabase = createClient();
+
     async function checkStatus() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
         if (!mounted) return;
+        if (sessionError) throw sessionError;
         
         if (!session?.user) {
+          setIsLoggedIn(false);
           setVerifying(false);
           return;
         }
 
+        setIsLoggedIn(true);
         const user = session.user;
 
-        // Check if already applied
-        const { data: existing } = await supabase
+        // 1. Check if already applied
+        const { data: existing, error: existingError } = await supabase
           .from('applications')
           .select('id')
           .eq('job_id', jobId)
           .eq('candidate_id', user.id)
           .maybeSingle();
 
+        if (existingError) console.error("Error checking application:", existingError);
         if (existing && mounted) setApplied(true);
 
-        // Check profile and resume
-        const { data: candidate } = await supabase
+        // 2. Check profile and resume
+        const { data: candidate, error: candidateError } = await supabase
           .from('candidates')
           .select('id, resume_url')
           .eq('id', user.id)
           .maybeSingle();
 
-        if (candidate && mounted) {
-          setHasProfile(true);
-          if (candidate.resume_url) setHasResume(true);
+        if (candidateError) console.error("Error fetching candidate:", candidateError);
+        if (candidate?.resume_url && mounted) {
+          setHasResume(true);
         }
+        
       } catch (e) {
         console.error("Initialization error:", e);
       } finally {
         if (mounted) setVerifying(false);
       }
     }
+    
     checkStatus();
+    
     return () => { mounted = false; };
-  }, [jobId]);
+  }, [jobId]); // Clean dependency array
 
   const handleApply = async () => {
     setLoading(true);
@@ -85,6 +99,7 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
     }
   };
 
+  // 1. Loading State
   if (verifying) {
     return (
       <Button disabled size="lg" className="w-full sm:w-auto">
@@ -93,6 +108,18 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
     );
   }
 
+  // 2. Not Logged In State (New!)
+  if (!isLoggedIn) {
+    return (
+      <Link href="/login" className="w-full sm:w-auto block">
+        <Button size="lg" className="w-full" variant="outline">
+          Sign in to Apply
+        </Button>
+      </Link>
+    );
+  }
+
+  // 3. Already Applied State
   if (applied) {
     return (
       <Button disabled size="lg" className="w-full sm:w-auto bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
@@ -101,16 +128,18 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
     );
   }
 
+  // 4. Missing Resume State
   if (!hasResume) {
     return (
-       <Link href="/dashboard/cvs" className="w-full sm:w-auto">
-          <Button size="lg" className="w-full sm:w-auto" variant="outline">
-             Complete Profile to Apply
+       <Link href="/dashboard/cvs" className="w-full sm:w-auto block">
+          <Button size="lg" className="w-full" variant="outline">
+             Upload CV to Apply
           </Button>
        </Link>
     );
   }
 
+  // 5. Ready to Apply State
   return (
     <Button 
       size="lg" 
@@ -126,9 +155,4 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
       {loading ? "Submitting..." : "One-Click Apply"}
     </Button>
   );
-}
-
-// Separate Link component to avoid import issues
-function Link({ href, children, className }: { href: string, children: React.ReactNode, className?: string }) {
-  return <a href={href} className={className}>{children}</a>;
 }
