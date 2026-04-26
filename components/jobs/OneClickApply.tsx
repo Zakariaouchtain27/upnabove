@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, CheckCircle2, Zap } from "lucide-react";
 import Link from "next/link"; // <-- Use the official Next.js Link
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -10,10 +11,12 @@ import { createClient } from "@/lib/supabase/client";
 interface OneClickApplyProps {
   jobId: string;
   jobTitle: string;
+  hasApplied?: boolean;
 }
 
-export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
+export default function OneClickApply({ jobId, jobTitle, hasApplied = false }: OneClickApplyProps) {
   const { addToast } = useToast();
+  const router = useRouter();
   
   // State Management
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,7 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
   
   // User Status Flags
   const[isLoggedIn, setIsLoggedIn] = useState(false);
-  const [applied, setApplied] = useState(false);
+  const [applied, setApplied] = useState(hasApplied);
   const [hasResume, setHasResume] = useState(false);
 
   useEffect(() => {
@@ -89,6 +92,7 @@ export default function OneClickApply({ jobId, jobTitle }: OneClickApplyProps) {
       if (data.success) {
         setApplied(true);
         addToast(`Successfully applied to ${jobTitle}!`, "success");
+        router.refresh();
       } else {
         addToast(data.error || "Failed to apply", "error");
       }

@@ -91,6 +91,20 @@ export default async function JobDetailPage({
 
   const employer = job.employers as any;
 
+  // Check if current user has applied
+  let hasApplied = false;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: existingApp } = await supabase
+      .from('applications')
+      .select('id')
+      .eq('job_id', id)
+      .eq('candidate_id', user.id)
+      .maybeSingle();
+      
+    if (existingApp) hasApplied = true;
+  }
+
   // ─── JSON-LD JobPosting Schema (Google Rich Results) ────────────────────────
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -193,6 +207,7 @@ export default async function JobDetailPage({
                  <OneClickApply 
                     jobId={job.id} 
                     jobTitle={job.title} 
+                    hasApplied={hasApplied}
                  />
               )}
               <div className="flex items-center gap-3 w-full sm:w-auto">

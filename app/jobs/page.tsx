@@ -44,6 +44,21 @@ export default async function JobsPage({
     // 
   }
 
+  // Fetch user's applied jobs to pass down
+  let appliedJobIds = new Set<string>();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+    const { data: userApps } = await supabase
+      .from('applications')
+      .select('job_id')
+      .eq('candidate_id', user.id);
+      
+    if (userApps) {
+      appliedJobIds = new Set(userApps.map(a => a.job_id).filter((id): id is string => id !== null));
+    }
+  }
+
   const displayJobs = jobs || [];
 
   return (
@@ -140,6 +155,7 @@ export default async function JobsPage({
                                    <OneClickApply 
                                       jobId={job.id} 
                                       jobTitle={job.title} 
+                                      hasApplied={appliedJobIds.has(job.id)}
                                    />
                                 )}
                              </div>
