@@ -26,13 +26,13 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Adzuna API keys are not configured.' }, { status: 500 });
     }
 
-    const countries = ['gb', 'us', 'ca', 'au'];
+    const countries = ['gb', 'us', 'ca', 'au', 'ae', 'za', 'nz'];
     let totalInserted = 0;
     const errors = [];
 
     for (const country of countries) {
       try {
-        const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=20`;
+        const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=50`;
         const res = await fetch(url);
         
         if (!res.ok) {

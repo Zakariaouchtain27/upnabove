@@ -19,32 +19,43 @@ export default async function EmployerPage() {
   let stats = { active: 0, applicants: 0, views: 0 };
 
   if (user) {
-    const { data: employer } = await supabase
-      .from('employers')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    try {
+      const { data: employer, error: empError } = await supabase
+        .from('employers')
+        .select('id')
+        .eq('id', user.id)
+        .single();
 
-    if (employer) {
-      // Fetch real job postings
-      const { data: jobPostings } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('employer_id', employer.id)
-        .order('created_at', { ascending: false });
+      if (employer) {
+        // Fetch real job postings
+        const { data: jobPostings } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('employer_id', employer.id)
+          .order('created_at', { ascending: false });
 
-      postings = jobPostings || [];
-      stats.active = postings.filter(p => p.status === 'active').length;
+        postings = jobPostings || [];
+        stats.active = postings.filter(p => p.status === 'active').length;
+      } else if (empError && empError.code !== 'PGRST116') {
+        console.error('Error fetching employer:', empError);
+      }
+    } catch (err) {
+      console.error('Unexpected error in employer dashboard:', err);
     }
 
     // Fetch forge challenges by this employer
-    const { count: challengeCount } = await supabase
-      .from('forge_challenges')
-      .select('id', { count: 'exact', head: true })
-      .eq('employer_id', user.id);
+    try {
+      const { count: challengeCount } = await supabase
+        .from('forge_challenges')
+        .select('id', { count: 'exact', head: true })
+        .eq('employer_id', user.id);
 
-    stats.active = stats.active + (challengeCount || 0);
+      stats.active = stats.active + (challengeCount || 0);
+    } catch (err) {
+      console.error('Error fetching challenges:', err);
+    }
   }
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
