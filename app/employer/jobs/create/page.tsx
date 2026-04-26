@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { 
@@ -12,27 +12,19 @@ import {
   CheckCircle2,
   Globe,
   Navigation,
-  Clock,
-  Coins
+  Clock
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 
-// Curated data for the demo - In production this could come from an API
-const COUNTRY_DATA: Record<string, string[]> = {
-  "United States": ["New York", "San Francisco", "Austin", "Chicago", "Seattle", "Los Angeles", "Miami"],
-  "United Kingdom": ["London", "Manchester", "Birmingham", "Edinburgh", "Bristol", "Leeds"],
-  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
-  "Canada": ["Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa"],
-  "France": ["Paris", "Lyon", "Marseille", "Bordeaux", "Toulouse"],
-  "Germany": ["Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"],
-  "Morocco": ["Casablanca", "Rabat", "Marrakech", "Tangier", "Agadir"],
-  "South Africa": ["Johannesburg", "Cape Town", "Durban", "Pretoria"],
-  "Other": ["Remote / Global"]
-};
+// Import country-state-city
+import { Country, City } from 'country-state-city';
+// Import currency-codes
+import cc from 'currency-codes';
 
-const CURRENCIES = ["USD", "EUR", "GBP", "AED", "MAD", "ZAR", "CAD"];
+const ALL_COUNTRIES = Country.getAllCountries();
+const ALL_CURRENCIES = cc.codes().sort();
 
 export default function CreateJobPage() {
   const router = useRouter();
@@ -42,11 +34,16 @@ export default function CreateJobPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [employerId, setEmployerId] = useState<string | null>(null);
   
+  // State for dependent dropdowns
+  const [countries] = useState(ALL_COUNTRIES);
+  const [cities, setCities] = useState<any[]>([]);
+
   const [formData, setFormData] = useState({
     title: "",
     job_type: "full-time",
-    country: "United States",
-    city: "New York",
+    countryCode: "US",
+    countryName: "United States",
+    city: "",
     work_mode: "on-site",
     salary_amount: "",
     salary_currency: "USD",
@@ -71,6 +68,19 @@ export default function CreateJobPage() {
     checkEmployer();
   }, [supabase, router]);
 
+  // Update cities when country changes
+  useEffect(() => {
+    if (formData.countryCode) {
+      const countryCities = City.getCitiesOfCountry(formData.countryCode) || [];
+      setCities(countryCities);
+      // Set default city if available, else empty
+      setFormData(prev => ({ 
+        ...prev, 
+        city: countryCities.length > 0 ? countryCities[0].name : "" 
+      }));
+    }
+  }, [formData.countryCode]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!employerId) {
@@ -84,21 +94,21 @@ export default function CreateJobPage() {
     const bens = formData.benefits.split('\n').filter(b => b.trim() !== '');
 
     // Construct human-readable strings for legacy columns
-    const locationString = `${formData.city}, ${formData.country} (${formData.work_mode})`;
+    const locationString = `${formData.city || "Remote"}, ${formData.countryName} (${formData.work_mode})`;
     const salaryString = `${formData.salary_currency} ${formData.salary_amount}/${formData.salary_period === 'yearly' ? 'yr' : formData.salary_period === 'monthly' ? 'mo' : 'hr'}`;
 
     const payload = {
       employer_id: employerId,
       title: formData.title,
       job_type: formData.job_type,
-      location: locationString, // Legacy support
-      salary_range: salaryString, // Legacy support
+      location: locationString,
+      salary_range: salaryString,
       description: formData.description,
       requirements: reqs,
       benefits: bens,
       is_active: true,
-      // Structured data (new columns)
-      country: formData.country,
+      // Structured data
+      country: formData.countryName,
       city: formData.city,
       work_mode: formData.work_mode,
       salary_amount: parseFloat(formData.salary_amount) || 0,
@@ -187,14 +197,18 @@ export default function CreateJobPage() {
               </label>
               <select 
                 className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
-                value={formData.country}
+                value={formData.countryCode}
                 onChange={e => {
-                  const country = e.target.value;
-                  setFormData({ ...formData, country, city: COUNTRY_DATA[country][0] });
+                  const country = countries.find(c => c.isoCode === e.target.value);
+                  setFormData({ 
+                    ...formData, 
+                    countryCode: e.target.value, 
+                    countryName: country ? country.name : "" 
+                  });
                 }}
               >
-                {Object.keys(COUNTRY_DATA).map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {countries.map(c => (
+                  <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
                 ))}
               </select>
             </div>
@@ -208,9 +222,13 @@ export default function CreateJobPage() {
                 value={formData.city}
                 onChange={e => setFormData({ ...formData, city: e.target.value })}
               >
-                {(COUNTRY_DATA[formData.country] || []).map(city => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
+                {cities.length > 0 ? (
+                  cities.map(city => (
+                    <option key={city.name + city.latitude} value={city.name}>{city.name}</option>
+                  ))
+                ) : (
+                  <option value="">No cities found / Remote</option>
+                )}
               </select>
             </div>
 
@@ -224,7 +242,7 @@ export default function CreateJobPage() {
                     value={formData.salary_currency}
                     onChange={e => setFormData({ ...formData, salary_currency: e.target.value })}
                   >
-                    {CURRENCIES.map(c => (
+                    {ALL_CURRENCIES.map(c => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
