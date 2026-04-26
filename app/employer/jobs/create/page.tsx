@@ -236,24 +236,29 @@ export default function CreateJobPage() {
             <div className="space-y-2 col-span-1 md:col-span-2 pt-4 border-t border-border">
               <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 block">Compensation Payload</label>
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-shrink-0 w-full sm:w-32">
+                <div className="flex-shrink-0 w-full sm:w-64">
                   <select 
                     className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground appearance-none"
                     value={formData.salary_currency}
                     onChange={e => setFormData({ ...formData, salary_currency: e.target.value })}
                   >
-                    {ALL_CURRENCIES.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
+                    {ALL_CURRENCIES.map(code => {
+                      const currencyInfo = cc.code(code);
+                      const countries = currencyInfo ? (Array.isArray(currencyInfo.countries) ? currencyInfo.countries.join(', ') : currencyInfo.countries) : '';
+                      return (
+                        <option key={code} value={code}>
+                          {code} - {countries}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 <div className="flex-grow">
                   <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                     <input 
                       type="number" 
                       required
-                      className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
+                      className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none text-foreground"
                       placeholder="e.g. 120000"
                       value={formData.salary_amount}
                       onChange={e => setFormData({ ...formData, salary_amount: e.target.value })}
