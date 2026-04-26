@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Filter } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 
 export function JobSearchForm({ 
   initialQuery = "", 
@@ -13,17 +12,13 @@ export function JobSearchForm({
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [location, setLocation] = useState(initialLocation);
-  
   const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [titleFocused, setTitleFocused] = useState(false);
   const [locationFocused, setLocationFocused] = useState(false);
-  
-  const supabase = createClient();
   const titleRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (titleRef.current && !titleRef.current.contains(e.target as Node)) setTitleFocused(false);
@@ -33,28 +28,22 @@ export function JobSearchForm({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Title autocomplete
   useEffect(() => {
     if (!query || query.length < 2) { setTitleSuggestions([]); return; }
     const t = setTimeout(async () => {
-      const { data } = await supabase.from('jobs').select('title').ilike('title', `%${query}%`).limit(20);
-      if (data) {
-        const unique = Array.from(new Set(data.map(j => j.title))).filter(Boolean) as string[];
-        setTitleSuggestions(unique.slice(0, 6));
-      }
+      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(query)}&type=title`);
+      const data = await res.json();
+      setTitleSuggestions(data.suggestions || []);
     }, 250);
     return () => clearTimeout(t);
   }, [query]);
 
-  // Location autocomplete
   useEffect(() => {
     if (!location || location.length < 2) { setLocationSuggestions([]); return; }
     const t = setTimeout(async () => {
-      const { data } = await supabase.from('jobs').select('location').ilike('location', `${location}%`).limit(20);
-      if (data) {
-        const unique = Array.from(new Set(data.map(j => j.location))).filter(Boolean) as string[];
-        setLocationSuggestions(unique.filter(l => l.toLowerCase() !== location.toLowerCase()).slice(0, 5));
-      }
+      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(location)}&type=location`);
+      const data = await res.json();
+      setLocationSuggestions(data.suggestions || []);
     }, 300);
     return () => clearTimeout(t);
   }, [location]);

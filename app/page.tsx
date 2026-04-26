@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { 
-  ArrowRight, Search, Zap, Globe, Shield, Star, 
-  MapPin, Clock, Briefcase, Activity, CheckCircle2, TrendingUp
+  ArrowRight, Zap, Globe, Shield,
+  Briefcase, Activity, CheckCircle2, TrendingUp, Clock
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";
+import { HomeSearchForm } from "@/components/jobs/HomeSearchForm";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -55,30 +56,7 @@ export default async function HomePage() {
             
             {/* Search Bar Container */}
             <ScrollReveal delay={0.4} direction="up" duration={0.8}>
-              <div className="max-w-3xl mx-auto p-2 sm:p-3 rounded-2xl glass-surface flex flex-col sm:flex-row gap-3 ring-1 ring-ring group transition-all duration-500 hover:ring-primary-light">
-                <div className="relative flex-1 flex items-center transition-opacity">
-                  <Search className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors" />
-                  <input 
-                    type="text" 
-                    placeholder="Job title, keyword, or company..." 
-                    className="w-full bg-transparent text-foreground placeholder:text-muted pl-12 pr-4 py-4 text-lg focus:outline-none"
-                  />
-                </div>
-                <div className="hidden sm:block w-px h-10 bg-border self-center" />
-                <div className="relative flex-1 flex items-center border-t border-border sm:border-t-0 transition-opacity">
-                  <MapPin className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors" />
-                  <input 
-                    type="text" 
-                    placeholder="City, state, or remote" 
-                    className="w-full bg-transparent text-foreground placeholder:text-muted pl-12 pr-4 py-4 text-lg focus:outline-none"
-                  />
-                </div>
-                <Link href="/jobs" className="w-full sm:w-auto flex-shrink-0">
-                  <button className="w-full h-full bg-primary text-white font-semibold px-8 py-4 sm:py-0 rounded-xl hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background">
-                    Search Jobs <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
-              </div>
+              <HomeSearchForm />
             </ScrollReveal>
             
             {/* Trusted By */}
