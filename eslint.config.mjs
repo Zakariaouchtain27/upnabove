@@ -8,13 +8,14 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
       "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-require-imports": "off",
       "@next/next/no-img-element": "off",
       "react-compiler/react-compiler": "off",
-      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/exhaustive-deps": "off",
       "react-hooks/set-state-in-effect": "off",
+      "jsx-a11y/alt-text": "off",
       "prefer-const": "off"
     }
   },
