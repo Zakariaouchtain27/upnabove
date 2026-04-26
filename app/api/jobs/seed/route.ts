@@ -69,6 +69,8 @@ export async function GET(req: Request) {
 
           if (!error) {
             totalInserted++;
+          } else {
+            errors.push(`Supabase Upsert Error for ${country}: ${error.message} (Code: ${error.code})`);
           }
         }
       } catch (err: any) {
