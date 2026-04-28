@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Download, AlertCircle } from "lucide-react";
+import { ArrowLeft, Loader2, Download, AlertCircle, ExternalLink } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 export default function ApplicationViewerPage({ params }: { params: Promise<{ id: string }> }) {
@@ -128,6 +128,12 @@ export default function ApplicationViewerPage({ params }: { params: Promise<{ id
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <a href={appData.resume_url} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">Open in New Tab</span>
+            </Button>
+          </a>
           <a href={appData.resume_url} target="_blank" rel="noopener noreferrer" download>
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="w-4 h-4" />
@@ -137,13 +143,35 @@ export default function ApplicationViewerPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      {/* PDF Viewer */}
+      {/* PDF Viewer — use <object> for broader browser compatibility */}
       <div className="flex-1 w-full bg-background relative">
-        <iframe
-          src={`${appData.resume_url}#view=FitH`}
+        <object
+          data={`${appData.resume_url}#toolbar=1&view=FitH`}
+          type="application/pdf"
           className="absolute inset-0 w-full h-full border-0"
-          title={`${candidateName} CV`}
-        />
+          aria-label={`${candidateName} CV`}
+        >
+          {/* Fallback for browsers that block the embed */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center px-4">
+            <p className="text-muted text-sm max-w-sm">
+              Your browser is blocking the PDF preview. Use the buttons below to view the CV.
+            </p>
+            <div className="flex items-center gap-3">
+              <a href={appData.resume_url} target="_blank" rel="noopener noreferrer">
+                <Button className="gap-2">
+                  <ExternalLink className="w-4 h-4" />
+                  Open in New Tab
+                </Button>
+              </a>
+              <a href={appData.resume_url} download>
+                <Button variant="outline" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Download PDF
+                </Button>
+              </a>
+            </div>
+          </div>
+        </object>
       </div>
     </div>
   );

@@ -200,6 +200,14 @@ export default function CVsPage() {
      }
 
      setDefaultCvUrl(publicUrl);
+
+     // Trigger PDF text extraction in the background for employer keyword search
+     fetch('/api/cvs/extract', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ resumeUrl: publicUrl }),
+     }).catch(err => console.error('CV extraction failed silently:', err));
+
      if (showToast) alert('Set as default CV.');
   }
 
