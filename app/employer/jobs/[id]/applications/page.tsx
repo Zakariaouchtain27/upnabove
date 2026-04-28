@@ -31,13 +31,16 @@ export default async function JobApplicationsPage({ params }: { params: Promise<
     notFound();
   }
 
+  // Fall back to user.id if no employers row exists (employer_id is always user.id)
   const { data: employer } = await supabase
     .from('employers')
     .select('id')
     .eq('id', user.id)
     .single();
 
-  if (!employer || employer.id !== job.employer_id) {
+  const resolvedEmployerId = employer?.id ?? user.id;
+
+  if (resolvedEmployerId !== job.employer_id) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center">
         <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>

@@ -20,27 +20,27 @@ export default async function EmployerPage() {
 
   if (user) {
     try {
-      const { data: employer, error: empError } = await supabase
+      const { data: employer } = await supabase
         .from('employers')
         .select('id')
         .eq('id', user.id)
         .single();
 
-      if (employer) {
-        // Fetch real job postings with application count
-        const { data: jobPostings } = await supabase
-          .from('jobs')
-          .select('id, title, status, location, job_type, created_at, views, is_active, applications(count)')
-          .eq('employer_id', employer.id)
-          .order('created_at', { ascending: false });
+      // Use employer.id if the row exists, otherwise fall back to user.id directly
+      // (jobs are keyed by employer_id = user.id even without an employers row)
+      const resolvedEmployerId = employer?.id ?? user.id;
 
-        postings = jobPostings || [];
-        stats.active = postings.filter(p => p.is_active || p.status === 'active').length;
-        stats.views = postings.reduce((sum, job) => sum + (job.views || 0), 0);
-        stats.applicants = postings.reduce((sum, job) => sum + (job.applications?.[0]?.count || 0), 0);
-      } else if (empError && empError.code !== 'PGRST116') {
-        console.error('Error fetching employer:', empError);
-      }
+      // Fetch real job postings with application count
+      const { data: jobPostings } = await supabase
+        .from('jobs')
+        .select('id, title, status, location, job_type, created_at, views, is_active, applications(count)')
+        .eq('employer_id', resolvedEmployerId)
+        .order('created_at', { ascending: false });
+
+      postings = jobPostings || [];
+      stats.active = postings.filter(p => p.is_active || p.status === 'active').length;
+      stats.views = postings.reduce((sum, job) => sum + (job.views || 0), 0);
+      stats.applicants = postings.reduce((sum, job) => sum + (job.applications?.[0]?.count || 0), 0);
     } catch (err) {
       console.error('Unexpected error in employer dashboard:', err);
     }

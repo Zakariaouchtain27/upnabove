@@ -51,14 +51,16 @@ export default function ApplicationViewerPage({ params }: { params: Promise<{ id
           return;
         }
 
-        // Verify ownership
+        // Verify ownership — fall back to user.id if no employers row exists
         const { data: employer } = await supabase
           .from('employers')
           .select('id')
           .eq('id', session.user.id)
           .single();
 
-        if (!employer || !application.jobs || employer.id !== application.jobs.employer_id) {
+        const resolvedEmployerId = employer?.id ?? session.user.id;
+
+        if (!application.jobs || resolvedEmployerId !== application.jobs.employer_id) {
           setError("You do not have permission to view this application.");
           setLoading(false);
           return;
