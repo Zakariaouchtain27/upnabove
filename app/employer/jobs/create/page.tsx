@@ -89,50 +89,53 @@ export default function CreateJobPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!employerId) {
-      addToast("Authentication error. Please refresh.", "error");
-      return;
-    }
 
     setIsLoading(true);
 
     const reqs = formData.requirements.split('\n').filter(r => r.trim() !== '');
     const bens = formData.benefits.split('\n').filter(b => b.trim() !== '');
 
-    // Construct human-readable strings for legacy columns
     const locationString = `${formData.city || "Remote"}, ${formData.countryName} (${formData.work_mode})`;
     const salaryString = `${formData.salary_currency} ${formData.salary_amount}/${formData.salary_period === 'yearly' ? 'yr' : formData.salary_period === 'monthly' ? 'mo' : 'hr'}`;
 
-    const payload = {
-      employer_id: employerId,
-      title: formData.title,
-      job_type: formData.job_type,
-      location: locationString,
-      salary_range: salaryString,
-      description: formData.description,
-      requirements: reqs,
-      benefits: bens,
-      is_active: true,
-      // Structured data
-      country: formData.countryName,
-      city: formData.city,
-      work_mode: formData.work_mode,
-      salary_amount: parseFloat(formData.salary_amount) || 0,
-      salary_currency: formData.salary_currency,
-      salary_period: formData.salary_period
-    };
+    try {
+      const res = await fetch('/api/jobs/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          job_type: formData.job_type,
+          location: locationString,
+          salary_range: salaryString,
+          description: formData.description,
+          requirements: reqs,
+          benefits: bens,
+          is_active: true,
+          country: formData.countryName,
+          city: formData.city,
+          work_mode: formData.work_mode,
+          salary_amount: parseFloat(formData.salary_amount) || 0,
+          salary_currency: formData.salary_currency,
+          salary_period: formData.salary_period,
+        }),
+      });
 
-    const { error } = await supabase.from('jobs').insert([payload]);
+      const data = await res.json();
 
-    if(error){
-       console.error("Job post error:", error);
-       addToast("Error posting job: " + error.message, "error");
-       setIsLoading(false);
-    } else {
-       addToast("Job launched successfully!", "success");
-       router.push("/employer");
+      if (!res.ok || !data.success) {
+        addToast("Error posting job: " + (data.error || "Unknown error"), "error");
+      } else {
+        addToast("Job launched successfully!", "success");
+        router.push("/employer");
+      }
+    } catch (err: any) {
+      addToast("An unexpected error occurred. Please try again.", "error");
+      console.error("Job post error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background relative pt-12 pb-32 px-6">
