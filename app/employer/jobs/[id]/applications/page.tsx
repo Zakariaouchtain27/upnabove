@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -14,14 +15,15 @@ export const metadata: Metadata = {
 export default async function JobApplicationsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: jobId } = await params;
   const supabase = await createClient();
+  const db = createAdminClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     redirect('/login');
   }
 
-  // Verify the employer owns this job
-  const { data: job, error: jobError } = await supabase
+  // Use admin client to bypass RLS for employer reads
+  const { data: job, error: jobError } = await db
     .from('jobs')
     .select('title, employer_id')
     .eq('id', jobId)
@@ -31,16 +33,8 @@ export default async function JobApplicationsPage({ params }: { params: Promise<
     notFound();
   }
 
-  // Fall back to user.id if no employers row exists (employer_id is always user.id)
-  const { data: employer } = await supabase
-    .from('employers')
-    .select('id')
-    .eq('id', user.id)
-    .single();
-
-  const resolvedEmployerId = employer?.id ?? user.id;
-
-  if (resolvedEmployerId !== job.employer_id) {
+  // Ownership check: job must belong to the logged-in user
+  if (job.employer_id !== user.id) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center">
         <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
@@ -50,8 +44,8 @@ export default async function JobApplicationsPage({ params }: { params: Promise<
     );
   }
 
-  // Cast to any[] since cv_text won't be in generated types until DB types are regenerated
-  const { data: applications } = await (supabase as any)
+  // Use admin client so employers can read applications for their own jobs
+  const { data: applications } = await db
     .from('applications')
     .select(`
       id,

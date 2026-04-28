@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -8,15 +9,16 @@ export async function POST(
   try {
     const { id: jobId } = await params;
     const supabase = await createClient();
+    const db = createAdminClient();
 
-    // 1. Get current user
+    // 1. Verify user identity with the user client
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Get candidate profile
-    const { data: candidate, error: candErr } = await supabase
+    // 2. Get candidate profile via admin client (bypasses RLS)
+    const { data: candidate, error: candErr } = await db
       .from('candidates')
       .select('id, resume_url')
       .eq('id', user.id)
@@ -30,8 +32,8 @@ export async function POST(
       return NextResponse.json({ error: "No CV found in your profile. Please upload one first." }, { status: 400 });
     }
 
-    // 3. Create application
-    const { error: appErr } = await supabase.from('applications').insert({
+    // 3. Insert application via admin client
+    const { error: appErr } = await db.from('applications').insert({
       job_id: jobId,
       candidate_id: candidate.id,
       resume_url: candidate.resume_url

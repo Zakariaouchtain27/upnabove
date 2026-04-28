@@ -3,6 +3,7 @@ import { Plus, BarChart3, Users, Eye, Briefcase, Rocket, Inbox } from "lucide-re
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 
 export default async function EmployerPage() {
   const supabase = await createClient();
+  const db = createAdminClient(); // bypasses RLS for employer data reads
   const { data: { user } } = await supabase.auth.getUser();
 
   // Fetch real employer data
@@ -20,18 +22,10 @@ export default async function EmployerPage() {
 
   if (user) {
     try {
-      const { data: employer } = await supabase
-        .from('employers')
-        .select('id')
-        .eq('id', user.id)
-        .single();
+      const resolvedEmployerId = user.id;
 
-      // Use employer.id if the row exists, otherwise fall back to user.id directly
-      // (jobs are keyed by employer_id = user.id even without an employers row)
-      const resolvedEmployerId = employer?.id ?? user.id;
-
-      // Fetch real job postings with application count
-      const { data: jobPostings } = await supabase
+      // Use admin client so RLS doesn't silently block employer reads
+      const { data: jobPostings } = await db
         .from('jobs')
         .select('id, title, status, location, job_type, created_at, views, is_active, applications(count)')
         .eq('employer_id', resolvedEmployerId)
@@ -45,13 +39,12 @@ export default async function EmployerPage() {
       console.error('Unexpected error in employer dashboard:', err);
     }
 
-    // Fetch forge challenges by this employer
+    // Fetch forge challenges count
     try {
-      const { count: challengeCount } = await supabase
+      const { count: challengeCount } = await db
         .from('forge_challenges')
         .select('id', { count: 'exact', head: true })
         .eq('employer_id', user.id);
-
       stats.active = stats.active + (challengeCount || 0);
     } catch (err) {
       console.error('Error fetching challenges:', err);
