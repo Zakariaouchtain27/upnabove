@@ -26,7 +26,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    // 2. Insert with admin client so employer_id is always set correctly
+    // 2. Ensure an employers row exists for this user (required by FK constraint)
+    const { error: employerErr } = await db
+      .from("employers")
+      .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+
+    if (employerErr) {
+      console.error("Employer upsert error:", employerErr);
+      return NextResponse.json({ error: "Failed to initialize employer profile" }, { status: 500 });
+    }
+
+    // 3. Insert with admin client so employer_id is always set correctly
     const { data: job, error: insertErr } = await db.from("jobs").insert({
       employer_id: user.id,
       title,
