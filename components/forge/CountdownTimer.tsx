@@ -62,13 +62,13 @@ export function CountdownTimer({ targetTime, size = 'md', onExpire, type = 'live
   const sizeClasses = {
     sm: "text-2xl",
     md: "text-4xl",
-    lg: "text-5xl md:text-7xl"
+    lg: "text-4xl sm:text-5xl lg:text-4xl xl:text-5xl"
   };
 
   const wrapperClasses = {
     sm: "gap-1",
     md: "gap-2",
-    lg: "gap-3 md:gap-4"
+    lg: "gap-2 md:gap-4"
   };
 
   const labelClasses = {
@@ -105,20 +105,20 @@ export function CountdownTimer({ targetTime, size = 'md', onExpire, type = 'live
   }
 
   return (
-    <div className={`flex items-center font-mono font-light tracking-tight ${wrapperClasses[size]} ${sizeClasses[size]} ${colorClass} ${dropShadow} transition-colors duration-1000`}>
+    <div suppressHydrationWarning className={`flex items-center font-mono font-light tracking-tight ${wrapperClasses[size]} ${sizeClasses[size]} ${colorClass} ${dropShadow} transition-colors duration-1000`}>
       <div className="flex flex-col items-center">
         <span className="font-bold tabular-nums">{timeLeft.hours}</span>
-        {size !== 'lg' && <span className={`text-muted-foreground uppercase ${labelClasses[size]}`}>HRS</span>}
+        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>HRS</span>
       </div>
       <span className="opacity-50 pb-2 md:pb-4">:</span>
       <div className="flex flex-col items-center">
         <span className="font-bold tabular-nums">{timeLeft.minutes}</span>
-        {size !== 'lg' && <span className={`text-muted-foreground uppercase ${labelClasses[size]}`}>MIN</span>}
+        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>MIN</span>
       </div>
       <span className="opacity-50 pb-2 md:pb-4">:</span>
       <div className="flex flex-col items-center">
         <span className="font-bold tabular-nums">{timeLeft.seconds}</span>
-        {size !== 'lg' && <span className={`text-muted-foreground uppercase ${labelClasses[size]}`}>SEC</span>}
+        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>SEC</span>
       </div>
     </div>
   );

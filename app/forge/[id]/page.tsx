@@ -125,7 +125,7 @@ export default async function ChallengeDetailPage({
   };
 
   return (
-    <div className="layout-wrapper relative z-10 bg-white dark:bg-[#05050a] min-h-screen">
+    <div className="layout-wrapper relative z-10 bg-[#05050a] text-white min-h-screen forge-theme">
       
       {/* Background Orbs */}
       <div className="glow-orb-primary top-[10%] left-[-10%] opacity-20 pointer-events-none" />

@@ -56,35 +56,35 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
                    </div>
                 )}
              </div>
-             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-gray-900 dark:text-zinc-900 dark:text-white drop-shadow-md">
+             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,111,97,0.3)] break-words line-clamp-3">
                 {challenge.title}
              </h1>
           </div>
 
-          <SpotlightCard className="wireframe-card p-8 rounded-2xl bg-surface/40 backdrop-blur-md prose prose-invert max-w-none">
-             <p className="whitespace-pre-wrap font-mono leading-relaxed text-muted-foreground">{challenge.description}</p>
+          <SpotlightCard className="wireframe-card p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md prose prose-invert max-w-none">
+             <p className="whitespace-pre-wrap font-mono leading-relaxed text-zinc-300">{challenge.description}</p>
           </SpotlightCard>
 
-          <SpotlightCard className="wireframe-card p-8 rounded-2xl">
-             <h3 className="text-2xl font-bold uppercase tracking-widest text-gray-900 dark:text-zinc-900 dark:text-white mb-6">Combat Brief</h3>
-             <div className="grid grid-cols-3 gap-4 font-mono text-sm max-w-xl">
-                 <div className="border-r border-black/5 dark:border-black/5 dark:border-white/5">
-                    <span className="block text-muted-foreground uppercase opacity-80 mb-1">Time Limit</span>
-                    <span className="font-bold text-gray-900 dark:text-zinc-900 dark:text-white text-xl">{challenge.time_limit_minutes} Min</span>
+          <SpotlightCard className="wireframe-card p-8 rounded-3xl bg-black/40 border border-white/5">
+             <h3 className="text-xl font-black uppercase tracking-[0.3em] text-white/50 mb-8">Mission Intel</h3>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 font-mono text-sm">
+                 <div className="border-r border-white/10">
+                    <span className="block text-zinc-500 uppercase text-[10px] font-black tracking-widest mb-2">Time Limit</span>
+                    <span className="font-black text-white text-2xl">{challenge.time_limit_minutes}m</span>
                  </div>
-                 <div className="border-r border-black/5 dark:border-black/5 dark:border-white/5 pl-4">
-                    <span className="block text-muted-foreground uppercase opacity-80 mb-1">Bounty</span>
-                    <span className="font-bold text-amber-500 text-xl flex items-center gap-1"><Trophy className="w-4 h-4"/> ${challenge.prize_value}</span>
+                 <div className="md:border-r border-white/10 md:pl-4">
+                    <span className="block text-zinc-500 uppercase text-[10px] font-black tracking-widest mb-2">Bounty</span>
+                    <span className="font-black text-amber-400 text-2xl flex items-center gap-1"><Trophy className="w-5 h-5"/> ${challenge.prize_value}</span>
                  </div>
-                 <div className="pl-4 border-r border-black/5 dark:border-black/5 dark:border-white/5">
-                    <span className="block text-muted-foreground uppercase opacity-80 mb-1">Entrants</span>
-                    <span className="font-bold text-gray-900 dark:text-zinc-900 dark:text-white text-xl flex items-center gap-1">
-                      <Users className="w-4 h-4 text-primary"/> 
+                 <div className="border-r border-white/10 pl-0 md:pl-4">
+                    <span className="block text-zinc-500 uppercase text-[10px] font-black tracking-widest mb-2">Entrants</span>
+                    <span className="font-black text-white text-2xl flex items-center gap-2">
+                      <Users className="w-5 h-5 text-primary"/> 
                       <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count} />
                     </span>
                  </div>
-                 <div className="pl-4">
-                    <span className="block text-muted-foreground uppercase opacity-80 mb-1">Spectating</span>
+                 <div className="pl-0 md:pl-4">
+                    <span className="block text-zinc-500 uppercase text-[10px] font-black tracking-widest mb-2">Spectating</span>
                     <div className="mt-1">
                       <SpectatorPresence challengeId={challenge.id} />
                     </div>
@@ -96,7 +96,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
        {/* Live Sidebar */}
        <div className="space-y-6">
           {/* Urgent Red Countdown is now handled directly inside the reactive CountdownTimer */}
-          <div className={`flex flex-col items-center justify-center py-8 rounded-3xl border bg-gray-100 dark:bg-white/40 dark:bg-black/40 border-black/5 dark:border-black/5 dark:border-white/5 relative overflow-hidden group`}>
+          <div className={`flex flex-col items-center justify-center py-8 rounded-3xl border bg-black/40 border-white/5 relative overflow-hidden group`}>
              <div className="absolute inset-0 bg-[#FF6F61]/5 group-hover:bg-[#FF6F61]/10 transition-colors pointer-events-none" />
              <div className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-muted-foreground relative z-10">
                TIME REMAINING
@@ -106,13 +106,13 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
 
           <div className="flex flex-col gap-3">
              <ClientActions challengeId={challenge.id} status={challenge.status} />
-             <button onClick={() => setIsShareModalOpen(true)} className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs bg-surface border border-border hover:bg-black/5 dark:bg-black/5 dark:bg-white/5 transition-all text-gray-900 dark:text-zinc-900 dark:text-white">
-               <Zap className="w-4 h-4 text-amber-400" /> Share & Rally Votes
-             </button>
+              <button onClick={() => setIsShareModalOpen(true)} className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-white">
+                <Zap className="w-4 h-4 text-amber-400" /> Share & Rally Votes
+              </button>
              {hasEntered && (
-               <button onClick={() => addToast("You are spectating live.", "info")} className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-mono bg-transparent text-muted-foreground hover:text-gray-900 dark:text-zinc-900 dark:text-white transition-colors">
-                 Just Watch
-               </button>
+                <button onClick={() => addToast("You are spectating live.", "info")} className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-mono bg-transparent text-zinc-500 hover:text-white transition-colors">
+                  Just Watch
+                </button>
              )}
           </div>
 
