@@ -57,10 +57,20 @@ export default function CreateChallengePage() {
   const [originalTitle, setOriginalTitle] = useState("");
   const [warnings, setWarnings] = useState<ValidationWarning[] | null>(null);
 
+  // Timezone-aware date formatting for datetime-local input
+  const toLocalISO = (date: Date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = (new Date(date.getTime() - tzOffset)).toISOString().slice(0, 16);
+    return localISOTime;
+  };
+
   const defaultDrop = new Date();
   defaultDrop.setDate(defaultDrop.getDate() + 1);
+  defaultDrop.setHours(19, 0, 0, 0); // Default to 7 PM
+
   const defaultExpire = new Date(defaultDrop);
   defaultExpire.setDate(defaultExpire.getDate() + 3);
+  defaultExpire.setHours(23, 59, 0, 0); // Default to end of day
 
   const [formData, setFormData] = useState({
     title: "",
@@ -74,8 +84,8 @@ export default function CreateChallengePage() {
     
     prize_description: "Origin Bounty",
     prize_value: 500,
-    drop_time: defaultDrop.toISOString().slice(0, 16),
-    expires_at: defaultExpire.toISOString().slice(0, 16),
+    drop_time: toLocalISO(defaultDrop),
+    expires_at: toLocalISO(defaultExpire),
     
     // Sponsorship Toggle & Fields
     is_sponsored: false,

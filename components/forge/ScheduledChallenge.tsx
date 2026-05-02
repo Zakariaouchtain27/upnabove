@@ -29,6 +29,7 @@ export function ScheduledChallenge({ challenge }: { challenge: any }) {
   }, [challenge.drop_time]);
 
   const dropDate = new Date(challenge.drop_time);
+  const formattedDropDate = dropDate.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
   const formattedDropTime = dropDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
   const handleShare = async () => {
@@ -102,7 +103,7 @@ export function ScheduledChallenge({ challenge }: { challenge: any }) {
                    <Lock className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold uppercase tracking-widest text-gray-900 dark:text-zinc-900 dark:text-white mb-2">Arena Locked</h3>
-                <p suppressHydrationWarning className="text-muted-foreground font-mono">The challenge brief and submission terminal will unlock <br/>exactly at {formattedDropTime}.</p>
+                <p suppressHydrationWarning className="text-muted-foreground font-mono">The challenge brief and submission terminal will unlock <br/>on <span className="text-primary font-bold">{formattedDropDate}</span> at <span className="text-primary font-bold">{formattedDropTime}</span>.</p>
              </div>
           </div>
        </div>
