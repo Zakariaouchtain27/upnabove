@@ -203,7 +203,7 @@ export default function SubmitForgePage() {
                    <CandidateArena 
                       challengeId={id as string} 
                       initialCode={formData.submission_text}
-                      onChange={(code) => setFormData(prev => ({ ...prev, submission_text: code }))}
+                      onChange={(code: string) => setFormData(prev => ({ ...prev, submission_text: code }))}
                    />
                 </div>
              ) : (
