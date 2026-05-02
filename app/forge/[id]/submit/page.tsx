@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
 import { CountdownTimer } from "@/components/forge/CountdownTimer";
 import { Save, Terminal, ShieldAlert, ArrowRight, Code2, Link as LinkIcon, UploadCloud, AlertTriangle } from "lucide-react";
+import { CandidateArena } from "@/components/forge/CandidateArena";
 import confetti from "canvas-confetti";
 
 export default function SubmitForgePage() {
@@ -195,14 +196,24 @@ export default function SubmitForgePage() {
        return (
           <div className="space-y-4 animate-in fade-in duration-500">
              <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary-light">
-               <Code2 className="w-4 h-4" /> Tactical Text Buffer
+               <Code2 className="w-4 h-4" /> Tactical Code Buffer
              </label>
-             <textarea 
-               value={formData.submission_text}
-               onChange={e => setFormData({ ...formData, submission_text: e.target.value })}
-               className="w-full h-96 bg-black/50 border border-primary/20 rounded-xl p-6 text-gray-300 font-mono text-sm leading-relaxed focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
-               placeholder={type === 'code' ? "// Paste your master algorithm here..." : "Draft your strategy here..."}
-             />
+             {type === 'code' ? (
+                <div className="h-[600px] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                   <CandidateArena 
+                      challengeId={id as string} 
+                      initialCode={formData.submission_text}
+                      onChange={(code) => setFormData(prev => ({ ...prev, submission_text: code }))}
+                   />
+                </div>
+             ) : (
+                <textarea 
+                  value={formData.submission_text}
+                  onChange={e => setFormData({ ...formData, submission_text: e.target.value })}
+                  className="w-full h-96 bg-black/50 border border-primary/20 rounded-xl p-6 text-gray-300 font-mono text-sm leading-relaxed focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"
+                  placeholder="Draft your strategy here..."
+                />
+             )}
              <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
                 <span>{(formData.submission_text || "").length} bytes</span>
                 <span>Supports Markdown</span>

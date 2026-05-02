@@ -74,9 +74,14 @@ export default function EmployerWarRoom() {
                 </p>
              </div>
              
-             <Link href={`/employer/forge/${challengeId}/analytics`} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white font-bold hover:bg-black/5 dark:bg-white/5 transition-all uppercase tracking-widest text-xs">
-                <BarChart3 className="w-4 h-4 text-emerald-400" /> View Analytics
-             </Link>
+             <div className="flex items-center gap-3">
+                 <Link href={`/employer/forge/${challengeId}/godview`} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-black hover:shadow-[0_0_20px_rgba(255,111,97,0.4)] transition-all uppercase tracking-widest text-xs">
+                    <Eye className="w-4 h-4" /> Enter God View
+                 </Link>
+                 <Link href={`/employer/forge/${challengeId}/analytics`} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white font-bold hover:bg-black/5 dark:bg-white/5 transition-all uppercase tracking-widest text-xs">
+                    <BarChart3 className="w-4 h-4 text-emerald-400" /> View Analytics
+                 </Link>
+              </div>
           </div>
        </header>
 

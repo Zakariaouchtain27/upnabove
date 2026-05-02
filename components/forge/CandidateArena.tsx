@@ -13,25 +13,24 @@ import { useLiveBroadcast } from "@/hooks/useLiveBroadcast";
 import { Shield, Zap, Terminal, Wifi } from "lucide-react";
 
 /**
- * Internal component to sync Sandpack state with our broadcast hook
+ * Internal component to sync Sandpack state with our broadcast hook and parent state
  */
-function BroadcastSync({ challengeId }: { challengeId: string }) {
+function ArenaListener({ challengeId, onChange }: { challengeId: string; onChange?: (code: string) => void }) {
   const { sandpack } = useSandpack();
   const activeCode = sandpack.files[sandpack.activeFile]?.code || "";
   
   // Use our custom hook to stream this code to Supabase
   useLiveBroadcast(challengeId, activeCode);
+
+  // Sync with parent form
+  useEffect(() => {
+    if (onChange) onChange(activeCode);
+  }, [activeCode, onChange]);
   
   return null;
 }
 
-export interface CandidateArenaProps {
-  challengeId: string;
-  initialCode?: string;
-  template?: "react" | "nextjs" | "vite-react";
-}
-
-export function CandidateArena({ challengeId, initialCode, template = "react" }: CandidateArenaProps) {
+export function CandidateArena({ challengeId, initialCode, template = "react", onChange }: CandidateArenaProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export function CandidateArena({ challengeId, initialCode, template = "react" }:
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-full bg-[#05050a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl relative">
+    <div className="flex flex-col h-full bg-[#05050a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl relative min-h-[600px]">
       
       {/* Arena Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-black/40 border-b border-white/5 backdrop-blur-md z-20">
@@ -82,7 +81,7 @@ export function CandidateArena({ challengeId, initialCode, template = "react" }:
         >
           <SandpackLayout className="h-full border-none rounded-none !bg-transparent">
             {/* Sync Logic Wrapper */}
-            <BroadcastSync challengeId={challengeId} />
+            <ArenaListener challengeId={challengeId} onChange={onChange} />
             
             <SandpackFileExplorer className="h-full !bg-[#0a0a0f]/80 !border-r !border-white/5 hidden md:block w-48" />
             
