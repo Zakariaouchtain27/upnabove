@@ -36,14 +36,33 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Fetch or Create Candidate profile
-    const { data: candidate } = await supabase
+    let { data: candidate } = await supabase
       .from("candidates")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("id", user.id)
       .single();
 
     if (!candidate) {
-      return NextResponse.json({ error: "You need a candidate profile to enter." }, { status: 400 });
+      // Auto-create candidate profile for the user (could be an employer testing the arena)
+      const firstName = user.user_metadata?.first_name || user.user_metadata?.full_name?.split(' ')[0] || "Forge";
+      const lastName = user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || "Combatant";
+      
+      const { data: newCandidate, error: candError } = await supabase
+        .from('candidates')
+        .insert({
+           id: user.id,
+           first_name: firstName,
+           last_name: lastName,
+           email: user.email,
+           is_public: true
+        })
+        .select('id')
+        .single();
+
+      if (candError) {
+        return NextResponse.json({ error: "Failed to initialize candidate profile: " + candError.message }, { status: 500 });
+      }
+      candidate = newCandidate;
     }
 
     // 3. Check if candidate already has an entry
