@@ -76,7 +76,7 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
 
         {/* Title */}
         <div>
-           <h3 className={`text-2xl font-extrabold leading-tight line-clamp-2 transition-colors ${challenge.is_sponsored ? 'text-zinc-900 dark:text-white group-hover:text-amber-400' : 'text-gray-900 dark:text-zinc-900 dark:text-white group-hover:text-primary'}`}>
+           <h3 className={`text-2xl font-extrabold leading-tight line-clamp-2 transition-colors ${challenge.is_sponsored ? 'text-white group-hover:text-amber-400' : 'text-white group-hover:text-primary'}`}>
              {challenge.title}
            </h3>
         </div>
@@ -96,14 +96,14 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
            <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm">
                  <Trophy className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-400' : 'text-amber-500'}`} />
-                 <span className={`font-bold ${challenge.is_sponsored ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-gray-900 dark:text-zinc-900 dark:text-white'}`}>
+                 <span className={`font-bold ${challenge.is_sponsored ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-white'}`}>
                     {challenge.prize_type === 'Job Offer' ? 'Exclusive Job Offer' : "$" + (challenge.prize_value || 0) + " " + (challenge.prize_type || 'Pool')}
                     <span className="text-zinc-400 font-normal sm:hidden lg:inline text-xs ml-1">Reward</span>
                  </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-zinc-300">
                  <Users className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-500/50' : 'text-primary'}`} />
-                 <span className="font-medium text-gray-900 dark:text-zinc-900 dark:text-white flex items-center gap-1">
+                 <span className="font-bold text-white flex items-center gap-1">
                      <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count || 0} />
                      <span className="font-normal text-zinc-400">Total Entries</span>
                  </span>

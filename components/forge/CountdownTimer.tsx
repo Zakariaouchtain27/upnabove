@@ -78,7 +78,7 @@ export function CountdownTimer({ targetTime, size = 'md', onExpire, type = 'live
   };
 
   // Color variations
-  let colorClass = "text-gray-900 dark:text-zinc-900 dark:text-white"; 
+  let colorClass = "text-white"; 
   let dropShadow = "drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]";
 
   if (status === 'orange') {
