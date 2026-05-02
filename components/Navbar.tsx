@@ -61,6 +61,8 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await signOut();
+      // Force navigation and reload to ensure all state is reset
+      window.location.href = "/";
     } catch (e) {
       console.error("Logout error:", e);
       window.location.href = "/";
