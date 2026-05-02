@@ -30,6 +30,13 @@ function ArenaListener({ challengeId, onChange }: { challengeId: string; onChang
   return null;
 }
 
+export interface CandidateArenaProps {
+  challengeId: string;
+  initialCode?: string;
+  template?: "react" | "nextjs" | "vite-react";
+  onChange?: (code: string) => void;
+}
+
 export function CandidateArena({ challengeId, initialCode, template = "react", onChange }: CandidateArenaProps) {
   const [mounted, setMounted] = useState(false);
 
