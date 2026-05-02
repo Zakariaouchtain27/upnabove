@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { GlobalBackground } from '@/components/GlobalBackground';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: "UpnAbove — Rise up. Find work. Go above.",
@@ -64,6 +65,7 @@ export default function RootLayout({
             <Footer />
           </ToastProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
