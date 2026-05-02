@@ -594,60 +594,99 @@ export default function CreateChallengePage() {
 
                       {/* Sponsor Checking */}
                       {formData.is_sponsored ? (
-                         <>
-                            <div className="text-center space-y-4 mb-12">
-                               <h2 className="text-4xl font-black uppercase tracking-tighter text-white flex justify-center items-center gap-3">
-                                  Boost the Drop <Crown className="w-8 h-8 text-amber-400" />
-                               </h2>
-                               <p className="text-muted-foreground font-mono text-sm max-w-lg mx-auto">Elevate your mission with sponsored perks. Select a tier to initialize deployment via Lemon Squeezy.</p>
-                            </div>
- 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                               {/* Standard */}
-                               <div onClick={() => updateForm('tier', 'standard')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'standard' ? 'bg-amber-500/10 border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
-                                  {formData.tier === 'standard' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-500 shadow-[inset_0_0_20px_rgba(245,158,11,0.2)]" />}
-                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Standard</h4>
-                                  <div className="relative z-10 text-4xl font-black font-mono text-amber-500 mb-6">$9.99</div>
-                                  <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
-                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Golden Outline</li>
-                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Brand Logo Render</li>
-                                  </ul>
-                               </div>
-                               
-                               {/* Premium */}
-                               <div onClick={() => updateForm('tier', 'premium')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-500 scale-105 z-10 ${formData.tier === 'premium' ? 'bg-amber-500/20 border-amber-400 shadow-[0_0_50px_rgba(245,158,11,0.3)]' : 'bg-gradient-to-b from-amber-500/5 to-transparent border-amber-500/20 hover:border-amber-400'}`}>
-                                  <div className="absolute -top-4 inset-x-0 flex justify-center"><span className="bg-amber-500 text-black text-[9px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)]">Elite Pick</span></div>
-                                  {formData.tier === 'premium' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-400 shadow-[inset_0_0_30px_rgba(245,158,11,0.3)]" />}
-                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-amber-400 mb-2">Premium</h4>
-                                  <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$19.99</div>
-                                  <ul className="relative z-10 text-xs font-mono text-gray-300 space-y-3">
-                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Homepage Pin</li>
-                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Analytics Suite</li>
-                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Push Notification</li>
-                                  </ul>
-                               </div>
- 
-                               {/* Enterprise */}
-                               <div onClick={() => updateForm('tier', 'enterprise')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'enterprise' ? 'bg-white/10 border-white shadow-[0_0_40px_rgba(255,255,255,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
-                                  {formData.tier === 'enterprise' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-white shadow-[inset_0_0_20px_rgba(255,255,255,0.1)]" />}
-                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Enterprise</h4>
-                                  <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$99</div>
-                                  <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
-                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Multiple Drops</li>
-                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Press Release API</li>
-                                  </ul>
-                               </div>
-                            </div>
-                         </>
+                          <>
+                             <div className="text-center space-y-4 mb-12">
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-white flex justify-center items-center gap-3">
+                                   Confirm the Drop <Crown className="w-8 h-8 text-amber-400" />
+                                </h2>
+                                <p className="text-muted-foreground font-mono text-sm max-w-lg mx-auto">Review your deployment schedule. Once confirmed, the arena will lock until the specified time.</p>
+                             </div>
+
+                             {/* Final Review Card */}
+                             <div className="p-8 rounded-3xl bg-primary/5 border border-primary/20 mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                                <div className="flex items-center gap-6">
+                                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                      <Calendar className="w-8 h-8" />
+                                   </div>
+                                   <div>
+                                      <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-black mb-1">Scheduled Launch</div>
+                                      <div className="text-2xl font-black text-white uppercase tracking-tighter">
+                                         {new Date(formData.drop_time).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
+                                      </div>
+                                   </div>
+                                </div>
+                                <div className="h-12 w-px bg-white/10 hidden md:block" />
+                                <div className="flex items-center gap-6 text-right">
+                                   <div>
+                                      <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-black mb-1">Local Time</div>
+                                      <div className="text-4xl font-black text-white font-mono">
+                                         {new Date(formData.drop_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                                      </div>
+                                   </div>
+                                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                      <Clock className="w-8 h-8" />
+                                   </div>
+                                </div>
+                             </div>
+  
+                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {/* Standard */}
+                                <div onClick={() => updateForm('tier', 'standard')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'standard' ? 'bg-amber-500/10 border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
+                                   {formData.tier === 'standard' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-500 shadow-[inset_0_0_20px_rgba(245,158,11,0.2)]" />}
+                                   <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Standard</h4>
+                                   <div className="relative z-10 text-4xl font-black font-mono text-amber-500 mb-6">$9.99</div>
+                                   <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
+                                      <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Golden Outline</li>
+                                      <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Brand Logo Render</li>
+                                   </ul>
+                                </div>
+                                
+                                {/* Premium */}
+                                <div onClick={() => updateForm('tier', 'premium')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-500 scale-105 z-10 ${formData.tier === 'premium' ? 'bg-amber-500/20 border-amber-400 shadow-[0_0_50px_rgba(245,158,11,0.3)]' : 'bg-gradient-to-b from-amber-500/5 to-transparent border-amber-500/20 hover:border-amber-400'}`}>
+                                   <div className="absolute -top-4 inset-x-0 flex justify-center"><span className="bg-amber-500 text-black text-[9px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)]">Elite Pick</span></div>
+                                   {formData.tier === 'premium' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-400 shadow-[inset_0_0_30px_rgba(245,158,11,0.3)]" />}
+                                   <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-amber-400 mb-2">Premium</h4>
+                                   <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$19.99</div>
+                                   <ul className="relative z-10 text-xs font-mono text-gray-300 space-y-3">
+                                      <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Homepage Pin</li>
+                                      <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Analytics Suite</li>
+                                      <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Push Notification</li>
+                                   </ul>
+                                </div>
+  
+                                {/* Enterprise */}
+                                <div onClick={() => updateForm('tier', 'enterprise')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'enterprise' ? 'bg-white/10 border-white shadow-[0_0_40px_rgba(255,255,255,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
+                                   {formData.tier === 'enterprise' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-white shadow-[inset_0_0_20px_rgba(255,255,255,0.1)]" />}
+                                   <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Enterprise</h4>
+                                   <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$99</div>
+                                   <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
+                                      <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Multiple Drops</li>
+                                      <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Press Release API</li>
+                                   </ul>
+                                </div>
+                             </div>
+                          </>
                       ) : (
-                         <div className="text-center space-y-6 py-24 bg-white/5 border border-white/5 rounded-3xl relative overflow-hidden">
-                            <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-                            <Megaphone className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                            <h2 className="relative z-10 text-4xl font-black uppercase tracking-tighter text-white">
-                               Standard Drop
-                            </h2>
-                            <p className="relative z-10 text-muted-foreground font-mono text-sm max-w-sm mx-auto">You've chosen a standard, un-sponsored Arena drop. Initiation is free of charge.</p>
-                         </div>
+                          <div className="text-center space-y-6 py-24 bg-white/5 border border-white/5 rounded-3xl relative overflow-hidden">
+                             <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+                             
+                             {/* Final Review Card for Free Drop */}
+                             <div className="relative z-10 max-w-md mx-auto p-6 rounded-2xl bg-white/5 border border-white/10 mb-8 flex flex-col items-center gap-4">
+                                <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-black">Launch Schedule</div>
+                                <div className="text-xl font-bold text-white">
+                                   {new Date(formData.drop_time).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
+                                </div>
+                                <div className="text-3xl font-black text-primary font-mono">
+                                   {new Date(formData.drop_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                                </div>
+                             </div>
+
+                             <Megaphone className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                             <h2 className="relative z-10 text-4xl font-black uppercase tracking-tighter text-white">
+                                Standard Drop
+                             </h2>
+                             <p className="relative z-10 text-muted-foreground font-mono text-sm max-w-sm mx-auto">You've chosen a standard, un-sponsored Arena drop. Initiation is free of charge.</p>
+                          </div>
                       )}
                     </motion.div>
                  )}
