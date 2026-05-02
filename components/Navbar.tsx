@@ -6,6 +6,7 @@ import { Menu, X, ArrowUpRight, Search, Briefcase, Flame, LogOut, User as UserIc
 import { usePathname, useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/forge/NotificationBell";
 import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/app/auth/actions";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -59,17 +60,9 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
-      // Reset local state
-      setUser(null);
-      setProfile(null);
-      setDropdownOpen(false);
-      
-      // Force a hard refresh to home to ensure all server-side state/cookies are cleared
-      window.location.href = "/";
+      await signOut();
     } catch (e) {
       console.error("Logout error:", e);
-      // Fallback redirect
       window.location.href = "/";
     }
   };
