@@ -266,7 +266,11 @@ export default function CreateChallengePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans pt-20 pb-32">
+    <div className="min-h-screen bg-[#05050a] text-white font-sans pt-20 pb-32 relative overflow-hidden">
+       {/* Background Aesthetics */}
+       <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+       <div className="glow-orb-primary -top-40 -right-40 opacity-30" />
+       <div className="glow-orb-cyan -bottom-40 -left-40 opacity-20" />
        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
        
        <div className="max-w-5xl mx-auto px-6 relative z-10">
@@ -275,20 +279,45 @@ export default function CreateChallengePage() {
              <Link href="/employer/forge" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-zinc-900 dark:text-white transition-colors mb-8 font-mono tracking-widest uppercase">
                 <ArrowLeft className="w-4 h-4" /> Back to Overview
              </Link>
-             <h1 className="text-4xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-6">Forge a Drop</h1>
+             <h1 className="text-5xl font-black text-white uppercase tracking-tighter mb-8 flex items-center gap-4">
+                <span className="p-3 rounded-2xl bg-primary/20 border border-primary/50 shadow-[0_0_20px_rgba(255,111,97,0.3)]">
+                  <Flame className="w-8 h-8 text-primary" />
+                </span>
+                Forge a Drop
+             </h1>
              
-             <div className="h-2 w-full bg-surface border border-black/5 dark:border-white/5 rounded-full overflow-hidden">
-                <motion.div 
-                   className="h-full bg-gradient-to-r from-primary-dark via-primary to-primary-light"
-                   initial={{ width: "33%" }}
-                   animate={{ width: `${(step / 3) * 100}%` }}
-                   transition={{ ease: "circOut", duration: 0.5 }}
-                />
-             </div>
-             <div className="flex justify-between mt-3 text-xs font-mono font-bold uppercase tracking-widest text-muted-foreground">
-                <span className={step >= 1 ? "text-primary-light drop-shadow-[0_0_8px_rgba(124,58,237,0.5)]" : ""}>1. Basics</span>
-                <span className={step >= 2 ? "text-primary-light drop-shadow-[0_0_8px_rgba(124,58,237,0.5)]" : ""}>2. The Brief</span>
-                <span className={step === 3 ? "text-primary-light drop-shadow-[0_0_8px_rgba(124,58,237,0.5)]" : ""}>3. Deploy</span>
+             {/* Styled Step Nodes */}
+             <div className="flex items-center gap-4 max-w-2xl">
+                {[
+                  { id: 1, label: "Basics" },
+                  { id: 2, label: "The Brief" },
+                  { id: 3, label: "Deploy" }
+                ].map((s, i) => (
+                  <React.Fragment key={s.id}>
+                    <div className="flex flex-col items-center gap-2">
+                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                          step >= s.id 
+                            ? "bg-primary border-primary shadow-[0_0_15px_rgba(255,111,97,0.6)] text-white" 
+                            : "bg-surface border-white/10 text-muted-foreground"
+                       }`}>
+                          {step > s.id ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-xs font-black">{s.id}</span>}
+                       </div>
+                       <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step >= s.id ? "text-primary" : "text-muted-foreground"}`}>
+                          {s.label}
+                       </span>
+                    </div>
+                    {i < 2 && (
+                       <div className="flex-1 h-px bg-white/10 relative overflow-hidden">
+                          <motion.div 
+                             className="absolute inset-0 bg-primary shadow-[0_0_10px_rgba(255,111,97,0.5)]"
+                             initial={{ x: "-100%" }}
+                             animate={{ x: step > s.id ? "0%" : "-100%" }}
+                             transition={{ duration: 0.5 }}
+                          />
+                       </div>
+                    )}
+                  </React.Fragment>
+                ))}
              </div>
           </div>
 
@@ -309,20 +338,34 @@ export default function CreateChallengePage() {
                         />
                      </div>
                      <div>
-                        <label className="block text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white mb-3">Combat Type</label>
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                           {['design', 'code', 'strategy', 'writing', 'data', 'video'].map((type) => (
+                        <label className="block text-sm font-bold uppercase tracking-widest text-white mb-3 flex items-center gap-2">
+                           <Target className="w-4 h-4 text-primary" /> Combat Type
+                        </label>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                           {Object.entries(TypeIcons).map(([type, icon]) => (
                               <button 
                                  key={type}
                                  onClick={() => updateForm('challenge_type', type)}
-                                 className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all ${
+                                 className={`relative group flex flex-col items-center justify-center p-8 rounded-3xl border-2 transition-all duration-300 ${
                                     formData.challenge_type === type 
-                                      ? "bg-primary/20 border-primary shadow-[0_0_20px_rgba(124,58,237,0.2)] text-primary-light" 
-                                      : "bg-surface border-black/5 dark:border-white/5 hover:bg-black/5 dark:bg-white/5 text-muted-foreground hover:text-zinc-900 dark:text-white"
+                                      ? "bg-primary/10 border-primary shadow-[0_0_30px_rgba(255,111,97,0.2)]" 
+                                      : "bg-surface border-white/5 hover:border-white/20 hover:bg-white/5"
                                  }`}
                               >
-                                 {TypeIcons[type as ChallengeType]}
-                                 <span className="mt-4 font-bold uppercase tracking-wider text-xs">{type}</span>
+                                 {formData.challenge_type === type && (
+                                    <motion.div 
+                                       layoutId="activeType"
+                                       className="absolute inset-0 rounded-3xl border-2 border-primary shadow-[inset_0_0_15px_rgba(255,111,97,0.3)]"
+                                       initial={false}
+                                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                 )}
+                                 <div className={`relative z-10 transition-transform duration-300 group-hover:scale-110 ${formData.challenge_type === type ? "text-primary-light" : "text-muted-foreground"}`}>
+                                    {icon}
+                                 </div>
+                                 <span className={`relative z-10 mt-4 font-black uppercase tracking-[0.2em] text-[10px] transition-colors ${formData.challenge_type === type ? "text-white" : "text-muted-foreground"}`}>
+                                    {type}
+                                 </span>
                               </button>
                            ))}
                         </div>
@@ -429,36 +472,60 @@ export default function CreateChallengePage() {
                          </div>
                      </div>
 
-                     {/* AI Side-by-Side Diff Viewer */}
-                     {improvedBrief ? (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                              <div className="flex flex-col border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-black/40 h-80 overflow-y-auto">
-                                 <div className="sticky top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md py-2 px-4 text-xs font-mono uppercase font-bold text-muted-foreground border-b border-black/10 dark:border-white/10 z-10">Original Draft</div>
-                                 <div className="p-4 text-sm text-muted-foreground line-through opacity-70 whitespace-pre-wrap font-mono">{originalDescription}</div>
-                              </div>
-                              <div className="flex flex-col border border-primary/50 rounded-xl bg-primary/5 h-80 overflow-y-auto w-full">
-                                 <div className="sticky top-0 bg-primary-dark/80 backdrop-blur-md py-2 px-4 text-xs font-mono uppercase font-bold text-primary-light border-b border-primary/20 flex items-center gap-2 z-10">
-                                    <Sparkles className="w-3.5 h-3.5" /> Improved Draft
-                                 </div>
-                                 <div className="p-4 text-sm text-zinc-800 dark:text-gray-200 whitespace-pre-wrap font-mono">{improvedBrief.improved_description}</div>
-                              </div>
-                           </div>
-                           <div className="flex gap-4 p-4 border-t border-black/10 dark:border-white/10 justify-end bg-surface/50 rounded-xl">
-                              <button onClick={rejectImprovedBrief} className="px-5 py-2.5 rounded-lg border border-black/10 dark:border-white/10 bg-surface hover:bg-black/5 dark:bg-white/5 text-xs font-bold uppercase tracking-wider text-muted-foreground">Keep Original</button>
-                              <button onClick={acceptImprovedBrief} className="btn-glow px-6 py-2.5 rounded-lg bg-primary text-white text-xs font-bold uppercase flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Use Improved Version</button>
-                           </div>
-                        </div>
-                     ) : (
-                        <div className="space-y-3 relative">
-                           {claudeThinking && (
-                              <div className="absolute inset-0 z-10 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center pointer-events-none">
-                                 <div className="flex flex-col items-center gap-3"><BrainCircuit className="w-8 h-8 text-primary animate-pulse" /></div>
-                              </div>
-                           )}
-                           <textarea className="w-full h-64 bg-surface border border-black/10 dark:border-white/10 rounded-xl p-5 text-zinc-700 dark:text-gray-300 font-mono leading-relaxed outline-none" placeholder="Describe the objective..." value={formData.description} onChange={e => updateForm('description', e.target.value)} />
-                        </div>
-                     )}
+                      {/* AI Side-by-Side Diff Viewer */}
+                      {improvedBrief ? (
+                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                               <div className="flex flex-col border border-white/5 rounded-2xl bg-black/40 h-96 overflow-hidden">
+                                  <div className="bg-white/5 py-3 px-5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-white/5 flex items-center justify-between">
+                                     <span>Original Logic</span>
+                                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                  </div>
+                                  <div className="p-6 text-sm text-muted-foreground line-through opacity-50 whitespace-pre-wrap font-mono overflow-y-auto leading-relaxed">{originalDescription}</div>
+                               </div>
+                               <div className="flex flex-col border border-primary/30 rounded-2xl bg-primary/5 h-96 overflow-hidden shadow-[0_0_40px_rgba(255,111,97,0.1)]">
+                                  <div className="bg-primary/20 py-3 px-5 text-[10px] font-black uppercase tracking-[0.2em] text-primary-light border-b border-primary/20 flex items-center justify-between">
+                                     <span className="flex items-center gap-2"><Sparkles className="w-3 h-3" /> Augmented Brief</span>
+                                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                  </div>
+                                  <div className="p-6 text-sm text-gray-200 whitespace-pre-wrap font-mono overflow-y-auto leading-relaxed">{improvedBrief.improved_description}</div>
+                               </div>
+                            </div>
+                            <div className="flex gap-4 p-4 border border-white/5 justify-end bg-white/5 rounded-2xl">
+                               <button onClick={rejectImprovedBrief} className="px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-all">Discard Changes</button>
+                               <button onClick={acceptImprovedBrief} className="px-8 py-3 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(255,111,97,0.4)] hover:shadow-[0_0_30px_rgba(255,111,97,0.6)] transition-all"><CheckCircle2 className="w-4 h-4" /> Merge AI Brief</button>
+                            </div>
+                         </div>
+                      ) : (
+                         <div className="space-y-3 relative group">
+                            {claudeThinking && (
+                               <div className="absolute inset-0 z-10 bg-black/60 backdrop-blur-md rounded-2xl flex items-center justify-center border border-primary/30">
+                                  <div className="flex flex-col items-center gap-4">
+                                     <div className="relative">
+                                        <BrainCircuit className="w-12 h-12 text-primary animate-pulse" />
+                                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-ping" />
+                                     </div>
+                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Analyzing Architectural Logic...</span>
+                                  </div>
+                               </div>
+                            )}
+                            <div className="absolute top-4 right-4 z-20">
+                               <button 
+                                  onClick={handleAIImprove}
+                                  disabled={!formData.description || claudeThinking}
+                                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 border border-primary/50 text-primary-light text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all disabled:opacity-30"
+                                >
+                                  <Wand2 className="w-3 h-3" /> Auditing Brief
+                                </button>
+                            </div>
+                            <textarea 
+                               className="w-full h-80 bg-surface border-2 border-white/5 rounded-2xl p-8 text-gray-300 font-mono leading-relaxed outline-none focus:border-primary/50 transition-all placeholder:opacity-30" 
+                               placeholder="Input the mission parameters..." 
+                               value={formData.description} 
+                               onChange={e => updateForm('description', e.target.value)} 
+                            />
+                         </div>
+                      )}
 
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
                         <div className="md:col-span-1">
@@ -507,66 +574,91 @@ export default function CreateChallengePage() {
                         </div>
                      </div>
 
-                     {/* Sponsor Checking */}
-                     {formData.is_sponsored ? (
-                        <>
-                           <div className="text-center space-y-2 mb-8">
-                              <h2 className="text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white drop-shadow-md flex justify-center items-center gap-3">
-                                 Sponsor Monetization <Crown className="w-6 h-6 text-amber-400" />
-                              </h2>
-                              <p className="text-muted-foreground font-mono">Select a tier to schedule your Drop via Lemon Squeezy.</p>
-                           </div>
-
-                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                              <div onClick={() => updateForm('tier', 'standard')} className={`relative p-6 rounded-2xl border cursor-pointer transition-all ${formData.tier === 'standard' ? 'bg-amber-500/10 border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.2)]' : 'bg-surface border-black/5 dark:border-white/5 hover:border-white/20'}`}>
-                                 {formData.tier === 'standard' && <div className="absolute top-4 right-4"><CheckCircle2 className="w-5 h-5 text-amber-500" /></div>}
-                                 <h4 className="text-lg font-bold uppercase tracking-widest text-zinc-900 dark:text-white mb-2">Standard Sponsored</h4>
-                                 <div className="text-3xl font-bold font-mono text-zinc-700 dark:text-gray-300 mb-6">$9.99</div>
-                                 <ul className="text-sm font-mono text-muted-foreground space-y-2"><li>• Golden Outline</li><li>• Brand Logo rendering</li><li>• Public Trophy Tag</li></ul>
-                              </div>
-                              <div onClick={() => updateForm('tier', 'premium')} className={`relative p-6 rounded-2xl border cursor-pointer transition-all scale-105 z-10 ${formData.tier === 'premium' ? 'bg-gradient-to-b from-amber-500/20 to-surface border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.4)]' : 'bg-gradient-to-b from-amber-500/5 to-surface border-amber-500/20 hover:border-amber-500/50'}`}>
-                                 <div className="absolute -top-3 inset-x-0 flex justify-center"><span className="bg-amber-500 text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Most Popular</span></div>
-                                 {formData.tier === 'premium' && <div className="absolute top-4 right-4"><CheckCircle2 className="w-5 h-5 text-amber-400" /></div>}
-                                 <h4 className="text-lg font-bold uppercase tracking-widest text-amber-400 mb-2">Premium Sponsored</h4>
-                                 <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-white mb-6 drop-shadow-md">$19.99</div>
-                                 <ul className="text-sm font-mono text-muted-foreground space-y-2"><li>• Homepage Pin</li><li>• Analytics Post-Drop</li><li>• Notification Push</li></ul>
-                              </div>
-                              <div onClick={() => updateForm('tier', 'enterprise')} className={`relative p-6 rounded-2xl border cursor-pointer transition-all ${formData.tier === 'enterprise' ? 'bg-black/10 dark:bg-white/10 border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-surface border-black/5 dark:border-white/5 hover:border-white/20'}`}>
-                                 {formData.tier === 'enterprise' && <div className="absolute top-4 right-4"><CheckCircle2 className="w-5 h-5 text-zinc-900 dark:text-white" /></div>}
-                                 <h4 className="text-lg font-bold uppercase tracking-widest text-zinc-700 dark:text-gray-300 mb-2">Enterprise</h4>
-                                 <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-white mb-6">$99</div>
-                                 <ul className="text-sm font-mono text-muted-foreground space-y-2"><li>• Multiple Auto-Drops</li><li>• Press Release API</li><li>• Private CRM DB Export</li></ul>
-                              </div>
-                           </div>
-                        </>
-                     ) : (
-                        <div className="text-center space-y-4 py-16 bg-surface border border-black/5 dark:border-white/5 rounded-2xl">
-                           <Megaphone className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                           <h2 className="text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white flex justify-center items-center gap-3">
-                              Free Drop Initiation
-                           </h2>
-                           <p className="text-muted-foreground font-mono max-w-sm mx-auto">You've chosen a standard, un-sponsored Arena drop. There is zero checkout fee required to launch.</p>
-                        </div>
-                     )}
-                   </motion.div>
-                )}
+                      {/* Sponsor Checking */}
+                      {formData.is_sponsored ? (
+                         <>
+                            <div className="text-center space-y-4 mb-12">
+                               <h2 className="text-4xl font-black uppercase tracking-tighter text-white flex justify-center items-center gap-3">
+                                  Boost the Drop <Crown className="w-8 h-8 text-amber-400" />
+                               </h2>
+                               <p className="text-muted-foreground font-mono text-sm max-w-lg mx-auto">Elevate your mission with sponsored perks. Select a tier to initialize deployment via Lemon Squeezy.</p>
+                            </div>
+ 
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                               {/* Standard */}
+                               <div onClick={() => updateForm('tier', 'standard')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'standard' ? 'bg-amber-500/10 border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
+                                  {formData.tier === 'standard' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-500 shadow-[inset_0_0_20px_rgba(245,158,11,0.2)]" />}
+                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Standard</h4>
+                                  <div className="relative z-10 text-4xl font-black font-mono text-amber-500 mb-6">$9.99</div>
+                                  <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
+                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Golden Outline</li>
+                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-amber-500" /> Brand Logo Render</li>
+                                  </ul>
+                               </div>
+                               
+                               {/* Premium */}
+                               <div onClick={() => updateForm('tier', 'premium')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-500 scale-105 z-10 ${formData.tier === 'premium' ? 'bg-amber-500/20 border-amber-400 shadow-[0_0_50px_rgba(245,158,11,0.3)]' : 'bg-gradient-to-b from-amber-500/5 to-transparent border-amber-500/20 hover:border-amber-400'}`}>
+                                  <div className="absolute -top-4 inset-x-0 flex justify-center"><span className="bg-amber-500 text-black text-[9px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)]">Elite Pick</span></div>
+                                  {formData.tier === 'premium' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-amber-400 shadow-[inset_0_0_30px_rgba(245,158,11,0.3)]" />}
+                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-amber-400 mb-2">Premium</h4>
+                                  <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$19.99</div>
+                                  <ul className="relative z-10 text-xs font-mono text-gray-300 space-y-3">
+                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Homepage Pin</li>
+                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Analytics Suite</li>
+                                     <li className="flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Push Notification</li>
+                                  </ul>
+                               </div>
+ 
+                               {/* Enterprise */}
+                               <div onClick={() => updateForm('tier', 'enterprise')} className={`group relative p-8 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.tier === 'enterprise' ? 'bg-white/10 border-white shadow-[0_0_40px_rgba(255,255,255,0.2)]' : 'bg-surface border-white/5 hover:border-white/20'}`}>
+                                  {formData.tier === 'enterprise' && <motion.div layoutId="activeTier" className="absolute inset-0 rounded-3xl border-2 border-white shadow-[inset_0_0_20px_rgba(255,255,255,0.1)]" />}
+                                  <h4 className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white mb-2">Enterprise</h4>
+                                  <div className="relative z-10 text-4xl font-black font-mono text-white mb-6">$99</div>
+                                  <ul className="relative z-10 text-xs font-mono text-muted-foreground space-y-3">
+                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Multiple Drops</li>
+                                     <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-white" /> Press Release API</li>
+                                  </ul>
+                               </div>
+                            </div>
+                         </>
+                      ) : (
+                         <div className="text-center space-y-6 py-24 bg-white/5 border border-white/5 rounded-3xl relative overflow-hidden">
+                            <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+                            <Megaphone className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+                            <h2 className="relative z-10 text-4xl font-black uppercase tracking-tighter text-white">
+                               Standard Drop
+                            </h2>
+                            <p className="relative z-10 text-muted-foreground font-mono text-sm max-w-sm mx-auto">You've chosen a standard, un-sponsored Arena drop. Initiation is free of charge.</p>
+                         </div>
+                      )}
+                    </motion.div>
+                 )}
 
              </AnimatePresence>
           </div>
 
-          <div className="flex justify-between mt-8">
-             <button onClick={handleBack} disabled={step === 1 || isSubmitting} className="px-6 py-3 rounded-xl font-bold font-mono text-xs uppercase tracking-widest border border-black/5 dark:border-white/5 hover:bg-black/5 dark:bg-white/5 text-muted-foreground hover:text-zinc-900 dark:text-white transition-colors disabled:opacity-30 flex items-center gap-2">
-                <ArrowLeft className="w-4 h-4" /> Go Back
+          <div className="flex justify-between items-center mt-12">
+             <button onClick={handleBack} disabled={step === 1 || isSubmitting} className="px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] border border-white/10 hover:bg-white/5 text-muted-foreground hover:text-white transition-all disabled:opacity-30 flex items-center gap-3">
+                <ArrowLeft className="w-4 h-4" /> Abort Phase
              </button>
 
              {step < 3 ? (
-                <button onClick={handleNext} className="px-8 py-3 rounded-xl font-bold font-mono text-xs uppercase tracking-widest bg-white text-black hover:bg-gray-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.2)] flex items-center gap-2">
-                  Continue <ArrowRight className="w-4 h-4" />
+                <button onClick={handleNext} className="px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] bg-white text-black hover:bg-primary hover:text-white transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] flex items-center gap-3">
+                  Advance Phase <ArrowRight className="w-4 h-4" />
                 </button>
              ) : (
-                <button onClick={handleCheckout} disabled={isSubmitting} className={`btn-glow px-8 py-3 rounded-xl font-bold font-mono text-xs uppercase tracking-widest transition-all gap-2 flex items-center disabled:opacity-50 disabled:grayscale ${formData.is_sponsored ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-[0_0_25px_rgba(245,158,11,0.5)]' : 'bg-primary text-white shadow-[0_0_20px_rgba(124,58,237,0.5)]'}`}>
-                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                  {isSubmitting ? "Processing..." : formData.is_sponsored ? `Lemon Squeezy Checkout` : `Deploy Free Challenge`}
+                <button 
+                  onClick={handleCheckout} 
+                  disabled={isSubmitting} 
+                  className={`relative px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all gap-4 flex items-center disabled:opacity-50 group overflow-hidden ${
+                     formData.is_sponsored 
+                       ? 'bg-amber-500 text-black shadow-[0_0_40px_rgba(245,158,11,0.4)] hover:shadow-[0_0_60px_rgba(245,158,11,0.6)]' 
+                       : 'bg-primary text-white shadow-[0_0_30px_rgba(255,111,97,0.4)] hover:shadow-[0_0_50px_rgba(255,111,97,0.6)]'
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                  <span className="relative z-10">{isSubmitting ? "Initiating..." : formData.is_sponsored ? `Lemon Squeezy Checkout` : `Deploy Drop`}</span>
                 </button>
              )}
           </div>
