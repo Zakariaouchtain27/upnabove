@@ -61,7 +61,7 @@ export default async function ForgePage() {
   ];
 
   return (
-    <div className="layout-wrapper bg-transparent min-h-screen relative overflow-hidden text-foreground">
+    <div className="layout-wrapper bg-[#05050a] min-h-screen relative overflow-hidden text-white forge-theme">
        {/* Forge Hero Gradient */}
        <div className="absolute inset-x-0 top-0 h-[800px] bg-gradient-to-b from-[#1B365D]/80 via-[#FF6F61]/20 to-transparent pointer-events-none z-[-1]" />
        <div className="absolute inset-0 z-0 bg-grid-pattern opacity-10 pointer-events-none" />
@@ -83,7 +83,7 @@ export default async function ForgePage() {
            </p>
 
            {/* Live Config Stats Bar */}
-           <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-mono mt-8 border border-black/10 dark:border-white/10 bg-gray-100 dark:bg-black/40 px-6 py-3 rounded-2xl shadow-inner backdrop-blur-md">
+           <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-mono mt-8 border border-white/10 bg-black/40 px-6 py-3 rounded-2xl shadow-inner backdrop-blur-md">
               <div className="flex items-center gap-2">
                  <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                  <span className="text-gray-900 dark:text-white font-bold">{liveChallenges?.length || 0}</span>
@@ -140,15 +140,15 @@ export default async function ForgePage() {
         {/* 3 & 4. UPCOMING AND LEADERBOARD */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-32">
            {/* Section 3: Upcoming Drops */}
-           <div className="lg:col-span-1 border border-black/10 dark:border-white/10 bg-gray-100 dark:bg-black/40 rounded-3xl p-8 shadow-inner backdrop-blur-sm">
-              <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-8 border-b border-black/10 dark:border-white/10 pb-4 flex items-center justify-between">
-                 Upcoming Drops
-                 <Clock className="w-6 h-6 text-muted-foreground" />
-              </h3>
+           <div className="lg:col-span-1 border border-white/10 bg-black/40 rounded-3xl p-8 shadow-inner backdrop-blur-sm">
+               <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-8 border-b border-white/10 pb-4 flex items-center justify-between">
+                  Upcoming Drops
+                  <Clock className="w-6 h-6 text-zinc-500" />
+               </h3>
 
               <div className="space-y-4">
                  {!upcomingChallenges || upcomingChallenges.length === 0 ? (
-                    <div className="text-muted-foreground font-mono text-sm py-8 text-center bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 border-dashed">No scheduled drops.</div>
+                    <div className="text-muted-foreground font-mono text-sm py-8 text-center bg-white/5 rounded-xl border border-white/5 border-dashed">No scheduled drops.</div>
                  ) : (
                     upcomingChallenges.map(challenge => (
                        <UpcomingDropCard key={challenge.id} challenge={challenge} />
@@ -166,19 +166,19 @@ export default async function ForgePage() {
         {/* 5. HOW IT WORKS */}
         <div className="mb-32">
            <div className="text-center mb-16">
-              <h2 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white">The Combat Loop</h2>
+              <h2 className="text-4xl font-black uppercase tracking-tight text-white">The Combat Loop</h2>
               <p className="text-muted-foreground font-mono tracking-widest uppercase text-sm mt-4">How it works</p>
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {howItWorks.map((step, idx) => (
-                 <div key={idx} className="relative p-8 rounded-2xl bg-surface border border-border flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300">
-                    <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-black/50 border border-black/10 dark:border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 shadow-lg shadow-black/50 transition-all">
-                       {step.icon}
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{step.title}</h4>
-                    <p className="text-sm text-muted-foreground">{step.desc}</p>
-                 </div>
+                  <div key={idx} className="relative p-8 rounded-2xl bg-black/20 border border-white/10 flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300">
+                     <div className="w-16 h-16 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 shadow-lg shadow-black/50 transition-all">
+                        {step.icon}
+                     </div>
+                     <h4 className="text-lg font-bold text-white mb-2">{step.title}</h4>
+                     <p className="text-sm text-zinc-400">{step.desc}</p>
+                  </div>
               ))}
            </div>
         </div>
