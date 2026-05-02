@@ -29,11 +29,15 @@ export async function POST(request: Request) {
     // 2. Ensure an employers row exists for this user (required by FK constraint)
     const { error: employerErr } = await db
       .from("employers")
-      .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+      .upsert({ 
+        id: user.id,
+        company_name: user.user_metadata?.company_name || user.email?.split('@')[0] || "New Employer",
+        contact_email: user.email || ""
+      }, { onConflict: "id", ignoreDuplicates: true });
 
     if (employerErr) {
       console.error("Employer upsert error:", employerErr);
-      return NextResponse.json({ error: "Failed to initialize employer profile" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to initialize employer profile: " + employerErr.message }, { status: 500 });
     }
 
     // 3. Insert with admin client so employer_id is always set correctly

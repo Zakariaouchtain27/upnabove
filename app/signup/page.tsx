@@ -38,10 +38,9 @@ export default function SignupPage() {
 
     if (data.user && data.session) {
       router.push('/onboarding')
-    } else if (data.user && !data.session) {
-      // Email confirmation is required
-      setSuccess('Success! Please check your email inbox to confirm your account.')
-      setLoading(false)
+    } else if (data.user) {
+      // Email confirmation is required - Redirect to login with success message
+      router.push('/login?signup=success')
     }
   }
 

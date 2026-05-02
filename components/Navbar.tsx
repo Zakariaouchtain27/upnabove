@@ -59,15 +59,18 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-       await supabase.auth.signOut();
+      await supabase.auth.signOut();
+      // Reset local state
+      setUser(null);
+      setProfile(null);
+      setDropdownOpen(false);
+      
+      // Force a hard refresh to home to ensure all server-side state/cookies are cleared
+      window.location.href = "/";
     } catch (e) {
-       console.error(e);
-    } finally {
-       setUser(null);
-       setProfile(null);
-       setDropdownOpen(false);
-       router.push('/');
-       router.refresh();
+      console.error("Logout error:", e);
+      // Fallback redirect
+      window.location.href = "/";
     }
   };
 

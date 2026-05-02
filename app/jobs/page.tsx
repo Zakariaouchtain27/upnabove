@@ -31,6 +31,7 @@ export default async function JobsPage({
 
   // 1. Apply Filtering
   if (queryText) {
+    // Priority: Title match is usually more relevant than description match
     query = query.or(`title.ilike.%${queryText}%,description.ilike.%${queryText}%`);
   }
   if (locationText) {
@@ -60,7 +61,8 @@ export default async function JobsPage({
   let jobs: any = [];
   let jobCount = 0;
   try {
-    const res = await query.limit(20);
+    // Increased limit to 100 to satisfy "full set" requirement
+    const res = await query.limit(100);
     jobs = res.data;
     jobCount = res.count || 0;
   } catch (e) {

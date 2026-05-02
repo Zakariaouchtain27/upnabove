@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   
   const router = useRouter()
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+  const signupSuccess = searchParams?.get('signup') === 'success'
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -87,6 +89,13 @@ export default function LoginPage() {
 
         <h2 className="text-2xl font-bold text-center text-white mb-2">Welcome Back</h2>
         <p className="text-center text-muted mb-8 text-sm">Sign in to continue</p>
+
+        {signupSuccess && (
+          <div className="mb-4 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm text-center">
+            <h3 className="font-bold text-green-300 mb-1">Account Created!</h3>
+            <p>Please check your email inbox to confirm your account before signing in.</p>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm text-center">
