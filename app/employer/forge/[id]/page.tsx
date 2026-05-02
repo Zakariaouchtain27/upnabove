@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ArrowLeft, BarChart3, Star, Mail, CheckCircle, 
+  ArrowLeft, BarChart3, Star, Mail, CheckCircle, Eye,
   X, Sparkles, BrainCircuit, ExternalLink, Trophy, Loader2, Inbox
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
