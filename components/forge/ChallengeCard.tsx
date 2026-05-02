@@ -44,14 +44,14 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
                  )}
               </div>
               <div>
-                 <span className={`text-xs uppercase tracking-widest block font-bold mb-0.5 ${challenge.is_sponsored ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                 <span className={`text-xs uppercase tracking-widest block font-black mb-0.5 ${challenge.is_sponsored ? 'text-amber-400' : 'text-zinc-200'}`}>
                    {challenge.sponsor_name || "UpnAbove Origin"}
                  </span>
                  <div className="flex gap-2">
                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border ${difficultyColors[challenge.difficulty as keyof typeof difficultyColors] || difficultyColors.mid}`}>
                      {challenge.difficulty}
                    </span>
-                   <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border bg-surface text-muted-foreground border-border">
+                   <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border bg-surface text-foreground border-border">
                      {challenge.challenge_type}
                    </span>
                  </div>
@@ -67,7 +67,7 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
              <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider border ${(
                challenge.status === "live"
                    ? "bg-[#FF6F61]/20 text-[#FF6F61] border-[#FF6F61]/30 animate-pulse shadow-[0_0_15px_rgba(255,111,97,0.3)]"
-                   : "bg-surface text-muted-foreground border-border"
+                   : "bg-surface text-foreground border-border"
                )}`}>
                {challenge.status}
              </span>
@@ -83,7 +83,7 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
 
         {/* Reactive Component: Countdown */}
         <div className={`flex flex-col items-center justify-center py-6 border rounded-xl shadow-inner min-h-[140px] ${challenge.is_sponsored ? 'bg-[#050a14]/60 border-amber-500/20' : 'bg-[#050a14]/40 border-white/5'}`}>
-           <div className="text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-2">
+           <div className="text-xs font-bold tracking-[0.2em] text-zinc-300 uppercase mb-2">
              {challenge.status === "scheduled" ? "DROPS IN" : "TIME REMAINING"}
            </div>
            <CountdownTimer targetTime={targetDate} size="md" />
@@ -98,14 +98,14 @@ export function ChallengeCard({ challenge }: { challenge: ForgeChallenge }) {
                  <Trophy className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-400' : 'text-amber-500'}`} />
                  <span className={`font-bold ${challenge.is_sponsored ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-gray-900 dark:text-zinc-900 dark:text-white'}`}>
                     {challenge.prize_type === 'Job Offer' ? 'Exclusive Job Offer' : "$" + (challenge.prize_value || 0) + " " + (challenge.prize_type || 'Pool')}
-                    <span className="text-muted-foreground font-normal sm:hidden lg:inline text-xs ml-1">Reward</span>
+                    <span className="text-zinc-400 font-normal sm:hidden lg:inline text-xs ml-1">Reward</span>
                  </span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-zinc-300">
                  <Users className={`w-4 h-4 ${challenge.is_sponsored ? 'text-amber-500/50' : 'text-primary'}`} />
                  <span className="font-medium text-gray-900 dark:text-zinc-900 dark:text-white flex items-center gap-1">
                      <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count || 0} />
-                     <span className="font-normal text-muted-foreground">Total Entries</span>
+                     <span className="font-normal text-zinc-400">Total Entries</span>
                  </span>
               </div>
            </div>

@@ -55,7 +55,7 @@ export function ScheduledChallenge({ challenge }: { challenge: any }) {
        <div className="lg:col-span-2 space-y-8">
           
           <div className="space-y-4">
-             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-surface/50 text-muted-foreground border-border text-xs font-bold uppercase tracking-widest">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-surface/50 text-zinc-300 border-border text-xs font-bold uppercase tracking-widest">
                 <Clock className="w-4 h-4" />
                 Scheduled Drop
              </div>
@@ -69,7 +69,7 @@ export function ScheduledChallenge({ challenge }: { challenge: any }) {
 
           {/* Huge Animated Countdown */}
           <div className="flex flex-col items-center justify-center py-16 bg-gray-100 dark:bg-white/40 dark:bg-black/40 border border-black/5 dark:border-black/5 dark:border-white/5 rounded-3xl shadow-[inset_0_0_80px_rgba(124,58,237,0.05)]">
-             <div className="text-sm font-bold tracking-[0.3em] text-muted-foreground uppercase mb-6">DROPS IN</div>
+             <div className="text-sm font-bold tracking-[0.3em] text-zinc-400 uppercase mb-6">DROPS IN</div>
              <div className="flex items-center gap-4 md:gap-8 font-mono text-6xl md:text-8xl font-light tracking-tighter text-gray-900 dark:text-zinc-900 dark:text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">
                 <div className="flex flex-col items-center">
                    <span className="font-bold">{timeLeft.hours}</span>

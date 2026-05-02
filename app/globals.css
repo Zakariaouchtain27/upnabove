@@ -13,6 +13,8 @@
   --color-surface-hover: var(--surface-hover);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 @layer base {
@@ -26,6 +28,8 @@
     --surface-hover: #f1f3f5;
     --border: rgba(0, 0, 0, 0.08);
     --ring: rgba(255, 111, 97, 0.3);
+    --muted: #4b5563;
+    --muted-foreground: #374151;
     
     /* Neon glow adjustments for light mode */
     --violet-glow: rgba(255, 111, 97, 0.15);
@@ -49,6 +53,8 @@
     --surface-hover: #2c5494;
     --border: rgba(255, 255, 255, 0.15);
     --ring: rgba(255, 111, 97, 0.5);
+    --muted: #cbd5e1;
+    --muted-foreground: #f1f5f9;
 
     /* Deep neon glows */
     --violet-glow: rgba(255, 111, 97, 0.25);
@@ -72,6 +78,8 @@
     --surface-hover: #12121a;
     --border: rgba(255, 255, 255, 0.1);
     --ring: rgba(139, 92, 246, 0.5);
+    --muted: #94a3b8;
+    --muted-foreground: #f8fafc;
     --violet-glow: rgba(139, 92, 246, 0.25);
     --cyan-glow: rgba(45, 212, 191, 0.2);
   }

@@ -284,7 +284,7 @@ export default function CreateChallengePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-white font-sans pt-20 pb-32 relative overflow-hidden">
+    <div className="min-h-screen bg-[#05050a] text-white font-sans pt-20 pb-32 relative overflow-hidden forge-theme">
        {/* Background Aesthetics */}
        <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
        <div className="glow-orb-primary -top-40 -right-40 opacity-30" />
@@ -294,7 +294,7 @@ export default function CreateChallengePage() {
        <div className="max-w-5xl mx-auto px-6 relative z-10">
           
           <div className="mb-12">
-             <Link href="/employer/forge" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-zinc-900 dark:text-white transition-colors mb-8 font-mono tracking-widest uppercase">
+             <Link href="/employer/forge" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors mb-8 font-mono tracking-widest uppercase">
                 <ArrowLeft className="w-4 h-4" /> Back to Overview
              </Link>
              <h1 className="text-5xl font-black text-white uppercase tracking-tighter mb-8 flex items-center gap-4">
@@ -320,7 +320,7 @@ export default function CreateChallengePage() {
                        }`}>
                           {step > s.id ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-xs font-black">{s.id}</span>}
                        </div>
-                       <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step >= s.id ? "text-primary" : "text-muted-foreground"}`}>
+                       <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step >= s.id ? "text-primary" : "text-zinc-500"}`}>
                           {s.label}
                        </span>
                     </div>

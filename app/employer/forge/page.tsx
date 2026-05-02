@@ -125,7 +125,7 @@ export default function EmployerForgeOverview() {
                       </div>
                    </div>
                    <div className="text-4xl font-black font-mono text-white tracking-tighter mb-1">{stat.value}</div>
-                   <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black">{stat.label}</div>
+                   <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-300 font-black">{stat.label}</div>
                    <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/20 rounded-tr" />
                 </motion.div>
              ))}
@@ -149,7 +149,7 @@ export default function EmployerForgeOverview() {
              
              <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                   <thead className="bg-white/5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-black">
+                   <thead className="bg-white/10 text-[10px] uppercase tracking-[0.25em] text-zinc-300 font-black">
                       <tr>
                          <th className="px-10 py-6">Mission / Bounty</th>
                          <th className="px-10 py-6 text-center">Status</th>
@@ -184,7 +184,7 @@ export default function EmployerForgeOverview() {
                              <td className="px-10 py-10">
                                 <div className="flex flex-col">
                                    <span className="text-white font-mono text-base">{bounty.drop_time ? new Date(bounty.drop_time).toLocaleDateString() : '—'}</span>
-                                   <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-black mt-1">Inception Date</span>
+                                   <span className="text-[10px] uppercase tracking-widest text-zinc-300 font-black mt-1">Inception Date</span>
                                 </div>
                              </td>
                             <td className="px-10 py-10 text-center">
