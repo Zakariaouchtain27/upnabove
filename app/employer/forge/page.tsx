@@ -86,9 +86,13 @@ export default function EmployerForgeOverview() {
   }
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto min-h-screen text-foreground relative">
+    <div className="min-h-screen bg-[#05050a] text-white font-sans pt-24 pb-32 relative overflow-hidden">
+       {/* Background Aesthetics */}
+       <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+       <div className="glow-orb-primary -top-40 -right-40 opacity-20" />
+       <div className="glow-orb-cyan -bottom-40 -left-40 opacity-10" />
        
-       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+       <div className="max-w-7xl mx-auto px-6 relative z-10">
 
        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-10 relative z-10">
           <div>
@@ -104,84 +108,116 @@ export default function EmployerForgeOverview() {
           </Link>
        </div>
 
-       {/* Matrix Stats */}
-       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10 relative z-10">
-           {statCards.map((stat) => (
-             <div key={stat.label} className="p-5 rounded-2xl border border-black/5 dark:border-black/5 dark:border-white/5 bg-white/40 dark:bg-white/40 dark:bg-black/40 backdrop-blur-md shadow-xl hover:bg-black/5 dark:hover:bg-black/5 dark:bg-white/5 transition-colors">
-                <div className="flex items-center gap-3 mb-3">
-                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
-                      {stat.icon}
-                   </div>
-                </div>
-                <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-900 dark:text-white tracking-tight">{stat.value}</div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1 font-semibold">{stat.label}</div>
-             </div>
-          ))}
-       </div>
-
-       {/* Bounties Master Table */}
-       <div className="bg-white/40 dark:bg-white/40 dark:bg-black/40 border border-black/5 dark:border-black/5 dark:border-white/5 rounded-3xl overflow-hidden shadow-2xl relative z-10">
-          <div className="p-6 border-b border-black/5 dark:border-black/5 dark:border-white/5 bg-zinc-100 dark:bg-black/5 dark:bg-white/5 flex items-center justify-between">
-             <h2 className="text-lg font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-900 dark:text-white">Active Operations</h2>
-             <div className="font-mono text-xs text-muted-foreground">Sorted by Status</div>
-          </div>
-          
-          <div className="overflow-x-auto">
-             <table className="w-full text-sm text-left">
-                <thead className="bg-zinc-100 dark:bg-zinc-100 dark:bg-black/60 text-xs uppercase tracking-widest text-muted-foreground font-semibold">
-                   <tr>
-                      <th className="px-6 py-4">Bounty Title</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Drop Timing</th>
-                      <th className="px-6 py-4">Total Entries</th>
-                      <th className="px-6 py-4">Top AI Score</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
-                   </tr>
-                </thead>
-                <tbody className="divide-y divide-black/5 dark:divide-white/5">
-                    {bounties.map((bounty) => (
-                      <tr key={bounty.id} className="hover:bg-black/5 dark:hover:bg-black/5 dark:bg-white/5 transition-colors group">
-                         <td className="px-6 py-5">
-                             <Link href={`/employer/forge/${bounty.id}`} className="font-bold text-base text-zinc-800 dark:text-zinc-800 dark:text-gray-200 group-hover:text-primary-light transition-colors line-clamp-1">
-                                {bounty.title}
-                             </Link>
+        {/* Matrix Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 mb-12 relative z-10">
+            {statCards.map((stat, i) => (
+              <motion.div 
+                key={stat.label} 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative p-6 rounded-3xl border border-white/5 bg-white/5 backdrop-blur-xl hover:bg-white/10 transition-all duration-300"
+              >
+                 <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.color} shadow-lg transition-transform group-hover:scale-110`}>
+                       {stat.icon}
+                    </div>
+                    <div className="w-8 h-px bg-white/10" />
+                 </div>
+                 <div className="text-4xl font-black font-mono text-white tracking-tighter mb-1">{stat.value}</div>
+                 <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black">{stat.label}</div>
+                 
+                 {/* Decorative Corner */}
+                 <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/20 rounded-tr" />
+              </motion.div>
+           ))}
+                {/* Bounties Master Table */}
+        <div className="border border-white/5 bg-white/5 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-2xl relative z-10">
+           <div className="p-8 border-b border-white/5 bg-white/5 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                 <div className="w-2 h-8 bg-primary rounded-full shadow-[0_0_15px_rgba(255,111,97,0.5)]" />
+                 <div>
+                    <h2 className="text-xl font-black uppercase tracking-[0.1em] text-white">Active Operations</h2>
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Strategic Drop Monitoring</p>
+                 </div>
+              </div>
+              <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black/40 border border-white/5">
+                 <Activity className="w-4 h-4 text-primary animate-pulse" />
+                 <span className="font-mono text-[10px] text-primary tracking-widest uppercase">System Online</span>
+              </div>
+           </div>
+           
+           <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                 <thead className="bg-white/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black">
+                    <tr>
+                       <th className="px-8 py-6">Mission / Bounty</th>
+                       <th className="px-8 py-6 text-center">Status</th>
+                       <th className="px-8 py-6">Inception</th>
+                       <th className="px-8 py-6 text-center">Infiltration</th>
+                       <th className="px-8 py-6 text-right">Actions</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-white/5">
+                     {bounties.length === 0 ? (
+                        <tr>
+                           <td colSpan={5} className="px-8 py-20 text-center">
+                              <div className="flex flex-col items-center gap-4 opacity-30">
+                                 <Inbox className="w-12 h-12" />
+                                 <p className="font-mono text-sm uppercase tracking-widest">No Active Operations Detected</p>
+                              </div>
+                           </td>
+                        </tr>
+                     ) : bounties.map((bounty) => (
+                       <tr key={bounty.id} className="hover:bg-white/5 transition-all duration-300 group">
+                          <td className="px-8 py-8">
+                              <Link href={`/employer/forge/${bounty.id}`} className="block group/link">
+                                 <div className="font-black text-lg text-white group-hover/link:text-primary transition-colors leading-none mb-1">
+                                    {bounty.title}
+                                 </div>
+                                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">ID: {bounty.id.slice(0, 8)}</div>
+                              </Link>
+                           </td>
+                           <td className="px-8 py-8 text-center">
+                              <StatusBadge status={bounty.status} />
+                           </td>
+                           <td className="px-8 py-8">
+                              <div className="flex flex-col">
+                                 <span className="text-white font-mono text-sm">{bounty.drop_time ? new Date(bounty.drop_time).toLocaleDateString() : '—'}</span>
+                                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-black mt-1">Drop Date</span>
+                              </div>
+                           </td>
+                          <td className="px-8 py-8 text-center">
+                             <div className="inline-flex flex-col items-center px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                <span className="text-emerald-400 font-black text-xl font-mono">{bounty.entries || 0}</span>
+                                <span className="text-[9px] uppercase tracking-widest text-emerald-500/60 font-black">Entries</span>
+                             </div>
                           </td>
-                          <td className="px-6 py-5">
-                             <StatusBadge status={bounty.status} />
+                          <td className="px-8 py-8">
+                             <div className="flex items-center justify-end gap-3">
+                                <Link href={`/employer/forge/${bounty.id}`} className="p-3 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:border-primary/50 transition-all shadow-sm" title="View War Room">
+                                   <Eye className="w-4 h-4" />
+                                </Link>
+                                {bounty.status === 'draft' && (
+                                   <Link href={`/employer/forge/create?id=${bounty.id}`} className="p-3 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:border-primary/50 transition-all shadow-sm" title="Edit Draft">
+                                      <FileEdit className="w-4 h-4" />
+                                   </Link>
+                                )}
+                                <button className="p-3 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:border-primary/50 transition-all shadow-sm" title="Duplicate">
+                                   <Copy className="w-4 h-4" />
+                                </button>
+                                <button className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/20 transition-all shadow-sm" title="Terminate Operation">
+                                   <Trash2 className="w-4 h-4" />
+                                </button>
+                             </div>
                           </td>
-                          <td className="px-6 py-5 font-mono text-muted-foreground">
-                             {bounty.drop_time ? new Date(bounty.drop_time).toLocaleDateString() : '—'}
-                          </td>
-                         <td className="px-6 py-5 font-mono">
-                            <span className="text-emerald-400 font-bold">{bounty.entries}</span>
-                         </td>
-                         <td className="px-6 py-5 font-mono text-muted-foreground">
-                            {bounty.top_score}
-                         </td>
-                         <td className="px-6 py-5">
-                            <div className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                               <Link href={`/employer/forge/${bounty.id}`} className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-black/10 dark:bg-white/10 text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white transition-colors" title="View War Room">
-                                  <Eye className="w-4 h-4" />
-                               </Link>
-                               {bounty.status === 'draft' && (
-                                  <button className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-black/10 dark:bg-white/10 text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white transition-colors" title="Edit Draft">
-                                     <FileEdit className="w-4 h-4" />
-                                  </button>
-                               )}
-                               <button className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-black/10 dark:bg-white/10 text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-900 dark:text-white transition-colors" title="Duplicate">
-                                  <Copy className="w-4 h-4" />
-                               </button>
-                               <button className="p-2 rounded-lg hover:bg-rose-500/20 text-muted-foreground hover:text-rose-500 transition-colors" title="Cancel/Delete">
-                                  <Trash2 className="w-4 h-4" />
-                               </button>
-                            </div>
-                         </td>
-                      </tr>
-                   ))}
-                </tbody>
-             </table>
-          </div>
-       </div>
+                       </tr>
+                     ))}
+                 </tbody>
+              </table>
+           </div>
+        </div>
+   </div>
 
     </div>
   );
