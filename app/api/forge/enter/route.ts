@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
            id: user.id,
            first_name: firstName,
            last_name: lastName,
-           email: user.email,
+           email: user.email || "",
            is_public: true
-        })
+        } as any)
         .select('id')
         .single();
 
