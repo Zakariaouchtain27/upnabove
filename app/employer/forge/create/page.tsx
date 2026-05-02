@@ -187,8 +187,18 @@ export default function CreateChallengePage() {
   };
 
   const handleCheckout = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+    addToast("Initiating orbital drop sequence...", "info");
+    
     try {
+       const supabase = createClient();
+       const { data: { user } } = await supabase.auth.getUser();
+       
+       if (!user) {
+         throw new Error("Authentication session lost. Please log in again.");
+       }
+
        // Only execute Lemon Squeezy integration if Sponsored Toggle is ON
        if (formData.is_sponsored) {
            const checkoutRes = await fetch("/api/forge/sponsor/checkout", {
@@ -203,11 +213,8 @@ export default function CreateChallengePage() {
            
            // Mimic sending them to Stripe/Lemon Squeezy by waiting
            // and instead immediately inserting directly here for mock purposes.
-           const supabase = createClient();
-           const { data: { user } } = await supabase.auth.getUser();
-           
            const insertData = {
-              employer_id: user?.id || null, 
+              employer_id: user.id, 
               title: formData.title || "The Arena Challenge",
               description: formData.description || "Survive the brief.",
               challenge_type: formData.challenge_type,
@@ -227,7 +234,7 @@ export default function CreateChallengePage() {
            };
 
            const { error } = await supabase.from('forge_challenges').insert(insertData);
-           if (error) throw new Error(error.message);
+           if (error) throw new Error(`Database error: ${error.message}`);
 
            addToast("Sponsorship Paid + Drop is scheduled via Lemon Squeezy!", "success");
            router.push(checkoutData.checkoutUrl);
@@ -235,10 +242,8 @@ export default function CreateChallengePage() {
        }
 
        // Otherwise standard 'Free' push to supabase
-       const supabase = createClient();
-       const { data: { user } } = await supabase.auth.getUser();
        const insertData = {
-          employer_id: user?.id || null, 
+          employer_id: user.id, 
           title: formData.title,
           description: formData.description,
           challenge_type: formData.challenge_type,
@@ -254,14 +259,17 @@ export default function CreateChallengePage() {
        };
 
        const { error } = await supabase.from('forge_challenges').insert(insertData);
-       if (error) throw new Error(error.message);
+       if (error) throw new Error(`Database error: ${error.message}`);
 
        addToast("Free Standard Drop Created!", "success");
        router.push("/employer/forge");
     } catch (err: any) {
-       addToast(`Checkout failed: ${err.message}`, "error");
+       console.error("Deploy failure:", err);
+       addToast(`Deployment failed: ${err.message}`, "error");
+       setIsSubmitting(false); // Reset state so they can try again
     } finally {
-       setIsSubmitting(false);
+       // We don't necessarily set isSubmitting(false) if we are redirecting
+       // but for errors it's handled in catch.
     }
   };
 
