@@ -10,7 +10,7 @@ import {
   ArrowLeft, ArrowRight, CheckCircle2, Wand2, Palette, Code2, 
   Lightbulb, PenTool, Database, Video, Clock, Users, Trophy, 
   Target, Calendar, CreditCard, Sparkles, Loader2, AlertTriangle, Copy, BrainCircuit,
-  Megaphone, Crown, UploadCloud
+  Megaphone, Crown, UploadCloud, Flame
 } from "lucide-react";
 
 type ChallengeType = 'design' | 'code' | 'strategy' | 'writing' | 'data' | 'video';
