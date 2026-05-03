@@ -27,7 +27,7 @@ export default async function CommandCenterPage() {
   const { data: analyticsData } = await getPostingAnalytics(user.id);
 
   return (
-    <Providers>
+    <>
       <div className="min-h-screen bg-[#05050a] text-white font-sans pt-8 pb-32 relative overflow-hidden">
         {/* Background Aesthetics */}
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
@@ -70,6 +70,6 @@ export default async function CommandCenterPage() {
           </section>
         </div>
       </div>
-    </Providers>
+    </>
   );
 }
