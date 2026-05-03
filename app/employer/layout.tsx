@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Briefcase, Users, Flame, Settings } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Flame, Settings, ShieldAlert } from "lucide-react";
 
 export default function EmployerLayout({
   children,
@@ -14,6 +14,7 @@ export default function EmployerLayout({
 
   const navItems = [
     { href: "/employer", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/employer/dashboard", label: "Command Center", icon: ShieldAlert },
     { href: "/employer/jobs", label: "My Postings", icon: Briefcase },
     { href: "/employer/candidates", label: "Candidates", icon: Users },
   ];
