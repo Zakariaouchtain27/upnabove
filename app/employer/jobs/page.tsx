@@ -24,7 +24,7 @@ export default async function EmployerJobsPage() {
 
       const { data: jobPostings } = await db
         .from('jobs')
-        .select('id, title, status, location, job_type, created_at, views, is_active, applications(count)')
+        .select('id, title, location, job_type, created_at, views, is_active, applications(count)')
         .eq('employer_id', resolvedEmployerId)
         .order('created_at', { ascending: false });
 
@@ -87,8 +87,8 @@ export default async function EmployerJobsPage() {
                   <tr key={posting.id} className="border-b border-border last:border-0 hover:bg-surface-alt transition-colors">
                     <td className="px-5 py-4 font-medium text-foreground">{posting.title}</td>
                     <td className="px-5 py-4">
-                      <Badge variant={posting.status === "active" ? "success" : "warning"}>
-                        {posting.status || 'draft'}
+                      <Badge variant={posting.is_active ? "success" : "warning"}>
+                        {posting.is_active ? 'active' : 'draft'}
                       </Badge>
                     </td>
                     <td className="px-5 py-4 font-medium text-foreground">{posting.views || 0}</td>
