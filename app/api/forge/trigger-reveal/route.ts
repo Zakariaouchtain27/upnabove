@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       .select('*, candidates(first_name, email)')
       .eq('challenge_id', challengeId)
       .not('ai_score', 'is', null)
+      .not('rank', 'is', null)
       .order('rank', { ascending: true })
       .limit(3);
 

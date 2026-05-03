@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     // 3. SECURE VOTE INCREMENT & RETRIEVE NEW COUNT
-    let currentVoteCount = 1;
+    let currentVoteCount = 0;
     // Using RPC to increment if available, else manual fallback
     const { data: rpcData, error: rpcError } = await supabase.rpc('increment_vote', { row_id: entryId });
     if (rpcError) {

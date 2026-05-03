@@ -161,20 +161,23 @@ export async function submitEntry(data: {
        
        if (forgeRef) {
           // Find the referrer
-          const { data: referrer } = await supabase
+          const { data: referrer, error: referrerError } = await supabase
              .from("candidates")
              .select("id, bonus_votes")
              .eq("referral_code", forgeRef)
              .single();
-             
+
           if (referrer && referrer.id !== userId) {
              // Reward them
-             await supabase.from("candidates").update({ 
-                bonus_votes: (referrer.bonus_votes || 0) + 10 
+             await supabase.from("candidates").update({
+                bonus_votes: (referrer.bonus_votes || 0) + 10
              }).eq("id", referrer.id);
           }
-          // Delete cookie so they don't multi-trigger arbitrarily
-          cookieStore.delete("forge_ref");
+          // Only clear the cookie if the lookup succeeded (code invalid or processed).
+          // Keep it if a transient DB error occurred so the referral can be retried.
+          if (!referrerError || referrerError.code === 'PGRST116') {
+             cookieStore.delete("forge_ref");
+          }
        }
     }
 

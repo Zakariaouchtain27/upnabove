@@ -35,20 +35,11 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. Mark them all as processing atomically before starting work
-  const entryIds = batch.map(b => b.entry_id).filter(Boolean) as string[];
+  const queueIds = batch.map(b => b.id);
   await supabase
     .from("forge_scoring_queue")
-    .update({ status: "processing", attempts: 99 }) // temporary sentinel
-    .in("entry_id", entryIds);
-
-  // Reset attempts properly per row
-  for (const item of batch) {
-    if (!item.entry_id) continue;
-    await supabase
-      .from("forge_scoring_queue")
-      .update({ attempts: 1 })
-      .eq("entry_id", item.entry_id);
-  }
+    .update({ status: "processing", attempts: 1 })
+    .in("id", queueIds);
 
   // 4. Fire each scoring request sequentially (Claude latency ~3–8s per entry → ~80s max)
   const results: { entryId: string; ok: boolean; score?: number; error?: string }[] = [];

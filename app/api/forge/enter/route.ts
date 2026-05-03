@@ -60,9 +60,20 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (candError) {
-        return NextResponse.json({ error: "Failed to initialize candidate profile: " + candError.message }, { status: 500 });
+        if (candError.code === '23505') {
+          // Concurrent request already created the profile — re-fetch it
+          const { data: existing } = await supabase.from('candidates').select('id').eq('id', user.id).single();
+          if (existing) {
+            candidate = existing;
+          } else {
+            return NextResponse.json({ error: "Failed to initialize candidate profile." }, { status: 500 });
+          }
+        } else {
+          return NextResponse.json({ error: "Failed to initialize candidate profile: " + candError.message }, { status: 500 });
+        }
+      } else {
+        candidate = newCandidate;
       }
-      candidate = newCandidate;
     }
 
     // 3. Check if candidate already has an entry

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const { data: leaderProfile, error: candidateError } = await supabase
        .from('candidates')
        .select('id')
-       .eq('user_id', user.id)
+       .eq('id', user.id)
        .single();
 
     if (candidateError || !leaderProfile) {

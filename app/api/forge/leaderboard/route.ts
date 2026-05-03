@@ -64,7 +64,7 @@ export async function GET(request: Request) {
             vote_count: Math.round(item.totalScore / item.count),
             ai_score: Math.round(item.totalAiScore / item.count),
             squad_id: item.id,
-            preview: item.entries.find((i: any) => i.submission_text)?.submission_text?.substring(0, 100) + "..." || null
+            preview: item.entries.find((i: any) => i.submission_text)?.submission_text?.substring(0, 100)?.concat("...") ?? null
          };
       }
       return item;
