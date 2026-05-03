@@ -86,7 +86,7 @@ export async function semanticCandidateSearch(searchQuery: string, threshold: nu
     // Fallback: Check if the RPC exists by attempting to call it.
     // Note: If the RPC is not deployed, this will fail. We'll handle it gracefully.
     const dummyEmbedding = Array(1536).fill(0).map(() => Math.random() * 0.01);
-    const { data: matches, error } = await db.rpc('match_candidates', {
+    const { data: matches, error } = await db.rpc('match_candidates' as any, {
       query_embedding: dummyEmbedding,
       match_threshold: threshold,
       match_count: 20
@@ -108,7 +108,7 @@ export async function semanticCandidateSearch(searchQuery: string, threshold: nu
       }
 
       // Add a simulated similarity score to the fallback results
-      const mapped = (fallbackCandidates || []).map(c => ({
+      const mapped = (fallbackCandidates || []).map((c: any) => ({
         ...c,
         similarity: (Math.random() * 0.4 + 0.5).toFixed(2) // Simulate 50-90% match
       }));
