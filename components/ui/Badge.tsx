@@ -1,6 +1,6 @@
 import React from "react";
 
-type BadgeVariant = "default" | "primary" | "success" | "warning" | "danger" | "outline";
+type BadgeVariant = "default" | "primary" | "success" | "warning" | "danger" | "outline" | "violet";
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -9,23 +9,26 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-surface-alt text-foreground",
-  primary: "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300",
-  success: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  warning: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  danger: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-  outline: "border border-border text-muted",
+  default:  "bg-zinc-800 text-zinc-300 border border-zinc-700",
+  primary:  "bg-violet-500/15 text-violet-300 border border-violet-500/25",
+  violet:   "bg-violet-500/15 text-violet-300 border border-violet-500/25",
+  success:  "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
+  warning:  "bg-amber-500/15 text-amber-400 border border-amber-500/25",
+  danger:   "bg-red-500/15 text-red-400 border border-red-500/25",
+  outline:  "bg-transparent text-zinc-400 border border-zinc-700",
 };
 
-export default function Badge({
-  variant = "default",
-  children,
-  className = "",
-}: BadgeProps) {
+export default function Badge({ variant = "default", children, className = "" }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-        ${variantStyles[variant]} ${className}`}
+      className={`
+        inline-flex items-center gap-1
+        px-2 py-0.5
+        rounded-md
+        text-xs font-medium tracking-tight
+        ${variantStyles[variant]}
+        ${className}
+      `}
     >
       {children}
     </span>
