@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +8,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Title and description are required." }, { status: 400 });
     }
 
-    if (!client) {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
       return NextResponse.json({ error: "AI features not configured." }, { status: 503 });
     }
 
@@ -23,13 +21,28 @@ ${requirements ? `Key Requirements: ${requirements}` : ""}
 Current Description:
 ${description}`;
 
-    const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
-      messages: [{ role: "user", content: prompt }],
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 600,
+        messages: [{ role: "user", content: prompt }],
+      }),
     });
 
-    const improved = message.content[0].type === "text" ? message.content[0].text.trim() : null;
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[Improve Description] Anthropic API error:", err);
+      return NextResponse.json({ error: "AI service error." }, { status: 502 });
+    }
+
+    const data = await res.json();
+    const improved = data.content?.[0]?.type === "text" ? data.content[0].text.trim() : null;
 
     if (!improved) {
       return NextResponse.json({ error: "AI returned an empty response." }, { status: 500 });
