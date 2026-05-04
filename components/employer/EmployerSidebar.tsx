@@ -3,15 +3,16 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  Users, 
-  Inbox, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  Users,
+  Inbox,
+  Settings,
   LogOut,
   Flame,
-  ChevronDown
+  ChevronDown,
+  BarChart3
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
@@ -33,6 +34,7 @@ export default function EmployerSidebar() {
 
   const navItems = [
     { href: "/employer", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/employer/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/employer/candidates", label: "Talent Search", icon: Users },
     { href: "/employer/jobs", label: "Bounties & Jobs", icon: Briefcase },
     { href: "/employer/applications", label: "Applications", icon: Inbox },

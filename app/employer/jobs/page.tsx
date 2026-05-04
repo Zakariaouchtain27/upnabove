@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Plus, Inbox } from "lucide-react";
+import { Plus, Inbox, BarChart3 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
+import RepostButton from "@/components/employer/RepostButton";
 
 export const metadata: Metadata = {
   title: "My Postings — UpnAbove",
@@ -19,45 +20,31 @@ export default async function EmployerJobsPage() {
   let postings: any[] = [];
 
   if (user) {
-    try {
-      const resolvedEmployerId = user.id;
-
-      const { data: jobPostings } = await db
-        .from('jobs')
-        .select('id, title, location, job_type, created_at, views, is_active, applications(count)')
-        .eq('employer_id', resolvedEmployerId)
-        .order('created_at', { ascending: false });
-
-      postings = jobPostings || [];
-    } catch (err) {
-      console.error('Unexpected error fetching jobs:', err);
-    }
+    const { data: jobPostings } = await db
+      .from('jobs')
+      .select('id, title, location, job_type, created_at, views, is_active, applications(count)')
+      .eq('employer_id', user.id)
+      .order('created_at', { ascending: false });
+    postings = jobPostings || [];
   }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            My Postings
-          </h1>
-          <p className="mt-1 text-muted">
-            Manage your open roles and job listings
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">My Postings</h1>
+          <p className="mt-1 text-muted">Manage your open roles and job listings.</p>
         </div>
         <Link href="/employer/jobs/create">
           <Button className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Post a Job
+            <Plus className="w-4 h-4" /> Post a Job
           </Button>
         </Link>
       </div>
 
       <div className="rounded-2xl border border-border bg-background overflow-hidden">
         <div className="p-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
-            All Job Postings
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground">All Job Postings</h2>
         </div>
 
         {postings.length === 0 ? (
@@ -65,9 +52,7 @@ export default async function EmployerJobsPage() {
             <Inbox className="w-12 h-12 text-muted mb-4" />
             <h3 className="text-lg font-bold text-foreground mb-1">No postings yet</h3>
             <p className="text-sm text-muted max-w-sm">Create your first job posting to start attracting top talent.</p>
-            <Link href="/employer/jobs/create" className="mt-4">
-              <Button>Create Posting</Button>
-            </Link>
+            <Link href="/employer/jobs/create" className="mt-4"><Button>Create Posting</Button></Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -79,7 +64,7 @@ export default async function EmployerJobsPage() {
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Views</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Applicants</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Posted</th>
-                  <th className="text-right px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Action</th>
+                  <th className="text-right px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -91,15 +76,21 @@ export default async function EmployerJobsPage() {
                         {posting.is_active ? 'active' : 'draft'}
                       </Badge>
                     </td>
-                    <td className="px-5 py-4 font-medium text-foreground">{posting.views || 0}</td>
-                    <td className="px-5 py-4 font-medium text-foreground">{posting.applications?.[0]?.count || 0}</td>
+                    <td className="px-5 py-4 font-mono text-foreground">{(posting.views || 0).toLocaleString()}</td>
+                    <td className="px-5 py-4 font-mono text-foreground">{posting.applications?.[0]?.count || 0}</td>
                     <td className="px-5 py-4 text-muted">{new Date(posting.created_at).toLocaleDateString()}</td>
-                    <td className="px-5 py-4 text-right">
-                      <Link href={`/employer/jobs/${posting.id}/applications`}>
-                        <Button variant="outline" size="sm">
-                          View Applications
-                        </Button>
-                      </Link>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/employer/jobs/${posting.id}/analytics`}>
+                          <Button variant="outline" size="sm" className="gap-1.5">
+                            <BarChart3 className="w-3.5 h-3.5" /> Analytics
+                          </Button>
+                        </Link>
+                        <Link href={`/employer/jobs/${posting.id}/applications`}>
+                          <Button variant="outline" size="sm">Applications</Button>
+                        </Link>
+                        <RepostButton jobId={posting.id} />
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Inbox, FileText, Mail, Search, X } from "lucide-react";
+import { Inbox, FileText, Mail, Search, X, GitCompare, Zap } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import CandidateCompare from "@/components/employer/CandidateCompare";
 
 interface Candidate {
   id: string;
@@ -21,15 +22,13 @@ interface Application {
   created_at: string;
   employer_viewed: boolean | null;
   candidates: Candidate | null;
+  forgeScore?: { finalScore: number; rank: number | null } | null;
 }
 
-interface ApplicationsClientProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  applications: any[];
-}
-
-export default function ApplicationsClient({ applications }: ApplicationsClientProps) {
+export default function ApplicationsClient({ applications }: { applications: Application[] }) {
   const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return applications;
@@ -37,41 +36,60 @@ export default function ApplicationsClient({ applications }: ApplicationsClientP
     return applications.filter((app) => {
       const cand = app.candidates;
       if (!cand) return false;
-      const inName = `${cand.first_name} ${cand.last_name}`.toLowerCase().includes(lower);
-      const inEmail = cand.email?.toLowerCase().includes(lower);
-      const inCv = cand.cv_text?.toLowerCase().includes(lower);
-      return inName || inEmail || inCv;
+      return (
+        `${cand.first_name} ${cand.last_name}`.toLowerCase().includes(lower) ||
+        cand.email?.toLowerCase().includes(lower) ||
+        cand.cv_text?.toLowerCase().includes(lower)
+      );
     });
   }, [applications, query]);
 
   const hasQuery = query.trim().length > 0;
 
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else if (next.size < 3) { next.add(id); }
+      return next;
+    });
+  };
+
+  const selectedApps = applications.filter(a => selected.has(a.id));
+
   return (
     <div>
-      {/* Search bar */}
-      <div className="mb-6 relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder='Search CVs by keyword, skill, or name… e.g. "React", "Python", "Oxford"'
-          className="w-full pl-11 pr-10 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
-        />
-        {hasQuery && (
-          <button
-            onClick={() => setQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+      {/* Search + compare bar */}
+      <div className="mb-5 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Search by name, skill, or keyword… e.g. "React", "Python"'
+            className="w-full pl-11 pr-10 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all"
+          />
+          {hasQuery && (
+            <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        {selected.size >= 2 && (
+          <Button onClick={() => setCompareOpen(true)} className="gap-2 shrink-0">
+            <GitCompare className="w-4 h-4" /> Compare {selected.size}
+          </Button>
         )}
       </div>
 
       {hasQuery && (
         <p className="text-sm text-muted mb-4">
-          Found <span className="font-semibold text-foreground">{filtered.length}</span> of {applications.length} candidates matching &quot;<span className="text-primary">{query}</span>&quot;
+          Found <span className="font-semibold text-foreground">{filtered.length}</span> of {applications.length} matching &quot;<span className="text-primary">{query}</span>&quot;
         </p>
+      )}
+
+      {selected.size > 0 && (
+        <p className="text-xs text-muted mb-3 font-mono">{selected.size}/3 selected for comparison</p>
       )}
 
       <div className="rounded-2xl border border-border bg-background overflow-hidden">
@@ -82,9 +100,7 @@ export default function ApplicationsClient({ applications }: ApplicationsClientP
               {hasQuery ? "No matching candidates" : "No applications yet"}
             </h3>
             <p className="text-sm text-muted max-w-sm">
-              {hasQuery
-                ? `No CVs contain "${query}". Try a different keyword.`
-                : "Share your job posting to start receiving candidates."}
+              {hasQuery ? `No CVs match "${query}".` : "Share your job posting to start receiving candidates."}
             </p>
           </div>
         ) : (
@@ -92,10 +108,12 @@ export default function ApplicationsClient({ applications }: ApplicationsClientP
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface/50">
+                  <th className="px-4 py-3 w-10" />
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Candidate</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Applied On</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Applied</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Status</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">CV Search</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Forge Score</th>
+                  <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">CV Match</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Contact</th>
                   <th className="text-right px-5 py-3 text-xs font-medium text-muted uppercase tracking-wider">Action</th>
                 </tr>
@@ -104,73 +122,81 @@ export default function ApplicationsClient({ applications }: ApplicationsClientP
                 {filtered.map((app) => {
                   const cand = app.candidates;
                   if (!cand) return null;
+                  const isSelected = selected.has(app.id);
 
-                  // Highlight the matched keyword in the CV snippet
                   let snippet: string | null = null;
                   if (hasQuery && cand.cv_text) {
                     const idx = cand.cv_text.toLowerCase().indexOf(query.toLowerCase());
                     if (idx !== -1) {
                       const start = Math.max(0, idx - 40);
                       const end = Math.min(cand.cv_text.length, idx + query.length + 40);
-                      const before = cand.cv_text.slice(start, idx);
-                      const match = cand.cv_text.slice(idx, idx + query.length);
-                      const after = cand.cv_text.slice(idx + query.length, end);
-                      snippet = `${start > 0 ? "…" : ""}${before}[[${match}]]${after}${end < cand.cv_text.length ? "…" : ""}`;
+                      snippet = `${start > 0 ? "…" : ""}${cand.cv_text.slice(start, idx)}[[${cand.cv_text.slice(idx, idx + query.length)}]]${cand.cv_text.slice(idx + query.length, end)}${end < cand.cv_text.length ? "…" : ""}`;
                     }
                   }
 
                   return (
-                    <tr key={app.id} className="border-b border-border last:border-0 hover:bg-surface-alt transition-colors">
+                    <tr key={app.id} className={`border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-primary/5' : 'hover:bg-surface-alt'}`}>
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelect(app.id)}
+                          disabled={!isSelected && selected.size >= 3}
+                          className="w-4 h-4 accent-primary cursor-pointer"
+                        />
+                      </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary font-bold dark:bg-primary-900/30">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
                             {cand.first_name?.[0]}{cand.last_name?.[0]}
                           </div>
                           <div>
                             <p className="font-medium text-foreground">{cand.first_name} {cand.last_name}</p>
                             {app.employer_viewed && (
-                              <Badge variant="default" className="text-[10px] px-1.5 py-0 mt-0.5">Viewed</Badge>
+                              <Badge variant="default" className="text-[9px] px-1.5 py-0 mt-0.5">Viewed</Badge>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-muted">{new Date(app.created_at).toLocaleDateString()}</td>
+                      <td className="px-5 py-4 text-muted text-xs">{new Date(app.created_at).toLocaleDateString()}</td>
                       <td className="px-5 py-4">
-                        <Badge variant="primary" className="capitalize">
-                          {app.status || 'applied'}
-                        </Badge>
+                        <Badge variant="primary" className="capitalize">{app.status || 'applied'}</Badge>
+                      </td>
+                      <td className="px-5 py-4">
+                        {app.forgeScore ? (
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                            <Zap className="w-3 h-3 text-amber-400" />
+                            <span className="text-xs font-black text-amber-400">{app.forgeScore.finalScore}/100</span>
+                            {app.forgeScore.rank && <span className="text-[9px] text-amber-400/70">#{app.forgeScore.rank}</span>}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted/40 font-mono">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-4 max-w-xs">
                         {snippet ? (
                           <p className="text-xs text-muted leading-relaxed">
                             {snippet.split("[[").map((part, i) => {
                               if (i === 0) return <span key={i}>{part}</span>;
-                              const [highlighted, rest] = part.split("]]");
-                              return (
-                                <span key={i}>
-                                  <mark className="bg-primary/20 text-primary rounded px-0.5">{highlighted}</mark>
-                                  {rest}
-                                </span>
-                              );
+                              const [hl, rest] = part.split("]]");
+                              return <span key={i}><mark className="bg-primary/20 text-primary rounded px-0.5">{hl}</mark>{rest}</span>;
                             })}
                           </p>
                         ) : cand.cv_text ? (
                           <span className="text-xs text-muted/50 italic">CV indexed ✓</span>
                         ) : (
-                          <span className="text-xs text-muted/40 italic">Not yet indexed</span>
+                          <span className="text-xs text-muted/40 italic">Not indexed</span>
                         )}
                       </td>
                       <td className="px-5 py-4">
-                        <a href={`mailto:${cand.email}`} className="text-muted hover:text-primary transition-colors flex items-center gap-1.5">
-                          <Mail className="w-4 h-4" />
-                          Email
+                        <a href={`mailto:${cand.email}`} className="text-muted hover:text-primary transition-colors flex items-center gap-1.5 text-xs">
+                          <Mail className="w-4 h-4" /> Email
                         </a>
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link href={`/employer/applications/${app.id}`}>
-                          <Button variant={app.employer_viewed ? "outline" : "primary"} size="sm" className="gap-2">
-                            <FileText className="w-4 h-4" />
-                            View CV
+                          <Button variant={app.employer_viewed ? "outline" : "primary"} size="sm" className="gap-1.5">
+                            <FileText className="w-3.5 h-3.5" /> View CV
                           </Button>
                         </Link>
                       </td>
@@ -182,6 +208,12 @@ export default function ApplicationsClient({ applications }: ApplicationsClientP
           </div>
         )}
       </div>
+
+      <CandidateCompare
+        isOpen={compareOpen}
+        onClose={() => setCompareOpen(false)}
+        applications={selectedApps}
+      />
     </div>
   );
 }
