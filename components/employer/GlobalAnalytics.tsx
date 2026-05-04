@@ -11,8 +11,8 @@ import { Eye, Users, Percent, Clock, TrendingUp, Activity, BarChart3, ArrowUpRig
 interface FunnelStage { stage: string; count: number; color: string; }
 interface TrendPoint { date: string; applications: number; }
 interface JobRow {
-  id: string; title: string; job_type: string; views: number;
-  applications: number; conversionRate: number; is_active: boolean | null; created_at: string;
+  id: string; title: string | null; job_type: string | null; views: number;
+  applications: number; conversionRate: number; is_active: boolean | null; created_at: string | null;
 }
 
 interface GlobalAnalyticsProps {
