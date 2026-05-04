@@ -34,14 +34,14 @@ export async function getPostingAnalytics(employerId: string, days: number = 14)
 
     // Time-to-hire: avg days from job created_at to first hired application
     const jobCreatedMap: Record<string, string> = {};
-    (jobs || []).forEach(j => { jobCreatedMap[j.id] = j.created_at; });
+    (jobs || []).forEach(j => { jobCreatedMap[j.id] = j.created_at ?? ''; });
     const hiredApps = allApps.filter(a => a.status === 'hired');
     let avgDaysToHire: number | null = null;
     if (hiredApps.length > 0) {
       const totalDays = hiredApps.reduce((sum, a) => {
-        const posted = jobCreatedMap[a.job_id];
+        const posted = a.job_id ? jobCreatedMap[a.job_id] : undefined;
         if (!posted) return sum;
-        return sum + Math.round((new Date(a.created_at).getTime() - new Date(posted).getTime()) / 86400000);
+        return sum + Math.round((new Date(a.created_at ?? '').getTime() - new Date(posted).getTime()) / 86400000);
       }, 0);
       avgDaysToHire = Math.round(totalDays / hiredApps.length);
     }
@@ -57,6 +57,7 @@ export async function getPostingAnalytics(employerId: string, days: number = 14)
       trendMap[key] = { applications: 0 };
     }
     allApps.forEach(app => {
+      if (!app.created_at) return;
       const d = new Date(app.created_at);
       if (d >= cutoff) {
         const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -128,6 +129,7 @@ export async function getJobAnalytics(jobId: string, employerId: string) {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 14);
     allApps.forEach(app => {
+      if (!app.created_at) return;
       const d = new Date(app.created_at);
       if (d >= cutoff) {
         const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
