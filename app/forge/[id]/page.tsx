@@ -125,20 +125,19 @@ export default async function ChallengeDetailPage({
   };
 
   return (
-    <div className="layout-wrapper relative z-10 bg-[#05050a] text-white min-h-screen forge-theme">
-      
+    <div className="relative z-10 min-h-screen">
       {/* Background Orbs */}
-      <div className="glow-orb-primary top-[10%] left-[-10%] opacity-20 pointer-events-none" />
+      <div className="glow-orb-primary top-[10%] left-[-10%] opacity-15 pointer-events-none" />
       <div className="glow-orb-cyan bottom-[20%] right-[-10%] opacity-10 pointer-events-none" />
 
       <section className="section-container mt-8 relative z-10 2xl:max-w-[1200px]">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground mb-8">
-           <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-           <span>/</span>
-           <Link href="/forge" className="hover:text-primary transition-colors">The Forge</Link>
-           <span>/</span>
-           <span className="text-gray-900 dark:text-white drop-shadow-sm">{challenge.title}</span>
+        <nav className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-600 mb-8">
+           <Link href="/" className="hover:text-violet-400 transition-colors">Home</Link>
+           <span className="text-zinc-800">/</span>
+           <Link href="/forge" className="hover:text-violet-400 transition-colors">The Forge</Link>
+           <span className="text-zinc-800">/</span>
+           <span className="text-zinc-400">{challenge.title}</span>
         </nav>
 
         {/* State Router */}

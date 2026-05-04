@@ -34,10 +34,10 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Views", value: views.toLocaleString(), icon: Eye, color: "text-violet-400", bg: "bg-violet-500/10" },
-          { label: "Applications", value: applications.length.toLocaleString(), icon: Users, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-          { label: "Conversion", value: `${conversionRate}%`, icon: TrendingUp, color: "text-amber-400", bg: "bg-amber-500/10" },
-          { label: "Hired", value: (applications as any[]).filter((a: any) => a.status === 'hired').length.toString(), icon: BarChart3, color: "text-blue-400", bg: "bg-blue-500/10" },
+          { label: "Total Views",  value: views.toLocaleString(),                                                      icon: Eye,        color: "text-violet-400",  bg: "bg-violet-500/10"  },
+          { label: "Applications", value: applications.length.toLocaleString(),                                         icon: Users,      color: "text-emerald-400", bg: "bg-emerald-500/10" },
+          { label: "Conversion",   value: `${conversionRate}%`,                                                         icon: TrendingUp, color: "text-amber-400",   bg: "bg-amber-500/10"   },
+          { label: "Hired",        value: (applications as any[]).filter((a: any) => a.status === 'hired').length.toString(), icon: BarChart3, color: "text-blue-400", bg: "bg-blue-500/10" },
         ].map((kpi, i) => (
           <div key={i} className="p-5 rounded-2xl border border-border bg-background">
             <div className="flex items-start justify-between">
@@ -84,9 +84,9 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
                   <p className="text-xs text-muted mt-0.5">{app.created_at ? new Date(app.created_at).toLocaleDateString() : '—'}</p>
                 </div>
                 <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full ${
-                  app.status === 'hired' ? 'bg-emerald-500/10 text-emerald-500' :
-                  app.status === 'interviewing' ? 'bg-blue-500/10 text-blue-400' :
-                  app.status === 'reviewing' ? 'bg-amber-500/10 text-amber-400' :
+                  app.status === 'hired'        ? 'bg-emerald-500/10 text-emerald-500' :
+                  app.status === 'interviewing' ? 'bg-blue-500/10 text-blue-400'      :
+                  app.status === 'reviewing'    ? 'bg-amber-500/10 text-amber-400'    :
                   'bg-zinc-500/10 text-zinc-400'
                 }`}>
                   {app.status || 'pending'}

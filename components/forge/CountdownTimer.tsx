@@ -3,123 +3,102 @@
 import React, { useState, useEffect } from "react";
 
 interface CountdownTimerProps {
-  targetTime: string; // ISO string
-  size?: 'sm' | 'md' | 'lg';
+  targetTime: string | null;
+  size?: "sm" | "md" | "lg";
   onExpire?: () => void;
-  type?: 'live' | 'scheduled'; // purely for labeling context if needed externally, but here we just render numbers
 }
 
-export function CountdownTimer({ targetTime, size = 'md', onExpire, type = 'live' }: CountdownTimerProps) {
+export function CountdownTimer({ targetTime, size = "md", onExpire }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState({ hours: "00", minutes: "00", seconds: "00" });
-  const [status, setStatus] = useState<'normal' | 'orange' | 'red' | 'flashing' | 'expired'>('normal');
+  const [urgency, setUrgency] = useState<"normal" | "warning" | "critical" | "expired">("normal");
 
   useEffect(() => {
+    if (!targetTime) {
+      setUrgency("expired");
+      return;
+    }
+
     const target = new Date(targetTime).getTime();
-    let expiredTriggered = false;
+    let expiredFired = false;
 
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const difference = target - now;
+    const tick = () => {
+      const diff = target - Date.now();
 
-      if (difference <= 0) {
+      if (diff <= 0) {
         setTimeLeft({ hours: "00", minutes: "00", seconds: "00" });
-        setStatus('expired');
-        if (!expiredTriggered && onExpire) {
-           expiredTriggered = true;
-           onExpire();
+        setUrgency("expired");
+        if (!expiredFired) {
+          expiredFired = true;
+          onExpire?.();
         }
         return;
       }
 
-      const h = Math.floor(difference / (1000 * 60 * 60));
-      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((difference % (1000 * 60)) / 1000);
+      const h = Math.floor(diff / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const s = Math.floor((diff % 60_000) / 1_000);
 
       setTimeLeft({
-        hours: h.toString().padStart(2, '0'),
-        minutes: m.toString().padStart(2, '0'),
-        seconds: s.toString().padStart(2, '0')
+        hours:   h.toString().padStart(2, "0"),
+        minutes: m.toString().padStart(2, "0"),
+        seconds: s.toString().padStart(2, "0"),
       });
 
-      // Status Logic
-      if (difference <= 5 * 60 * 1000) { // < 5 mins
-        setStatus('flashing');
-      } else if (difference <= 10 * 60 * 1000) { // < 10 mins
-        setStatus('red');
-      } else if (difference <= 60 * 60 * 1000) { // < 60 mins
-        setStatus('orange');
-      } else {
-        setStatus('normal');
-      }
+      if      (diff <= 5 * 60_000)  setUrgency("critical");
+      else if (diff <= 60 * 60_000) setUrgency("warning");
+      else                          setUrgency("normal");
     };
 
-    updateTimer();
-    const timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, [targetTime, onExpire]);
 
-  // Size variations
-  const sizeClasses = {
-    sm: "text-2xl",
-    md: "text-4xl",
-    lg: "text-4xl sm:text-5xl lg:text-4xl xl:text-5xl"
-  };
+  const numSize = { sm: "text-2xl", md: "text-4xl", lg: "text-4xl sm:text-5xl" }[size];
+  const labelSize = { sm: "text-[8px]", md: "text-[10px]", lg: "text-xs" }[size];
+  const gap = { sm: "gap-1", md: "gap-2", lg: "gap-3" }[size];
 
-  const wrapperClasses = {
-    sm: "gap-1",
-    md: "gap-2",
-    lg: "gap-2 md:gap-4"
-  };
+  const numColor =
+    urgency === "expired"  ? "text-zinc-600" :
+    urgency === "critical" ? "text-red-400 animate-pulse" :
+    urgency === "warning"  ? "text-amber-400" :
+                             "text-zinc-100";
 
-  const labelClasses = {
-    sm: "text-[8px] mt-0.5",
-    md: "text-[10px] mt-1",
-    lg: "text-xs md:text-sm mt-2"
-  };
+  const glowStyle =
+    urgency === "critical" ? { filter: "drop-shadow(0 0 12px rgba(239,68,68,0.6))" } :
+    urgency === "warning"  ? { filter: "drop-shadow(0 0 10px rgba(245,158,11,0.4))" } :
+    urgency === "normal"   ? { filter: "drop-shadow(0 0 8px rgba(255,255,255,0.08))" } :
+                             {};
 
-  // Color variations
-  let colorClass = "text-white"; 
-  let dropShadow = "drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]";
-
-  if (status === 'orange') {
-      colorClass = "text-[#FF6F61] opacity-70";
-      dropShadow = "drop-shadow-[0_0_15px_rgba(255,111,97,0.3)]";
-  } else if (status === 'red') {
-      colorClass = "text-[#FF6F61] opacity-90";
-      dropShadow = "drop-shadow-[0_0_15px_rgba(255,111,97,0.6)]";
-  } else if (status === 'flashing') {
-      colorClass = "text-[#FF6F61] animate-pulse";
-      dropShadow = "drop-shadow-[0_0_20px_rgba(255,111,97,1)]";
-  } else if (status === 'expired') {
-      colorClass = "text-[#FF6F61] opacity-50";
-      dropShadow = "drop-shadow-none";
-  }
-
-  // If scheduled, it shouldn't flash red for time remaining until it's "dropping", but let's just stick to the requested logic universally.
-  if (status === 'expired') {
-      return (
-         <div className={`font-mono font-bold uppercase tracking-widest ${sizeClasses[size]} text-[#FF6F61]/50`}>
-            CLOSED
-         </div>
-      );
+  if (urgency === "expired") {
+    return (
+      <div className={`font-mono font-black uppercase tracking-widest ${numSize} text-zinc-600`}>
+        ENDED
+      </div>
+    );
   }
 
   return (
-    <div suppressHydrationWarning className={`flex items-center font-mono font-light tracking-tight ${wrapperClasses[size]} ${sizeClasses[size]} ${colorClass} ${dropShadow} transition-colors duration-1000`}>
-      <div className="flex flex-col items-center">
-        <span className="font-bold tabular-nums">{timeLeft.hours}</span>
-        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>HRS</span>
-      </div>
-      <span className="opacity-50 pb-2 md:pb-4">:</span>
-      <div className="flex flex-col items-center">
-        <span className="font-bold tabular-nums">{timeLeft.minutes}</span>
-        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>MIN</span>
-      </div>
-      <span className="opacity-50 pb-2 md:pb-4">:</span>
-      <div className="flex flex-col items-center">
-        <span className="font-bold tabular-nums">{timeLeft.seconds}</span>
-        <span className={`text-zinc-500 uppercase ${labelClasses[size]} font-black tracking-widest`}>SEC</span>
-      </div>
+    <div
+      suppressHydrationWarning
+      className={`flex items-center font-mono tracking-tight ${gap} ${numSize} ${numColor} transition-colors duration-700`}
+      style={glowStyle}
+    >
+      {[
+        { val: timeLeft.hours,   label: "HRS" },
+        { val: timeLeft.minutes, label: "MIN" },
+        { val: timeLeft.seconds, label: "SEC" },
+      ].map(({ val, label }, i) => (
+        <React.Fragment key={label}>
+          {i > 0 && (
+            <span className="opacity-30 pb-3 text-zinc-400">:</span>
+          )}
+          <div className="flex flex-col items-center">
+            <span className="font-black tabular-nums">{val}</span>
+            <span className={`text-zinc-600 uppercase ${labelSize} font-black tracking-widest`}>{label}</span>
+          </div>
+        </React.Fragment>
+      ))}
     </div>
   );
 }
