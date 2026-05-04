@@ -12,7 +12,7 @@ interface FunnelStage { stage: string; count: number; color: string; }
 interface TrendPoint { date: string; applications: number; }
 interface JobRow {
   id: string; title: string; job_type: string; views: number;
-  applications: number; conversionRate: number; is_active: boolean; created_at: string;
+  applications: number; conversionRate: number; is_active: boolean | null; created_at: string;
 }
 
 interface GlobalAnalyticsProps {
