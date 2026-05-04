@@ -87,9 +87,12 @@ export default async function JobsPage({
   const displayJobs = jobs || [];
 
   return (
-    <div className="min-h-screen bg-background relative pt-24 px-6 sm:px-10 pb-32">
-      {/* Background Effect */}
-      <div className="glow-orb-primary fixed top-[-20%] right-[-10%] opacity-50 pointer-events-none" />
+    <div className="min-h-screen bg-transparent relative pt-24 px-6 sm:px-10 pb-32">
+      {/* Background */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
+      <div className="glow-orb-primary top-[-10%] right-[-8%] opacity-50 pointer-events-none" />
+      <div className="glow-orb-cyan bottom-[10%] left-[-8%] opacity-30 pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
 
       <div className="layout-wrapper">
         <div className="section-container">
@@ -171,7 +174,7 @@ export default async function JobsPage({
                             </div>
                              <div className="shrink-0 flex items-center">
                                 {job.source === 'adzuna' && job.external_apply_url ? (
-                                   <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-[#FF6F61] text-white text-sm font-semibold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.3)] hover:shadow-[0_0_20px_rgba(255,111,97,0.5)]">
+                                   <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-violet-700 text-white text-sm font-semibold rounded-xl hover:-translate-y-px transition-all shadow-lg shadow-violet-900/40 hover:bg-violet-600">
                                       Apply on {companyName} &rarr;
                                    </a>
                                 ) : (
