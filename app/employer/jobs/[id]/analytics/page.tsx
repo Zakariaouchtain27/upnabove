@@ -18,7 +18,8 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
   if (error || !data) notFound();
 
   const { job, applications, applicationTrend, funnel } = data;
-  const conversionRate = job.views > 0 ? ((applications.length / job.views) * 100).toFixed(1) : "0.0";
+  const views = job.views ?? 0;
+  const conversionRate = views > 0 ? ((applications.length / views) * 100).toFixed(1) : "0.0";
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -27,7 +28,7 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
           <ArrowLeft className="w-4 h-4" /> Back to Applications
         </Link>
         <h1 className="text-3xl font-black uppercase tracking-tight text-foreground flex items-center gap-3">
-          <BarChart3 className="w-7 h-7 text-primary" /> {job.title}
+          <BarChart3 className="w-7 h-7 text-primary" /> {job.title ?? 'Job Analytics'}
         </h1>
         <p className="text-sm text-muted mt-1">Per-job analytics and hiring funnel breakdown.</p>
       </div>
@@ -35,7 +36,7 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Views", value: (job.views || 0).toLocaleString(), icon: Eye, color: "text-violet-400", bg: "bg-violet-500/10" },
+          { label: "Total Views", value: views.toLocaleString(), icon: Eye, color: "text-violet-400", bg: "bg-violet-500/10" },
           { label: "Applications", value: applications.length.toLocaleString(), icon: Users, color: "text-emerald-400", bg: "bg-emerald-500/10" },
           { label: "Conversion", value: `${conversionRate}%`, icon: TrendingUp, color: "text-amber-400", bg: "bg-amber-500/10" },
           { label: "Hired", value: applications.filter((a: any) => a.status === 'hired').length.toString(), icon: BarChart3, color: "text-blue-400", bg: "bg-blue-500/10" },
