@@ -25,10 +25,7 @@ export default async function HomePage() {
 
         {/* Wordmark */}
         <div className="mb-10">
-          <h1
-            className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-zinc-50 mb-4 leading-none"
-            style={{ fontFamily: 'var(--font-syne)' }}
-          >
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-zinc-50 mb-4 leading-none">
             up<span className="text-violet-400">N</span>above
           </h1>
           <p className="text-lg sm:text-xl text-zinc-300 font-normal leading-relaxed max-w-md mx-auto">

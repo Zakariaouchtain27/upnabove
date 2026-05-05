@@ -1,15 +1,7 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
+import { Lato } from 'next/font/google';
 import { GeistMono } from 'geist/font/mono';
-import { Syne } from 'next/font/google';
 import './globals.css';
-
-const syne = Syne({
-  subsets: ['latin'],
-  weight: ['700', '800'],
-  variable: '--font-syne',
-  display: 'swap',
-});
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -17,25 +9,33 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { GlobalBackground } from '@/components/GlobalBackground';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['300', '400', '700', '900'],
+  style: ['normal', 'italic'],
+  variable: '--font-lato',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: "UpnAbove — Rise up. Find work. Go above.",
+  title: "upNabove — Rise up. Find work. Go above.",
   description:
-    "UpnAbove is a global job marketplace connecting top talent with the world's best employers. Search jobs, build your career, and go above.",
+    "upNabove is a global job marketplace connecting top talent with the world's best employers. Search jobs, build your career, and go above.",
   keywords: ["jobs", "careers", "hiring", "remote work", "job marketplace"],
   metadataBase: new URL("https://upnabove-zeta.vercel.app"),
   verification: {
     google: "_6ky2YebI_Uhfek75-H0VrlreE9bXYm4eEQtraGcasU",
   },
   openGraph: {
-    title: "UpnAbove — Rise up. Find work. Go above.",
+    title: "upNabove — Rise up. Find work. Go above.",
     description: "A global job marketplace connecting talent with opportunity.",
     url: "https://upnabove-zeta.vercel.app",
-    siteName: "UpnAbove",
+    siteName: "upNabove",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "UpnAbove — Rise up. Find work. Go above.",
+    title: "upNabove — Rise up. Find work. Go above.",
     description: "A global job marketplace connecting talent with opportunity.",
   },
 };
@@ -46,19 +46,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${GeistSans.variable} ${GeistMono.variable} ${syne.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${lato.variable} ${GeistMono.variable}`}>
       <body className="font-sans min-h-screen flex flex-col antialiased bg-transparent text-foreground transition-colors duration-300">
         <GlobalBackground />
-        
-        {/* Subtle noise texture overlay for a physical, premium feel */}
-        <div className="fixed inset-0 z-[-10] opacity-[0.04] pointer-events-none mix-blend-overlay">
-          <svg className="w-full h-full">
-            <filter id="noiseFilter">
-              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-          </svg>
-        </div>
 
         <ThemeProvider
           attribute="class"
