@@ -158,7 +158,7 @@ export default function OneClickApply({ jobId, jobTitle, hasApplied = false }: O
   return (
     <Button
       size="lg"
-      className="w-full sm:w-auto bg-[#FF6F61] text-white hover:bg-[#ff8c81] shadow-lg shadow-[#FF6F61]/30"
+      className="w-full sm:w-auto bg-violet-600 text-white hover:bg-violet-500 shadow-lg shadow-violet-900/40"
       onClick={handleApply}
       disabled={loading}
     >

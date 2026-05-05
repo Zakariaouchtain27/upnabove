@@ -1,4 +1,3 @@
-"use no memo";
 import { createClient } from "@/lib/supabase/server";
 import { GlobalFeedClient } from "./GlobalFeedClient";
 import type { Metadata } from "next";

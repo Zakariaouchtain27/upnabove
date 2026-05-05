@@ -200,7 +200,7 @@ export default async function JobDetailPage({
 
             <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-border">
               {job.source === 'adzuna' && job.external_apply_url ? (
-                 <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="w-full sm:w-auto px-6 py-3 bg-[#FF6F61] text-white text-center font-bold rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,111,97,0.4)]">
+                 <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="w-full sm:w-auto px-6 py-3 bg-violet-600 text-white text-center font-bold rounded-xl hover:bg-violet-500 hover:scale-105 transition-all shadow-lg shadow-violet-900/40">
                     Apply on {job.company_name || 'External Site'} &rarr;
                  </a>
               ) : (

@@ -39,7 +39,7 @@ export default function SubmitForgePage() {
       const { data: candidate } = await supabase.from('candidates').select('id').eq('id', user.id).single();
       if (!candidate) return router.push("/forge");
 
-      const challengeId = Array.isArray(id) ? id[0] : id as string;
+      const challengeId = Array.isArray(id) ? (id[0] ?? "") : (id ?? "");
 
       const { data: cData, error: cErr } = await supabase.from('forge_challenges').select('*').eq('id', challengeId).single();
       if (cErr || !cData) return router.push("/forge");

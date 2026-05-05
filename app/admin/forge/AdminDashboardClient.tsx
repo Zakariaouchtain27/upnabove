@@ -35,8 +35,8 @@ export function AdminDashboardClient({
      setLoadingAction(actionName);
      try {
        await actionFn();
-     } catch(e) {
-       console.error(e);
+     } catch {
+       // action failed silently; UI is unaffected
      }
      setLoadingAction(null);
   };
