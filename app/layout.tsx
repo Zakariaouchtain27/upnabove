@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Lato } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import Navbar from '@/components/Navbar';
@@ -9,11 +9,10 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { GlobalBackground } from '@/components/GlobalBackground';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-const lato = Lato({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['300', '400', '700', '900'],
-  style: ['normal', 'italic'],
-  variable: '--font-lato',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -46,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${lato.variable} ${GeistMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${GeistMono.variable}`}>
       <body className="font-sans min-h-screen flex flex-col antialiased bg-transparent text-foreground transition-colors duration-300">
         <GlobalBackground />
 
