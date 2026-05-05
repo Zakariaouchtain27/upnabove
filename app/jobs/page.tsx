@@ -21,21 +21,25 @@ export default async function JobsPage({
 
   const queryText    = (resolvedParams?.q        as string) || '';
   const locationText = (resolvedParams?.loc      as string) || '';
+  const categoryText = (resolvedParams?.category as string) || '';
   const timeText     = (resolvedParams?.time     as string) || 'any';
   const sortText     = (resolvedParams?.sort     as string) || 'recent';
 
   // Attempt to fetch real jobs
   let query = supabase
     .from('jobs')
-    .select('*, employers(company_name, company_logo_url)', { count: 'exact' });
+    .select('*, employers(company_name, company_logo_url)', { count: 'exact' })
+    .eq('is_active', true);
 
   // 1. Apply Filtering
   if (queryText) {
-    // Priority: Title match is usually more relevant than description match
-    query = query.or(`title.ilike.%${queryText}%,description.ilike.%${queryText}%`);
+    query = query.or(`title.ilike.%${queryText}%,description.ilike.%${queryText}%,category.ilike.%${queryText}%`);
   }
   if (locationText) {
     query = query.ilike('location', `%${locationText}%`);
+  }
+  if (categoryText) {
+    query = query.ilike('category', `%${categoryText}%`);
   }
   
   if (timeText !== 'any') {

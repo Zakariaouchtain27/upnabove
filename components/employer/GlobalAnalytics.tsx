@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell,
 } from "recharts";
 import { Eye, Users, Percent, Clock, TrendingUp, Activity, BarChart3, ArrowUpRight } from "lucide-react";
 
@@ -30,8 +30,9 @@ const PERIODS = [
   { label: '90d', days: 90 },
 ];
 
-export default function GlobalAnalytics({ analytics, jobPerformance }: GlobalAnalyticsProps) {
-  const [activePeriod] = useState(1); // default 30d (index 1)
+export default function GlobalAnalytics({ analytics, jobPerformance, activeDays }: GlobalAnalyticsProps & { activeDays?: number }) {
+  const router = useRouter();
+  const activePeriod = PERIODS.findIndex(p => p.days === (activeDays ?? 30));
 
   const t = analytics?.totals;
   const kpis = [
@@ -54,7 +55,11 @@ export default function GlobalAnalytics({ analytics, jobPerformance }: GlobalAna
         </div>
         <div className="flex items-center gap-1 bg-surface border border-border rounded-xl p-1">
           {PERIODS.map((p, i) => (
-            <button key={p.label} className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${i === activePeriod ? 'bg-primary text-white shadow' : 'text-muted hover:text-foreground'}`}>
+            <button
+              key={p.label}
+              onClick={() => router.push(`/employer/analytics?days=${p.days}`)}
+              className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${i === activePeriod ? 'bg-primary text-white shadow' : 'text-muted hover:text-foreground'}`}
+            >
               {p.label}
             </button>
           ))}

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 import { Plus, Inbox, BarChart3 } from "lucide-react";
 import Button from "@/components/ui/Button";

@@ -24,6 +24,12 @@ export function SearchForm() {
     if (e.key === "Enter") handleSearch();
   };
 
+  const handleQuickFilter = (tag: string) => {
+    const params = new URLSearchParams();
+    params.set("q", tag);
+    router.push("/jobs?" + params.toString());
+  };
+
   return (
     <form onSubmit={handleSearch} className="relative w-full z-20">
 
@@ -110,7 +116,7 @@ export function SearchForm() {
           <button
             key={tag}
             type="button"
-            onClick={() => { setQuery(tag); handleSearch(); }}
+            onClick={() => handleQuickFilter(tag)}
             className="px-3.5 py-1.5 rounded-full border border-zinc-700 bg-zinc-900/60 text-zinc-300 text-sm font-medium hover:border-violet-500/50 hover:text-violet-300 hover:bg-zinc-800/80 transition-all duration-150"
           >
             {tag}
