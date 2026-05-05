@@ -62,7 +62,7 @@ export default function RootLayout({
           <ToastProvider>
             <NuqsAdapter>
               <Navbar />
-              <main className="flex-grow pt-24">{children}</main>
+              <main className="flex-grow">{children}</main>
               <Footer />
             </NuqsAdapter>
           </ToastProvider>
