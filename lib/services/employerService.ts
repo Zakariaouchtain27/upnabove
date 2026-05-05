@@ -34,7 +34,7 @@ export async function getPostingAnalytics(employerId: string, days: number = 14)
 
     // Time-to-hire: avg days from job created_at to first hired application
     const jobCreatedMap: Record<string, string> = {};
-    (jobs || []).forEach(j => { jobCreatedMap[j.id] = j.created_at; });
+    (jobs || []).forEach(j => { jobCreatedMap[j.id] = j.created_at ?? ''; });
     const hiredApps = allApps.filter(a => a.status === 'hired');
     let avgDaysToHire: number | null = null;
     if (hiredApps.length > 0) {
