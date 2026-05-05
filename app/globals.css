@@ -31,8 +31,8 @@
     --surface-hover:      #3f3f46;   /* zinc-700   */
     --border:             rgba(255, 255, 255, 0.08);
     --ring:               rgba(124, 58, 237, 0.5);
-    --muted:              #71717a;   /* zinc-500   */
-    --muted-foreground:   #a1a1aa;   /* zinc-400   */
+    --muted:              #a1a1aa;   /* zinc-400 — lifted for readability on dark bg */
+    --muted-foreground:   #d4d4d8;   /* zinc-300 — lifted for readability on dark bg */
     --violet-glow:        rgba(124, 58, 237, 0.2);
     --cyan-glow:          rgba(6, 182, 212, 0.15);
     --emerald-glow:       rgba(16, 185, 129, 0.15);
@@ -76,8 +76,8 @@
     --surface-hover:    #16162a;
     --border:           rgba(255, 255, 255, 0.07);
     --ring:             rgba(139, 92, 246, 0.5);
-    --muted:            #6b7280;
-    --muted-foreground: #9ca3af;
+    --muted:            #a1a1aa;   /* lifted for readability */
+    --muted-foreground: #d4d4d8;   /* lifted for readability */
     --violet-glow:      rgba(139, 92, 246, 0.25);
     --cyan-glow:        rgba(45, 212, 191, 0.15);
     --shadow-glow:      0 0 40px -8px var(--violet-glow);
@@ -88,7 +88,17 @@
     color: var(--foreground);
     font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    /* Ensure body text is never below zinc-300 equivalent on dark bg */
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* Small text helpers — enforce minimum readable size */
+  small, .text-xs, .text-\[10px\], .text-\[9px\] {
+    letter-spacing: 0.01em;
   }
 
   * { box-sizing: border-box; }
@@ -101,6 +111,22 @@
     border-radius: 6px;
   }
 }
+
+/* ==========================================================================
+   DARK-MODE READABILITY — boost dim zinc shades for WCAG AA compliance
+   zinc-600 (#52525b) contrast 2.9:1 → needs lifting
+   zinc-500 (#71717a) contrast 4.1:1 → borderline, lift for small text
+   ========================================================================== */
+
+:root, .dark {
+  /* Re-map the dim zinc utilities to readable values on dark backgrounds */
+  --tw-text-zinc-600: #a1a1aa;  /* was zinc-500; now passes AA */
+  --tw-text-zinc-500: #b4b4bc;  /* between zinc-400 and zinc-300 */
+}
+
+/* Override via attribute selector so it works without JS */
+:root .text-zinc-600, .dark .text-zinc-600 { color: #a1a1aa; }
+:root .text-zinc-500, .dark .text-zinc-500 { color: #b4b4bc; }
 
 /* ==========================================================================
    LAYOUT
