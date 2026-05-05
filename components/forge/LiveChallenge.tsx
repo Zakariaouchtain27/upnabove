@@ -50,8 +50,8 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
           {/* Title block */}
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border bg-[#FF6F61]/10 text-[#FF6F61] border-[#FF6F61]/30 text-[10px] font-black uppercase tracking-widest">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6F61] animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/30 text-[10px] font-black uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
                 Live Arena
               </span>
               {!hasEntered && (
@@ -68,7 +68,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
             </div>
 
             {/* Accent line */}
-            <div className="h-px w-full bg-gradient-to-r from-[#FF6F61]/60 via-white/10 to-transparent" />
+            <div className="h-px w-full bg-gradient-to-r from-violet-500/60 via-white/10 to-transparent" />
 
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05] break-words forge-title-glow">
               {challenge.title}
@@ -121,7 +121,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
                 <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
                   <Users className="w-3 h-3" /> Entrants
                 </span>
-                <span className="font-black text-[#FF6F61] text-2xl font-mono">
+                <span className="font-black text-violet-400 text-2xl font-mono">
                   <LiveEntryCount challengeId={challenge.id} initialCount={challenge.entry_count} />
                 </span>
               </div>
@@ -148,12 +148,12 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
             <div className="flex items-center justify-center py-6">
               <CountdownTimer targetTime={challenge.expires_at} size="lg" />
             </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-[#FF6F61]/30 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
             <div className="px-6 py-4 space-y-3">
               <ClientActions challengeId={challenge.id} status={challenge.status} />
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-black uppercase tracking-widest text-xs bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#FF6F61]/30 transition-all text-white"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-black uppercase tracking-widest text-xs bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 transition-all text-white"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
                 Share & Rally Votes

@@ -24,7 +24,7 @@ export function CandidateTable({ candidates, currentUserId }: { candidates: any[
          
          <thead className="bg-[#1B365D]/60 border-b border-white/10">
             <tr>
-               <th className="px-6 py-4 font-bold uppercase tracking-widest text-[#FF6F61] text-xs">Rank</th>
+               <th className="px-6 py-4 font-bold uppercase tracking-widest text-violet-400 text-xs">Rank</th>
                <th className="px-6 py-4 font-bold uppercase tracking-widest text-muted-foreground text-xs">Ghost</th>
                <th className="px-6 py-4 font-bold uppercase tracking-widest text-muted-foreground text-xs text-center">Wins</th>
                <th className="px-6 py-4 font-bold uppercase tracking-widest text-muted-foreground text-xs text-center">Top 3</th>
@@ -57,15 +57,15 @@ export function CandidateTable({ candidates, currentUserId }: { candidates: any[
 
 function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate: any, isCurrentUser: boolean, pinned?: boolean }) {
   return (
-     <tr className={`transition-colors ${isCurrentUser ? (pinned ? 'bg-[#FF6F61]/20 border-t-2 border-[#FF6F61]' : 'bg-[#FF6F61]/10 hover:bg-[#FF6F61]/20') : 'hover:bg-[#1B365D]/60'}`}>
+     <tr className={`transition-colors ${isCurrentUser ? (pinned ? 'bg-violet-500/20 border-t-2 border-violet-500' : 'bg-violet-500/10 hover:bg-violet-500/20') : 'hover:bg-[#1B365D]/60'}`}>
         
         {/* Rank */}
         <td className="px-6 py-4">
            {candidate.computeRank <= 3 ? (
              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-black ${
-               candidate.computeRank === 1 ? 'bg-[#FF6F61] text-white shadow-[0_0_15px_rgba(255,111,97,0.5)]' : 
-               candidate.computeRank === 2 ? 'bg-[#FF6F61]/80 text-white' : 
-               'bg-[#FF6F61]/60 text-white'
+               candidate.computeRank === 1 ? 'bg-violet-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.5)]' :
+               candidate.computeRank === 2 ? 'bg-violet-500/80 text-white' :
+               'bg-violet-500/60 text-white'
              } shadow-sm`}>
                {candidate.computeRank}
              </span>
@@ -84,8 +84,8 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
              </div>
            )}
            <div className="flex flex-col">
-              <span className={isCurrentUser ? 'text-[#FF6F61]' : ''}>
-                {candidate.name} {isCurrentUser && <span className="text-xs uppercase bg-[#FF6F61] text-white rounded-full px-2 py-0.5 ml-1 select-none">You</span>}
+              <span className={isCurrentUser ? 'text-violet-400' : ''}>
+                {candidate.name} {isCurrentUser && <span className="text-xs uppercase bg-violet-600 text-white rounded-full px-2 py-0.5 ml-1 select-none">You</span>}
               </span>
               <span className="text-xs text-muted-foreground lg:max-w-xs truncate">{candidate.skills?.join(" • ")}</span>
            </div>
@@ -128,8 +128,8 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
                    <Award className="w-3 h-3 text-white" />
                 </div>
              ))}
-             {candidate.badges?.length > 3 && (
-                <span className="text-xs font-mono text-muted-foreground ml-1">+{candidate.badges.length - 3}</span>
+             {(candidate.badges?.length ?? 0) > 3 && (
+                <span className="text-xs font-mono text-muted-foreground ml-1">+{(candidate.badges?.length ?? 0) - 3}</span>
              )}
              {(!candidate.badges || candidate.badges.length === 0) && (
                 <span className="text-muted-foreground opacity-30 text-xs">—</span>

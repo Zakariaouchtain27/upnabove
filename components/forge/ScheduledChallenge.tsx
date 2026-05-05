@@ -44,8 +44,8 @@ export function ScheduledChallenge({ challenge }: { challenge: any }) {
         await navigator.clipboard.writeText(window.location.href);
         addToast("Link copied to clipboard. Share the hype!", "success");
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // share cancelled or unsupported
     }
   };
 
