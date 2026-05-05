@@ -79,8 +79,11 @@ export default function Navbar() {
               <path d="M4 8.5H10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="text-sm font-semibold text-zinc-100 tracking-tight">
-            UpnAbove
+          <span
+            className="text-sm font-bold text-zinc-100 tracking-tight"
+            style={{ fontFamily: 'var(--font-syne)' }}
+          >
+            up<span className="text-violet-400">N</span>above
           </span>
         </Link>
 

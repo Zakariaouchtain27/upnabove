@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Syne } from 'next/font/google';
 import './globals.css';
+
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-syne',
+  display: 'swap',
+});
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -38,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${GeistSans.variable} ${GeistMono.variable} ${syne.variable}`}>
       <body className="font-sans min-h-screen flex flex-col antialiased bg-transparent text-foreground transition-colors duration-300">
         <GlobalBackground />
         
