@@ -6,8 +6,8 @@ import {
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";
-import { HomeSearchForm } from "@/components/jobs/HomeSearchForm";
 import MockLeaderboard from "@/components/MockLeaderboard";
+import { SearchForm } from "@/components/home/SearchForm";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -86,7 +86,7 @@ export default async function HomePage() {
 
             {/* Search */}
             <ScrollReveal delay={0.32} direction="up" duration={0.7}>
-              <HomeSearchForm />
+              <SearchForm />
             </ScrollReveal>
 
           </div>
