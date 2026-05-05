@@ -1,119 +1,85 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, ArrowRight } from "lucide-react";
+import { useQueryStates, parseAsString } from "nuqs";
+import { Search, MapPin, Clock, ArrowRight } from "lucide-react";
+
+const searchParsers = {
+  q:    parseAsString.withDefault(""),
+  loc:  parseAsString.withDefault(""),
+  time: parseAsString.withDefault("any"),
+};
 
 export function HomeSearchForm() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("");
-  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  const [titleFocused, setTitleFocused] = useState(false);
-  const [locationFocused, setLocationFocused] = useState(false);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<HTMLDivElement>(null);
+  const [{ q, loc, time }, setSearch] = useQueryStates(searchParsers, { shallow: true });
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (titleRef.current && !titleRef.current.contains(e.target as Node)) setTitleFocused(false);
-      if (locationRef.current && !locationRef.current.contains(e.target as Node)) setLocationFocused(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    if (!query || query.length < 2) { setTitleSuggestions([]); return; }
-    const t = setTimeout(async () => {
-      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(query)}&type=title`);
-      const data = await res.json();
-      setTitleSuggestions(data.suggestions || []);
-    }, 250);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  useEffect(() => {
-    if (!location || location.length < 2) { setLocationSuggestions([]); return; }
-    const t = setTimeout(async () => {
-      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(location)}&type=location`);
-      const data = await res.json();
-      setLocationSuggestions(data.suggestions || []);
-    }, 300);
-    return () => clearTimeout(t);
-  }, [location]);
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (query) params.set('q', query);
-    if (location) params.set('location', location);
+    if (q)                     params.set("q",    q);
+    if (loc)                   params.set("loc",  loc);
+    if (time && time !== "any") params.set("time", time);
     router.push(`/jobs?${params.toString()}`);
   };
 
   return (
-    <form onSubmit={handleSearch} className="max-w-3xl mx-auto p-2 sm:p-3 rounded-2xl glass-surface flex flex-col sm:flex-row gap-3 ring-1 ring-ring group transition-all duration-500 hover:ring-primary-light relative z-20">
-      {/* Title */}
-      <div className="relative flex-1 flex items-center" ref={titleRef}>
-        <Search className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors z-10" />
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-3xl mx-auto p-2 sm:p-3 rounded-2xl glass-surface flex flex-col sm:flex-row gap-0 ring-1 ring-zinc-800 group hover:ring-violet-500/30 transition-all duration-300 relative z-20"
+    >
+      {/* Job Title */}
+      <div className="relative flex-1 flex items-center">
+        <Search className="absolute left-4 w-4 h-4 text-zinc-500 pointer-events-none" />
         <input
           type="text"
-          value={query}
-          onChange={e => { setQuery(e.target.value); setTitleFocused(true); }}
-          onFocus={() => setTitleFocused(true)}
+          value={q}
+          onChange={e => setSearch({ q: e.target.value })}
           placeholder="Job title, keyword, or company..."
           autoComplete="off"
-          className="w-full bg-transparent text-foreground placeholder:text-muted pl-12 pr-4 py-4 text-lg focus:outline-none"
+          className="w-full bg-transparent text-zinc-100 placeholder:text-zinc-600 pl-11 pr-4 py-4 text-sm focus:outline-none"
         />
-        {titleFocused && titleSuggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B365D] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-            <ul className="py-2">
-              {titleSuggestions.map((s, i) => (
-                <li key={i}>
-                  <button type="button" onClick={() => { setQuery(s); setTitleFocused(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-white/10 hover:text-[#FF6F61] transition-colors flex items-center gap-2">
-                    <Search className="w-4 h-4 text-muted shrink-0" /> {s}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
 
-      <div className="hidden sm:block w-px h-10 bg-border self-center" />
+      <div className="hidden sm:block w-px bg-zinc-800 self-stretch my-2" />
 
       {/* Location */}
-      <div className="relative flex-1 flex items-center border-t border-border sm:border-t-0" ref={locationRef}>
-        <MapPin className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors z-10" />
+      <div className="relative flex-1 flex items-center border-t border-zinc-800 sm:border-t-0">
+        <MapPin className="absolute left-4 w-4 h-4 text-zinc-500 pointer-events-none" />
         <input
           type="text"
-          value={location}
-          onChange={e => { setLocation(e.target.value); setLocationFocused(true); }}
-          onFocus={() => setLocationFocused(true)}
+          value={loc}
+          onChange={e => setSearch({ loc: e.target.value })}
           placeholder="City, state, or remote"
           autoComplete="off"
-          className="w-full bg-transparent text-foreground placeholder:text-muted pl-12 pr-4 py-4 text-lg focus:outline-none"
+          className="w-full bg-transparent text-zinc-100 placeholder:text-zinc-600 pl-11 pr-4 py-4 text-sm focus:outline-none"
         />
-        {locationFocused && locationSuggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B365D] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-            <ul className="py-2">
-              {locationSuggestions.map((s, i) => (
-                <li key={i}>
-                  <button type="button" onClick={() => { setLocation(s); setLocationFocused(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-white/10 hover:text-[#FF6F61] transition-colors flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-muted shrink-0" /> {s}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
 
-      <button type="submit" className="w-full sm:w-auto flex-shrink-0 bg-primary text-white font-semibold px-8 py-4 sm:py-0 rounded-xl hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-sm">
-        Search Jobs <ArrowRight className="w-4 h-4" />
+      <div className="hidden sm:block w-px bg-zinc-800 self-stretch my-2" />
+
+      {/* Time filter */}
+      <div className="relative flex items-center border-t border-zinc-800 sm:border-t-0">
+        <Clock className="absolute left-4 w-4 h-4 text-zinc-500 pointer-events-none" />
+        <select
+          value={time}
+          onChange={e => setSearch({ time: e.target.value })}
+          className="bg-transparent text-zinc-400 pl-11 pr-8 py-4 text-sm focus:outline-none appearance-none cursor-pointer w-full sm:w-36"
+        >
+          <option value="any" className="bg-zinc-900">Any Time</option>
+          <option value="24h" className="bg-zinc-900">Past 24h</option>
+          <option value="7d"  className="bg-zinc-900">Past Week</option>
+          <option value="30d" className="bg-zinc-900">Past Month</option>
+        </select>
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="mt-2 sm:mt-0 sm:ml-2 flex-shrink-0 self-center px-6 py-3.5 rounded-xl bg-violet-700 text-white text-sm font-semibold hover:bg-violet-600 hover:-translate-y-px transition-all shadow-lg shadow-violet-900/40 flex items-center justify-center gap-2 whitespace-nowrap"
+      >
+        Search Jobs <ArrowRight className="w-3.5 h-3.5" />
       </button>
     </form>
   );

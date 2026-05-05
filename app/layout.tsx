@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { GlobalBackground } from '@/components/GlobalBackground';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export const metadata: Metadata = {
   title: "UpnAbove — Rise up. Find work. Go above.",
@@ -59,9 +60,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ToastProvider>
-            <Navbar />
-            <main className="flex-grow pt-24">{children}</main>
-            <Footer />
+            <NuqsAdapter>
+              <Navbar />
+              <main className="flex-grow pt-24">{children}</main>
+              <Footer />
+            </NuqsAdapter>
           </ToastProvider>
         </ThemeProvider>
       </body>

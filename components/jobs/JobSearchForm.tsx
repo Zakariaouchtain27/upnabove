@@ -1,137 +1,80 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Search, MapPin, Filter } from "lucide-react";
+import React from "react";
+import { useQueryStates, parseAsString } from "nuqs";
+import { Search, MapPin, Clock, Filter } from "lucide-react";
 
-export function JobSearchForm({ 
-  initialQuery = "", 
-  initialLocation = "",
-  initialTime = "any"
-}: { 
-  initialQuery?: string; 
-  initialLocation?: string; 
-  initialTime?: string;
-}) {
-  const [query, setQuery] = useState(initialQuery);
-  const [location, setLocation] = useState(initialLocation);
-  const [time, setTime] = useState(initialTime);
-  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  const [titleFocused, setTitleFocused] = useState(false);
-  const [locationFocused, setLocationFocused] = useState(false);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<HTMLDivElement>(null);
+const searchParsers = {
+  q:    parseAsString.withDefault(""),
+  loc:  parseAsString.withDefault(""),
+  time: parseAsString.withDefault("any"),
+};
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (titleRef.current && !titleRef.current.contains(e.target as Node)) setTitleFocused(false);
-      if (locationRef.current && !locationRef.current.contains(e.target as Node)) setLocationFocused(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  useEffect(() => {
-    if (!query || query.length < 2) { setTitleSuggestions([]); return; }
-    const t = setTimeout(async () => {
-      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(query)}&type=title`);
-      const data = await res.json();
-      setTitleSuggestions(data.suggestions || []);
-    }, 250);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  useEffect(() => {
-    if (!location || location.length < 2) { setLocationSuggestions([]); return; }
-    const t = setTimeout(async () => {
-      const res = await fetch(`/api/jobs/autocomplete?q=${encodeURIComponent(location)}&type=location`);
-      const data = await res.json();
-      setLocationSuggestions(data.suggestions || []);
-    }, 300);
-    return () => clearTimeout(t);
-  }, [location]);
+export function JobSearchForm() {
+  const [{ q, loc, time }, setSearch] = useQueryStates(searchParsers, {
+    shallow: false,
+    startTransition: (fn) => fn(),
+  });
 
   return (
-    <form action="/jobs" method="GET" className="w-full glass-surface rounded-2xl p-4 mb-10 flex flex-col lg:flex-row gap-4 ring-1 ring-border relative z-20">
+    <form
+      action="/jobs"
+      method="GET"
+      className="w-full glass-surface rounded-2xl p-4 mb-10 flex flex-col lg:flex-row gap-4 ring-1 ring-zinc-800 hover:ring-violet-500/20 transition-all relative z-20"
+    >
       <div className="flex-1 flex flex-col md:flex-row gap-4">
 
-        {/* Job title search */}
-        <div className="relative flex-1 flex items-center group" ref={titleRef}>
-          <Search className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors z-10" />
+        {/* Job title */}
+        <div className="relative flex-1 flex items-center">
+          <Search className="absolute left-4 w-4 h-4 text-zinc-500 pointer-events-none" />
           <input
             type="text"
             name="q"
-            value={query}
-            onChange={e => { setQuery(e.target.value); setTitleFocused(true); }}
-            onFocus={() => setTitleFocused(true)}
+            value={q}
+            onChange={e => setSearch({ q: e.target.value })}
             placeholder="Search by role, company, or keyword..."
             autoComplete="off"
-            className="w-full bg-surface text-foreground placeholder:text-muted pl-12 pr-4 py-3.5 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
+            className="w-full bg-zinc-900 text-zinc-100 placeholder:text-zinc-600 pl-11 pr-4 py-3.5 rounded-xl border border-zinc-800 focus:border-violet-500/60 focus:ring-1 focus:ring-violet-500/30 focus:outline-none transition-all text-sm"
           />
-          {titleFocused && titleSuggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B365D] border border-border rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-              <ul className="py-2">
-                {titleSuggestions.map((s, i) => (
-                  <li key={i}>
-                    <button type="button" className="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-white/10 hover:text-[#FF6F61] transition-colors flex items-center gap-2"
-                      onClick={() => { setQuery(s); setTitleFocused(false); }}>
-                      <Search className="w-4 h-4 text-muted shrink-0" /> {s}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
 
-        {/* Location search */}
-        <div className="relative flex-1 flex items-center group" ref={locationRef}>
-          <MapPin className="absolute left-4 w-5 h-5 text-muted group-focus-within:text-primary transition-colors z-10" />
+        {/* Location */}
+        <div className="relative flex-1 flex items-center">
+          <MapPin className="absolute left-4 w-4 h-4 text-zinc-500 pointer-events-none" />
           <input
             type="text"
-            name="location"
-            value={location}
-            onChange={e => { setLocation(e.target.value); setLocationFocused(true); }}
-            onFocus={() => setLocationFocused(true)}
+            name="loc"
+            value={loc}
+            onChange={e => setSearch({ loc: e.target.value })}
             placeholder="City, state, or remote"
             autoComplete="off"
-            className="w-full bg-surface text-foreground placeholder:text-muted pl-12 pr-4 py-3.5 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
+            className="w-full bg-zinc-900 text-zinc-100 placeholder:text-zinc-600 pl-11 pr-4 py-3.5 rounded-xl border border-zinc-800 focus:border-violet-500/60 focus:ring-1 focus:ring-violet-500/30 focus:outline-none transition-all text-sm"
           />
-          {locationFocused && locationSuggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B365D] border border-border rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-              <ul className="py-2">
-                {locationSuggestions.map((s, i) => (
-                  <li key={i}>
-                    <button type="button" className="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-white/10 hover:text-[#FF6F61] transition-colors flex items-center gap-2"
-                      onClick={() => { setLocation(s); setLocationFocused(false); }}>
-                      <MapPin className="w-4 h-4 text-muted shrink-0" /> {s}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
 
       </div>
-      
-      <div className="flex gap-4">
-        <select 
-          name="time"
-          value={time}
-          onChange={e => setTime(e.target.value)}
-          className="px-4 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm shrink-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary appearance-none pr-8"
-          style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
+
+      <div className="flex gap-3">
+        {/* Time */}
+        <div className="relative flex items-center">
+          <Clock className="absolute left-3 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <select
+            name="time"
+            value={time}
+            onChange={e => setSearch({ time: e.target.value })}
+            className="pl-9 pr-8 py-3.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 text-sm font-medium hover:border-zinc-700 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-violet-500/30 appearance-none shrink-0"
+          >
+            <option value="any" className="bg-zinc-900">Any Time</option>
+            <option value="24h" className="bg-zinc-900">Past 24h</option>
+            <option value="7d"  className="bg-zinc-900">Past Week</option>
+            <option value="30d" className="bg-zinc-900">Past Month</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="px-7 py-3.5 bg-zinc-100 text-zinc-900 font-semibold rounded-xl hover:-translate-y-px transition-all text-sm shrink-0"
         >
-          <option value="any">Any Time</option>
-          <option value="24h">Past 24 hours</option>
-          <option value="7d">Past Week</option>
-          <option value="30d">Past Month</option>
-        </select>
-        <button type="button" className="hidden sm:flex items-center gap-2 px-6 py-3.5 rounded-xl border border-border bg-surface text-foreground font-medium hover:bg-surface-hover transition-colors shadow-sm shrink-0">
-          <Filter className="w-4 h-4" /> Filters
-        </button>
-        <button type="submit" className="px-8 py-3.5 bg-foreground text-background font-semibold rounded-xl hover:scale-105 transition-all shadow-sm shrink-0">
           Search
         </button>
       </div>

@@ -19,10 +19,10 @@ export default async function JobsPage({
   const supabase = await createClient();
   const resolvedParams = await searchParams;
 
-  const queryText = (resolvedParams?.q as string) || '';
-  const locationText = (resolvedParams?.location as string) || '';
-  const timeText = (resolvedParams?.time as string) || 'any';
-  const sortText = (resolvedParams?.sort as string) || 'recent';
+  const queryText    = (resolvedParams?.q        as string) || '';
+  const locationText = (resolvedParams?.loc      as string) || '';
+  const timeText     = (resolvedParams?.time     as string) || 'any';
+  const sortText     = (resolvedParams?.sort     as string) || 'recent';
 
   // Attempt to fetch real jobs
   let query = supabase
@@ -111,7 +111,7 @@ export default async function JobsPage({
 
           {/* Search and Filter Bar */}
           <ScrollReveal delay={0.2}>
-            <JobSearchForm initialQuery={queryText} initialLocation={locationText} initialTime={timeText} />
+            <JobSearchForm />
           </ScrollReveal>
 
           {/* Job Listings */}
