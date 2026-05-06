@@ -95,7 +95,7 @@ export default function EmployerSidebar() {
           </Link>
 
           <Link
-            href="/employer/forge/create?type=bounty"
+            href="/employer/bounties/new"
             className="flex items-center gap-2 mx-3 mt-3 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600/15 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-600/25 hover:border-emerald-400/40 transition-all"
           >
             <DollarSign className="w-3.5 h-3.5" />
