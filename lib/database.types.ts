@@ -24,7 +24,6 @@ export type Database = {
           motivation_text: string | null
           resume_url: string
           status: string | null
-          employer_viewed: boolean | null
         }
         Insert: {
           candidate_id?: string | null
@@ -35,7 +34,6 @@ export type Database = {
           motivation_text?: string | null
           resume_url: string
           status?: string | null
-          employer_viewed?: boolean | null
         }
         Update: {
           candidate_id?: string | null
@@ -46,7 +44,6 @@ export type Database = {
           motivation_text?: string | null
           resume_url?: string
           status?: string | null
-          employer_viewed?: boolean | null
         }
         Relationships: [
           {
@@ -102,9 +99,11 @@ export type Database = {
           bonus_votes: number | null
           country: string | null
           created_at: string | null
+          cv_text: string | null
           email: string
           first_name: string
           forge_replay_active: boolean | null
+          forge_streak: number
           github_url: string | null
           id: string
           is_banned: boolean | null
@@ -114,6 +113,7 @@ export type Database = {
           ls_subscription_id: string | null
           ls_subscription_status: string | null
           referral_code: string | null
+          referrals: number
           resume_url: string | null
           updated_at: string | null
         }
@@ -123,9 +123,11 @@ export type Database = {
           bonus_votes?: number | null
           country?: string | null
           created_at?: string | null
+          cv_text?: string | null
           email: string
           first_name: string
           forge_replay_active?: boolean | null
+          forge_streak?: number
           github_url?: string | null
           id: string
           is_banned?: boolean | null
@@ -135,6 +137,7 @@ export type Database = {
           ls_subscription_id?: string | null
           ls_subscription_status?: string | null
           referral_code?: string | null
+          referrals?: number
           resume_url?: string | null
           updated_at?: string | null
         }
@@ -144,9 +147,11 @@ export type Database = {
           bonus_votes?: number | null
           country?: string | null
           created_at?: string | null
+          cv_text?: string | null
           email?: string
           first_name?: string
           forge_replay_active?: boolean | null
+          forge_streak?: number
           github_url?: string | null
           id?: string
           is_banned?: boolean | null
@@ -156,6 +161,7 @@ export type Database = {
           ls_subscription_id?: string | null
           ls_subscription_status?: string | null
           referral_code?: string | null
+          referrals?: number
           resume_url?: string | null
           updated_at?: string | null
         }
@@ -172,9 +178,11 @@ export type Database = {
           id: string
           industry: string | null
           is_banned: boolean | null
+          is_pro: boolean | null
           is_verified: boolean | null
           ls_subscription_id: string | null
           ls_subscription_status: string | null
+          plan_expires_at: string | null
           updated_at: string | null
           website_url: string | null
         }
@@ -188,9 +196,11 @@ export type Database = {
           id: string
           industry?: string | null
           is_banned?: boolean | null
+          is_pro?: boolean | null
           is_verified?: boolean | null
           ls_subscription_id?: string | null
           ls_subscription_status?: string | null
+          plan_expires_at?: string | null
           updated_at?: string | null
           website_url?: string | null
         }
@@ -204,9 +214,11 @@ export type Database = {
           id?: string
           industry?: string | null
           is_banned?: boolean | null
+          is_pro?: boolean | null
           is_verified?: boolean | null
           ls_subscription_id?: string | null
           ls_subscription_status?: string | null
+          plan_expires_at?: string | null
           updated_at?: string | null
           website_url?: string | null
         }
@@ -254,14 +266,16 @@ export type Database = {
       forge_challenges: {
         Row: {
           ai_weight: number | null
+          bounty_amount: number | null
           challenge_type: string
           checkout_url: string | null
           created_at: string | null
           description: string
           difficulty: string
-          drop_time: string
+          drop_time: string | null
           employer_id: string | null
           entry_count: number | null
+          escrow_status: string | null
           expires_at: string
           id: string
           is_public: boolean | null
@@ -269,8 +283,12 @@ export type Database = {
           ls_order_id: string | null
           max_participants: number | null
           payment_status: string | null
-          prize_description: string
+          platform_fee: number | null
+          prize_description: string | null
+          prize_type: string
           prize_value: number | null
+          purpose: string | null
+          sponsor_logo_url: string | null
           sponsor_name: string | null
           status: string
           time_limit_minutes: number
@@ -280,14 +298,16 @@ export type Database = {
         }
         Insert: {
           ai_weight?: number | null
+          bounty_amount?: number | null
           challenge_type: string
           checkout_url?: string | null
           created_at?: string | null
           description: string
           difficulty: string
-          drop_time: string
+          drop_time?: string | null
           employer_id?: string | null
           entry_count?: number | null
+          escrow_status?: string | null
           expires_at: string
           id?: string
           is_public?: boolean | null
@@ -295,8 +315,12 @@ export type Database = {
           ls_order_id?: string | null
           max_participants?: number | null
           payment_status?: string | null
-          prize_description: string
+          platform_fee?: number | null
+          prize_description?: string | null
+          prize_type?: string
           prize_value?: number | null
+          purpose?: string | null
+          sponsor_logo_url?: string | null
           sponsor_name?: string | null
           status: string
           time_limit_minutes: number
@@ -306,14 +330,16 @@ export type Database = {
         }
         Update: {
           ai_weight?: number | null
+          bounty_amount?: number | null
           challenge_type?: string
           checkout_url?: string | null
           created_at?: string | null
           description?: string
           difficulty?: string
-          drop_time?: string
+          drop_time?: string | null
           employer_id?: string | null
           entry_count?: number | null
+          escrow_status?: string | null
           expires_at?: string
           id?: string
           is_public?: boolean | null
@@ -321,8 +347,12 @@ export type Database = {
           ls_order_id?: string | null
           max_participants?: number | null
           payment_status?: string | null
-          prize_description?: string
+          platform_fee?: number | null
+          prize_description?: string | null
+          prize_type?: string
           prize_value?: number | null
+          purpose?: string | null
+          sponsor_logo_url?: string | null
           sponsor_name?: string | null
           status?: string
           time_limit_minutes?: number
@@ -624,6 +654,7 @@ export type Database = {
           entry_id: string | null
           id: string
           priority: number | null
+          processed_at: string | null
           skill_id: string | null
           status: string | null
           updated_at: string | null
@@ -636,6 +667,7 @@ export type Database = {
           entry_id?: string | null
           id?: string
           priority?: number | null
+          processed_at?: string | null
           skill_id?: string | null
           status?: string | null
           updated_at?: string | null
@@ -648,6 +680,7 @@ export type Database = {
           entry_id?: string | null
           id?: string
           priority?: number | null
+          processed_at?: string | null
           skill_id?: string | null
           status?: string | null
           updated_at?: string | null
@@ -826,7 +859,9 @@ export type Database = {
         Row: {
           benefits: string[] | null
           category: string | null
+          city: string | null
           company_name: string | null
+          country: string | null
           created_at: string | null
           description: string
           employer_id: string | null
@@ -838,16 +873,21 @@ export type Database = {
           job_type: string
           location: string
           requirements: string[] | null
+          salary_amount: number | null
+          salary_currency: string | null
+          salary_period: string | null
           salary_range: string | null
           source: string | null
           title: string
           updated_at: string | null
-          views: number | null
+          work_mode: string | null
         }
         Insert: {
           benefits?: string[] | null
           category?: string | null
+          city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string | null
           description: string
           employer_id?: string | null
@@ -859,16 +899,21 @@ export type Database = {
           job_type: string
           location: string
           requirements?: string[] | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          salary_period?: string | null
           salary_range?: string | null
           source?: string | null
           title: string
           updated_at?: string | null
-          views?: number | null
+          work_mode?: string | null
         }
         Update: {
           benefits?: string[] | null
           category?: string | null
+          city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string
           employer_id?: string | null
@@ -880,11 +925,14 @@ export type Database = {
           job_type?: string
           location?: string
           requirements?: string[] | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          salary_period?: string | null
           salary_range?: string | null
           source?: string | null
           title?: string
           updated_at?: string | null
-          views?: number | null
+          work_mode?: string | null
         }
         Relationships: [
           {
