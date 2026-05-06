@@ -26,8 +26,8 @@ const schema = z.object({
   title:       z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(20, "Please describe the bounty in more detail"),
   ref_url:     z.union([z.string().url("Must be a valid URL"), z.literal("")]).optional(),
-  deadline:    z.enum(["24h", "3d", "7d"], { required_error: "Please select a deadline" }),
-  amount:      z.number({ invalid_type_error: "Enter a number" }).min(10, "Minimum bounty is $10"),
+  deadline:    z.enum(["24h", "3d", "7d"]),
+  amount:      z.number().min(10, "Minimum bounty is $10"),
 });
 
 type FormData = z.infer<typeof schema>;
