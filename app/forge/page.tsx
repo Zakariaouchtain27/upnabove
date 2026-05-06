@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ChallengeCard } from "@/components/forge/ChallengeCard";
+import { ForgeArenaClient } from "@/components/forge/ForgeArenaClient";
 import { LeaderboardPreview } from "@/components/forge/LeaderboardPreview";
 import Link from "next/link";
 import {
@@ -18,7 +19,7 @@ export default async function ForgePage() {
 
   const { data: liveChallenges } = await supabase
     .from("forge_challenges")
-    .select("*")
+    .select("*, purpose, bounty_amount, escrow_status")
     .eq("status", "live")
     .order("expires_at", { ascending: true });
 
@@ -181,56 +182,11 @@ export default async function ForgePage() {
         </div>
       </section>
 
-      {/* ── LIVE NOW ──────────────────────────────────────────────────────── */}
-      <section id="live-now" className="relative w-full py-24 scroll-mt-20">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
-
-        <div className="section-container">
-          <ScrollReveal delay={0.05} direction="up">
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 mb-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Live Now</span>
-                </div>
-                <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-100">
-                  Active Challenges
-                </h2>
-              </div>
-              <Link
-                href="/forge/feed"
-                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-violet-400 transition-colors"
-              >
-                View All <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </ScrollReveal>
-
-          {!liveChallenges || liveChallenges.length === 0 ? (
-            <ScrollReveal delay={0.1} direction="up">
-              <div className="flex flex-col items-center justify-center py-24 rounded-2xl border border-zinc-800 border-dashed bg-zinc-900/30">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
-                  <Zap className="w-5 h-5 text-zinc-600" />
-                </div>
-                <p className="text-zinc-500 font-mono text-sm mb-2">No active challenges right now.</p>
-                {upcomingChallenges?.[0]?.drop_time && (
-                  <p suppressHydrationWarning className="text-zinc-600 text-xs font-mono">
-                    Next drop: {new Date(upcomingChallenges[0].drop_time).toLocaleString()}
-                  </p>
-                )}
-              </div>
-            </ScrollReveal>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-              {liveChallenges.map((challenge, i) => (
-                <ScrollReveal key={challenge.id} delay={0.08 * i} direction="up">
-                  <ChallengeCard challenge={challenge} />
-                </ScrollReveal>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      {/* ── ARENA MODE TOGGLE + LIVE CHALLENGES ───────────────────────── */}
+      <ForgeArenaClient
+        liveChallenges={(liveChallenges ?? []) as any}
+        completedChallenges={(completedChallenges ?? []) as any}
+      />
 
       {/* ── UPCOMING + LEADERBOARD ────────────────────────────────────────── */}
       <section className="relative w-full py-24">
