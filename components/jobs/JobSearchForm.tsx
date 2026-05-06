@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { useQueryStates, parseAsString } from "nuqs";
-import { Search, MapPin, Clock, Filter } from "lucide-react";
+import { Search, MapPin, Clock } from "lucide-react";
 
 const searchParsers = {
   q:    parseAsString.withDefault(""),

@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { 
-  forceCompleteChallenge, 
-  cancelChallenge, 
-  featureChallenge, 
-  approveFlaggedEntry, 
-  removeSubmission, 
+import {
+  forceCompleteChallenge,
+  cancelChallenge,
+  approveFlaggedEntry,
+  removeSubmission,
   banCandidate,
   triggerJobSeed
 } from "./actions";
@@ -43,7 +42,6 @@ export function AdminDashboardClient({
 
   // ----- STATS CALCULATION -----
   const liveCount = challenges.filter(c => c.status === "live").length;
-  const completedThisMonth = challenges.filter(c => c.status === "completed" && new Date(c.created_at).getMonth() === new Date().getMonth()).length;
   const hiredCount = entries.filter(e => e.status === "hired").length;
   
   // Total Revenue derived from challenges payment_amount
@@ -105,7 +103,7 @@ export function AdminDashboardClient({
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground font-mono text-sm border-dashed border border-white/10 rounded-xl">No Revenue Hooked</div>
                   )}
                </div>
-               <div className="space-y-2 mt-4 mt-8 flex flex-wrap gap-4">
+               <div className="space-y-2 mt-8 flex flex-wrap gap-4">
                   {revByProduct.map((p, i) => (
                      <div key={i} className="flex items-center gap-2 text-xs font-mono">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />

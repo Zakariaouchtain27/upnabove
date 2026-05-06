@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Award, Target, Flame } from "lucide-react";
 
@@ -59,7 +58,7 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
   return (
      <tr className={`transition-colors ${isCurrentUser ? (pinned ? 'bg-violet-500/20 border-t-2 border-violet-500' : 'bg-violet-500/10 hover:bg-violet-500/20') : 'hover:bg-[#1B365D]/60'}`}>
         
-        {/* Rank */}
+
         <td className="px-6 py-4">
            {candidate.computeRank <= 3 ? (
              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-black ${
@@ -74,7 +73,7 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
            )}
         </td>
 
-        {/* Name / Avatar */}
+
         <td className="px-6 py-4 font-bold text-gray-900 dark:text-white flex items-center gap-3">
            {candidate.avatar_url ? (
              <Image src={candidate.avatar_url} alt="Avatar" width={32} height={32} className="rounded-full border border-border" />
@@ -91,21 +90,21 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
            </div>
         </td>
 
-        {/* Wins */}
+
         <td className="px-6 py-4 text-center">
            <span className={`font-mono font-bold text-lg ${candidate.totalWins > 0 ? 'text-amber-500' : 'text-muted-foreground opacity-50'}`}>
               {candidate.totalWins}
            </span>
         </td>
 
-        {/* Top 3 */}
+
         <td className="px-6 py-4 text-center">
            <span className="font-mono font-bold text-lg text-gray-900 dark:text-white">
               {candidate.top3Finishes}
            </span>
         </td>
 
-        {/* Votes */}
+
         <td className="px-6 py-4 text-center">
            <span className="font-mono font-bold text-lg text-emerald-500 relative group">
               {candidate.totalVotes}
@@ -113,14 +112,14 @@ function CandidateRow({ candidate, isCurrentUser, pinned = false }: { candidate:
            </span>
         </td>
 
-        {/* Hires */}
+
         <td className="px-6 py-4 text-center">
            <span className="font-mono font-bold text-lg text-blue-500">
               {candidate.hires}
            </span>
         </td>
 
-        {/* Badges */}
+
         <td className="px-6 py-4 text-right">
            <div className="flex items-center justify-end gap-1">
              {candidate.badges?.slice(0, 3).map((b: string, i: number) => (

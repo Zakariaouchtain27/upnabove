@@ -58,7 +58,6 @@
     --muted:              #71717a;
     --muted-foreground:   #52525b;
     --violet-glow:        rgba(124, 58, 237, 0.12);
-    --cyan-glow:          rgba(6, 182, 212, 0.1);
     --shadow-sm:          0 1px 2px rgba(0,0,0,0.06);
     --shadow-md:          0 4px 8px rgba(0,0,0,0.08);
     --shadow-lg:          0 10px 24px rgba(0,0,0,0.1);
@@ -154,20 +153,6 @@
 
 .text-gradient {
   background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-emerald {
-  background: linear-gradient(135deg, #6ee7b7 0%, #10b981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-dim {
-  background: linear-gradient(135deg, #fafafa 0%, #71717a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -315,22 +300,6 @@
   66%       { transform: translate(20px, -20px) scale(0.96); }
 }
 
-@keyframes moveGrid {
-  0%   { background-position: 0 0; }
-  100% { background-position: 32px 32px; }
-}
-
-@keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-@keyframes waveAnimation {
-  0%   { transform: translateX(0) translateY(0); }
-  50%  { transform: translateX(-25%) translateY(15px); }
-  100% { transform: translateX(-50%) translateY(0); }
-}
-
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.7; transform: scale(0.97); }
@@ -349,11 +318,3 @@
 
 button, a { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
 
-.wave-bg-container {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 400px;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}

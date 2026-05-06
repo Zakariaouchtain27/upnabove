@@ -1,9 +1,5 @@
-import React from "react";
 import Link from "next/link";
-import { 
-  Search, MapPin, Briefcase, DollarSign, Clock, 
-  ChevronDown, Filter, Building2, Star, Zap, Inbox
-} from "lucide-react";
+import { MapPin, Briefcase, DollarSign, Building2, Inbox } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { createClient } from "@/lib/supabase/server";

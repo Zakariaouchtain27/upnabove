@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { SpotlightCard } from "@/components/SpotlightCard";
 import { ShieldAlert, Zap, Users, Trophy, Clock, FileText } from "lucide-react";
 import { LiveLeaderboard } from "@/components/forge/LiveLeaderboard";
@@ -36,18 +35,17 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
   return (
     <div className="relative">
       {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="forge-arena-grid" />
         <div className="forge-orb-coral" />
         <div className="forge-orb-violet" />
       </div>
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 pb-32 pt-10" style={{ zIndex: 1 }}>
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-32 pt-10">
 
-        {/* ── LEFT COLUMN ─────────────────────────────────── */}
         <div className="lg:col-span-2 space-y-5">
 
-          {/* Title block */}
+
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/30 text-[10px] font-black uppercase tracking-widest">
@@ -67,7 +65,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
               )}
             </div>
 
-            {/* Accent line */}
+  
             <div className="h-px w-full bg-gradient-to-r from-violet-500/60 via-white/10 to-transparent" />
 
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05] break-words forge-title-glow">
@@ -75,7 +73,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
             </h1>
           </div>
 
-          {/* Challenge brief */}
+
           {challenge.description ? (
             <div className="forge-panel p-7 rounded-2xl space-y-3">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">
@@ -95,7 +93,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
             </div>
           )}
 
-          {/* Mission Intel */}
+
           <div className="forge-panel p-7 rounded-2xl">
             <h3 className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500 mb-6">
               Mission Intel
@@ -137,7 +135,6 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
           </div>
         </div>
 
-        {/* ── RIGHT SIDEBAR ────────────────────────────────── */}
         <div className="space-y-4">
 
           {/* Countdown */}
