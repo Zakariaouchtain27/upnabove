@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           candidate_id: string | null
           created_at: string | null
+          employer_viewed: boolean
           id: string
           job_id: string | null
           motivation_letter_url: string | null
@@ -28,6 +29,7 @@ export type Database = {
         Insert: {
           candidate_id?: string | null
           created_at?: string | null
+          employer_viewed?: boolean
           id?: string
           job_id?: string | null
           motivation_letter_url?: string | null
@@ -38,6 +40,7 @@ export type Database = {
         Update: {
           candidate_id?: string | null
           created_at?: string | null
+          employer_viewed?: boolean
           id?: string
           job_id?: string | null
           motivation_letter_url?: string | null
@@ -880,6 +883,7 @@ export type Database = {
           source: string | null
           title: string
           updated_at: string | null
+          views: number
           work_mode: string | null
         }
         Insert: {
@@ -906,6 +910,7 @@ export type Database = {
           source?: string | null
           title: string
           updated_at?: string | null
+          views?: number
           work_mode?: string | null
         }
         Update: {
@@ -932,6 +937,7 @@ export type Database = {
           source?: string | null
           title?: string
           updated_at?: string | null
+          views?: number
           work_mode?: string | null
         }
         Relationships: [

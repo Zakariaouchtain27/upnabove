@@ -15,7 +15,7 @@ export async function POST(
       .from('applications')
       .select(`
         id,
-        status,
+        employer_viewed,
         jobs (
           title,
           employer_id,
@@ -50,15 +50,15 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3. If already moved past pending, don't send another email to avoid spam
-    if (app.status && app.status !== 'pending') {
+    // 3. If already viewed, don't send another email to avoid spam
+    if (app.employer_viewed) {
       return NextResponse.json({ success: true, message: "Already viewed" });
     }
 
-    // 4. Mark as reviewing
+    // 4. Mark as viewed
     const { error: updateError } = await supabase
       .from('applications')
-      .update({ status: 'reviewing' })
+      .update({ employer_viewed: true, status: 'reviewing' })
       .eq('id', appId);
 
     if (updateError) throw updateError;
