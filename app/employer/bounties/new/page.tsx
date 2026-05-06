@@ -77,22 +77,24 @@ export default function NewBountyPage() {
 
       const { data: challenge, error } = await supabase
         .from("forge_challenges")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .insert({
-          employer_id:    employer.id,
-          title:          data.title,
-          description:    data.description,
-          purpose:        "bounty",
-          bounty_amount:  data.amount,
-          platform_fee:   fee,
-          escrow_status:  "pending",
-          challenge_type: "bounty",
-          difficulty:     "mid",
-          prize_value:    data.amount,
-          prize_type:     "Cash",
+          employer_id:        employer.id,
+          title:              data.title,
+          description:        data.description,
+          challenge_type:     "bounty",
+          difficulty:         "mid",
+          prize_value:        data.amount,
+          prize_type:         "Cash",
           time_limit_minutes: data.deadline === "24h" ? 1440 : data.deadline === "3d" ? 4320 : 10080,
-          expires_at:     deadlineToDate(data.deadline),
-          status:         "live",
-        })
+          expires_at:         deadlineToDate(data.deadline),
+          status:             "live",
+          // columns added via migration — not yet in generated types
+          purpose:            "bounty",
+          bounty_amount:      data.amount,
+          platform_fee:       fee,
+          escrow_status:      "pending",
+        } as any)
         .select("id")
         .single();
 
