@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,7 +11,9 @@ import {
   LogOut,
   Flame,
   ChevronDown,
-  BarChart3
+  BarChart3,
+  DollarSign,
+  Zap,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
@@ -82,8 +83,8 @@ export default function EmployerSidebar() {
             <Flame className="w-4 h-4" /> The Forge
           </Link>
           
-          <Link 
-            href="/employer/forge/create" 
+          <Link
+            href="/employer/forge/create"
             className={`flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-all font-mono ml-4 mt-1 ${
               pathname === "/employer/forge/create"
                 ? "text-primary"
@@ -92,7 +93,15 @@ export default function EmployerSidebar() {
           >
             + Launch a Drop
           </Link>
-          
+
+          <Link
+            href="/employer/forge/create?type=bounty"
+            className="flex items-center gap-2 mx-3 mt-3 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600/15 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-600/25 hover:border-emerald-400/40 transition-all"
+          >
+            <DollarSign className="w-3.5 h-3.5" />
+            Launch Bounty
+          </Link>
+
           <div className="mt-auto pt-4 flex flex-col gap-1">
             <div className="my-2 h-px bg-white/5 mx-2" />
             <Link 
@@ -107,6 +116,25 @@ export default function EmployerSidebar() {
             </Link>
           </div>
         </nav>
+      </div>
+
+      {/* Plan Upgrade Banner */}
+      <div className="px-4 pb-3">
+        <div className="rounded-xl border border-violet-500/20 bg-violet-500/8 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-3.5 h-3.5 text-violet-400" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-violet-400">Free Plan</span>
+          </div>
+          <p className="text-[10px] text-zinc-500 leading-relaxed mb-3">
+            Unlock unlimited bounties, priority placement & escrow payments.
+          </p>
+          <Link
+            href="/employer/settings?tab=billing"
+            className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-[10px] font-black uppercase tracking-wider bg-violet-600 text-white hover:bg-violet-500 transition-all"
+          >
+            Upgrade to Pro · $19/mo
+          </Link>
+        </div>
       </div>
 
       {/* User Dropdown / Sign Out Footer */}
