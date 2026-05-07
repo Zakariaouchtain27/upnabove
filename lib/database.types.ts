@@ -286,6 +286,7 @@ export type Database = {
       forge_challenges: {
         Row: {
           ai_weight: number | null
+          allowed_languages: string[] | null
           bounty_amount: number | null
           challenge_type: string
           checkout_url: string | null
@@ -319,6 +320,7 @@ export type Database = {
         }
         Insert: {
           ai_weight?: number | null
+          allowed_languages?: string[] | null
           bounty_amount?: number | null
           challenge_type: string
           checkout_url?: string | null
@@ -352,6 +354,7 @@ export type Database = {
         }
         Update: {
           ai_weight?: number | null
+          allowed_languages?: string[] | null
           bounty_amount?: number | null
           challenge_type?: string
           checkout_url?: string | null
@@ -508,6 +511,7 @@ export type Database = {
           is_flagged: boolean | null
           is_revealed: boolean | null
           rank: number | null
+          replay_json_url: string | null
           revealed_at: string | null
           squad_id: string | null
           status: string
@@ -530,6 +534,7 @@ export type Database = {
           is_flagged?: boolean | null
           is_revealed?: boolean | null
           rank?: number | null
+          replay_json_url?: string | null
           revealed_at?: string | null
           squad_id?: string | null
           status: string
@@ -552,6 +557,7 @@ export type Database = {
           is_flagged?: boolean | null
           is_revealed?: boolean | null
           rank?: number | null
+          replay_json_url?: string | null
           revealed_at?: string | null
           squad_id?: string | null
           status?: string
@@ -1417,6 +1423,7 @@ export type Database = {
           is_flagged: boolean | null
           is_revealed: boolean | null
           rank: number | null
+          replay_json_url: string | null
           revealed_at: string | null
           squad_id: string | null
           status: string
@@ -1452,6 +1459,7 @@ export type Database = {
           is_flagged: boolean | null
           is_revealed: boolean | null
           rank: number | null
+          replay_json_url: string | null
           revealed_at: string | null
           squad_id: string | null
           status: string

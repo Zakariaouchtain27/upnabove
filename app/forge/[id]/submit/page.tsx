@@ -17,6 +17,7 @@ export default function SubmitForgePage() {
   const [loading, setLoading] = useState(true);
   const [challenge, setChallenge] = useState<any>(null);
   const [entryInfo, setEntryInfo] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     submission_text: "",
@@ -35,6 +36,7 @@ export default function SubmitForgePage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return router.push("/auth");
+      setUserId(user.id);
 
       const { data: candidate } = await supabase.from('candidates').select('id').eq('id', user.id).single();
       if (!candidate) return router.push("/forge");
@@ -200,10 +202,22 @@ export default function SubmitForgePage() {
              </label>
              {type === 'code' ? (
                 <div className="h-[600px] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
-                   <CandidateArena 
-                      challengeId={id as string} 
-                      initialCode={formData.submission_text}
+                   <CandidateArena
+                      challengeId={id as string}
+                      initialCode={formData.submission_text || undefined}
                       onChange={(code: string) => setFormData(prev => ({ ...prev, submission_text: code }))}
+                      challenge={{
+                        description: challenge.description ?? "",
+                        allowed_languages: challenge.allowed_languages ?? null,
+                      }}
+                      entryId={entryInfo?.id}
+                      userId={userId ?? undefined}
+                      onSuccess={() => {
+                        localStorage.removeItem(`forge_draft_${id}`);
+                        triggerConfetti();
+                        setIsSuccess(true);
+                        window.scrollTo(0, 0);
+                      }}
                    />
                 </div>
              ) : (
@@ -343,19 +357,20 @@ export default function SubmitForgePage() {
                {renderInputFields()}
             </div>
 
-            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-               <button onClick={handleManualSave} className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-white/5 transition-all w-full sm:w-auto">
-                 <Save className="w-4 h-4" /> Force Buffer Save
-               </button>
-
-               <button 
+            {challenge?.challenge_type !== 'code' && (
+              <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button onClick={handleManualSave} className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-white/5 transition-all w-full sm:w-auto">
+                  <Save className="w-4 h-4" /> Force Buffer Save
+                </button>
+                <button
                   onClick={handleFinalSubmit}
                   disabled={isSubmitting || (!formData.submission_text && !formData.submission_url && !formData.submission_file_url)}
                   className="btn-glow flex items-center justify-center gap-2 px-10 py-4 rounded-xl bg-primary text-white text-sm font-black uppercase tracking-[0.2em] hover:bg-primary-light transition-all shadow-[0_0_30px_rgba(124,58,237,0.4)] disabled:opacity-50 disabled:grayscale w-full sm:w-auto"
-               >
-                 {isSubmitting ? "Encrypting..." : "Lock & Transmit"} <ArrowRight className="w-4 h-4" />
-               </button>
-            </div>
+                >
+                  {isSubmitting ? "Encrypting..." : "Lock & Transmit"} <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
          </div>
 
        </div>
