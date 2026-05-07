@@ -6,9 +6,9 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const candidateId = user?.id || 'mock-candidate-id';
+    const candidateId = user.id;
 
     const lsKey = process.env.LEMON_SQUEEZY_API_KEY;
     const storeId = process.env.LEMON_SQUEEZY_STORE_ID;

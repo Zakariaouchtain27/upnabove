@@ -12,15 +12,14 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // In a strict prod environment, reject unauthenticated
-    // if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const reqBody = await request.json();
     const { challengeId, tier = 'forge_standard' } = reqBody;
 
     if (!challengeId) return NextResponse.json({ error: "Missing challengeId" }, { status: 400 });
 
-    const employerId = user?.id || 'mock-employer-id'; // Fallback for testing
+    const employerId = user.id;
 
     // Retrieve employer's challenge post count specifically
     const { data: employer } = await supabase.from('employers').select('challenges_posted').eq('id', employerId).single();

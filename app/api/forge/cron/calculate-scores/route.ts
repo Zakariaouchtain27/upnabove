@@ -4,6 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { challengeId } = await request.json();
     if (!challengeId) return NextResponse.json({ error: "Missing challengeId" }, { status: 400 });

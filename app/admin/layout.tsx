@@ -11,28 +11,19 @@ export default async function AdminLayout({
 }) {
   const supabase = await createClient();
 
-  // 1. Get Auth Session
   const { data: { user } } = await supabase.auth.getUser();
-  const isDev = process.env.NODE_ENV === "development";
 
-  if (!user && !isDev) {
-    redirect("/");
-  }
+  if (!user) redirect("/");
 
-  if (!isDev && user) {
-    // 2. Check if user is an admin
-    const { data: adminCheck } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .eq("role", "admin")
-      .single();
+  // Always verify admin role regardless of environment
+  const { data: adminCheck } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .eq("role", "admin")
+    .single();
 
-    if (!adminCheck) {
-      // Return 404 to obscure the existence of the admin route
-      notFound();
-    }
-  }
+  if (!adminCheck) notFound();
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row pt-16">

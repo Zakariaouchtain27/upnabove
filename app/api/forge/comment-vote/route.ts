@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const { commentId, vote } = await request.json(); // vote: 1, -1, or 0 (remove)
     if (!commentId || vote === undefined) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    if (![1, -1, 0].includes(vote)) return NextResponse.json({ error: 'Invalid vote value.' }, { status: 400 });
 
     const supabase = await createClient();
     const { data: authData } = await supabase.auth.getUser();

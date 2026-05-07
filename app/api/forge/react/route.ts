@@ -8,6 +8,11 @@ export async function POST(request: NextRequest) {
     const { entryId, reactionType } = await request.json();
     if (!entryId || !reactionType) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
+    const VALID_REACTIONS = new Set(["fire", "mind_blown", "clap", "love", "100"]);
+    if (!VALID_REACTIONS.has(reactionType)) {
+      return NextResponse.json({ error: 'Invalid reaction type.' }, { status: 400 });
+    }
+
     const supabase = await createClient();
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
     const { data: authData } = await supabase.auth.getUser();

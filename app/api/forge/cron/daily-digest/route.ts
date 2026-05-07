@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // Simple auth check if triggered manually (Vercel crons pass a CRON_SECRET, but we'll keep it simple for local dev)
-  const authHeader = request.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    console.warn("[Cron] Unauthorized trigger attempt for daily-digest.");
+  const secret = process.env.CRON_SECRET;
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const supabase = await createClient();

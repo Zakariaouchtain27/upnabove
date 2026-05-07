@@ -8,18 +8,16 @@ export async function POST(request: Request) {
     const signature = request.headers.get("x-signature") || "";
     
     const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+    if (!secret) {
+      console.error("[Webhook] LEMON_SQUEEZY_WEBHOOK_SECRET is not configured.");
+      return new Response("Webhook secret not configured", { status: 500 });
+    }
 
-    // Verify HMAC signature securely
-    if (secret) {
-        const hmac = crypto.createHmac("sha256", secret);
-        const digest = Buffer.from(hmac.update(rawBody).digest("hex"), "utf8");
-        const signatureBuffer = Buffer.from(signature, "utf8");
-        
-        if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
-            return new Response("Invalid signature", { status: 401 });
-        }
-    } else {
-        console.warn("[Lemon Squeezy] No webhook secret defined. Bypassing signature validation for dev sandbox.");
+    const hmac = crypto.createHmac("sha256", secret);
+    const digest = Buffer.from(hmac.update(rawBody).digest("hex"), "utf8");
+    const signatureBuffer = Buffer.from(signature, "utf8");
+    if (digest.length !== signatureBuffer.length || !crypto.timingSafeEqual(digest, signatureBuffer)) {
+      return new Response("Invalid signature", { status: 401 });
     }
 
     const payload = JSON.parse(rawBody);

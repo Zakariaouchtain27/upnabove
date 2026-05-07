@@ -10,10 +10,12 @@ export async function POST(request: Request) {
   
   const badgesToAward: { candidate_id: string, badge_type: string, challenge_id?: string }[] = [];
 
+  const secret = process.env.CRON_SECRET;
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-     // Check for auth header just in case, though usually cron endpoints use a secret
-     const authHeader = request.headers.get('authorization');
-     
      // Evaluate Streaks
      const { data: candidates } = await supabase.from('candidates').select('id, forge_streak, referrals');
      if (candidates) {

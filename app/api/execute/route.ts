@@ -36,8 +36,16 @@ export interface ExecuteResponse {
 }
 
 const PISTON_URL = "https://emkc.org/api/v2/piston/execute";
+const ALLOWED_LANGUAGES = new Set(["python", "javascript", "typescript", "c++", "java", "go", "rust"]);
+const MAX_CODE_LENGTH = 50_000;
 
 export async function POST(req: Request) {
+  // Auth guard — must be a signed-in user
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   let body: ExecuteRequest;
   try {
     body = await req.json();
@@ -51,6 +59,12 @@ export async function POST(req: Request) {
       { error: "Missing required fields: source_code, language, version." },
       { status: 400 }
     );
+  }
+  if (source_code.length > MAX_CODE_LENGTH) {
+    return NextResponse.json({ error: "Source code exceeds maximum allowed size." }, { status: 413 });
+  }
+  if (!ALLOWED_LANGUAGES.has(language)) {
+    return NextResponse.json({ error: "Language not supported." }, { status: 400 });
   }
 
   let pistonRes: Response;

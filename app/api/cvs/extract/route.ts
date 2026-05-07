@@ -16,6 +16,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing resumeUrl" }, { status: 400 });
     }
 
+    // SSRF guard: only allow HTTPS URLs from our Supabase storage origin
+    let parsedUrl: URL;
+    try { parsedUrl = new URL(resumeUrl); } catch {
+      return NextResponse.json({ error: "Invalid URL." }, { status: 400 });
+    }
+    const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+      : null;
+    if (
+      parsedUrl.protocol !== "https:" ||
+      !supabaseHost ||
+      !parsedUrl.hostname.endsWith(supabaseHost)
+    ) {
+      return NextResponse.json({ error: "URL not permitted." }, { status: 400 });
+    }
+
     // Fetch the PDF buffer from the public URL
     const pdfResponse = await fetch(resumeUrl);
     if (!pdfResponse.ok) {
