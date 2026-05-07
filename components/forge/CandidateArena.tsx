@@ -26,6 +26,7 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
 
 // ── Language definitions (Piston runtime names + versions) ──────────────────
 interface Language {
+  id: string;
   pistonLang: string;   // Piston language name; "" = Sandpack/React mode
   pistonVersion: string;
   name: string;
@@ -36,6 +37,7 @@ interface Language {
 
 const LANGUAGES: Language[] = [
   {
+    id: "react",
     pistonLang: "",
     pistonVersion: "",
     name: "React",
@@ -44,6 +46,7 @@ const LANGUAGES: Language[] = [
     defaultCode: `export default function App() {\n  return (\n    <div style={{ padding: "2rem", fontFamily: "sans-serif", background: "#0a0a0f", color: "white", minHeight: "100vh" }}>\n      <h1>Hello Forge</h1>\n      <p>Start coding to prove your skills...</p>\n    </div>\n  );\n}`,
   },
   {
+    id: "javascript",
     pistonLang: "javascript",
     pistonVersion: "18.15.0",
     name: "JavaScript",
@@ -52,6 +55,7 @@ const LANGUAGES: Language[] = [
     defaultCode: `// JavaScript (Node 18)\nconsole.log("Hello, Forge!");\n\nconst solve = (n) =>\n  Array.from({ length: n }, (_, i) => i + 1).reduce((a, b) => a + b, 0);\n\nconsole.log("Sum 1..10 =", solve(10));`,
   },
   {
+    id: "python",
     pistonLang: "python",
     pistonVersion: "3.10.0",
     name: "Python",
@@ -60,6 +64,7 @@ const LANGUAGES: Language[] = [
     defaultCode: `# Python 3.10\nprint("Hello, Forge!")\n\ndef solve(n: int) -> int:\n    return sum(range(1, n + 1))\n\nprint(f"Sum 1..10 = {solve(10)}")`,
   },
   {
+    id: "typescript",
     pistonLang: "typescript",
     pistonVersion: "5.0.3",
     name: "TypeScript",
@@ -68,6 +73,7 @@ const LANGUAGES: Language[] = [
     defaultCode: `// TypeScript 5\nconst greet = (name: string): string => \`Hello, \${name}!\`;\nconsole.log(greet("Forge"));\n\nconst solve = (n: number): number =>\n  Array.from({ length: n }, (_, i) => i + 1).reduce((a, b) => a + b, 0);\n\nconsole.log("Sum 1..10 =", solve(10));`,
   },
   {
+    id: "cpp",
     pistonLang: "c++",
     pistonVersion: "10.2.0",
     name: "C++",
