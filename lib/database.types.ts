@@ -60,6 +60,13 @@ export type Database = {
             foreignKeyName: "applications_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
+            referencedRelation: "active_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
@@ -177,6 +184,7 @@ export type Database = {
           company_name: string
           contact_email: string
           created_at: string | null
+          deleted_at: string | null
           description: string | null
           id: string
           industry: string | null
@@ -195,6 +203,7 @@ export type Database = {
           company_name: string
           contact_email: string
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           id: string
           industry?: string | null
@@ -213,6 +222,7 @@ export type Database = {
           company_name?: string
           contact_email?: string
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           id?: string
           industry?: string | null
@@ -261,6 +271,13 @@ export type Database = {
             foreignKeyName: "forge_badges_challenge_id_fkey"
             columns: ["challenge_id"]
             isOneToOne: false
+            referencedRelation: "active_forge_challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forge_badges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
             referencedRelation: "forge_challenges"
             referencedColumns: ["id"]
           },
@@ -273,6 +290,7 @@ export type Database = {
           challenge_type: string
           checkout_url: string | null
           created_at: string | null
+          deleted_at: string | null
           description: string
           difficulty: string
           drop_time: string | null
@@ -305,6 +323,7 @@ export type Database = {
           challenge_type: string
           checkout_url?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description: string
           difficulty: string
           drop_time?: string | null
@@ -337,6 +356,7 @@ export type Database = {
           challenge_type?: string
           checkout_url?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string
           difficulty?: string
           drop_time?: string | null
@@ -364,6 +384,13 @@ export type Database = {
           vote_weight?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "forge_challenges_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "active_employers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "forge_challenges_employer_id_fkey"
             columns: ["employer_id"]
@@ -546,6 +573,13 @@ export type Database = {
             foreignKeyName: "forge_entries_challenge_id_fkey"
             columns: ["challenge_id"]
             isOneToOne: false
+            referencedRelation: "active_forge_challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forge_entries_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
             referencedRelation: "forge_challenges"
             referencedColumns: ["id"]
           },
@@ -694,6 +728,13 @@ export type Database = {
             columns: ["candidate_id"]
             isOneToOne: false
             referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forge_scoring_queue_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "active_forge_challenges"
             referencedColumns: ["id"]
           },
           {
@@ -866,6 +907,7 @@ export type Database = {
           company_name: string | null
           country: string | null
           created_at: string | null
+          deleted_at: string | null
           description: string
           employer_id: string | null
           expires_at: string | null
@@ -893,6 +935,7 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description: string
           employer_id?: string | null
           expires_at?: string | null
@@ -920,6 +963,7 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string
           employer_id?: string | null
           expires_at?: string | null
@@ -941,6 +985,13 @@ export type Database = {
           work_mode?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "active_employers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_employer_id_fkey"
             columns: ["employer_id"]
@@ -994,6 +1045,285 @@ export type Database = {
       }
     }
     Views: {
+      active_employers: {
+        Row: {
+          challenges_posted: number | null
+          company_logo_url: string | null
+          company_name: string | null
+          contact_email: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string | null
+          industry: string | null
+          is_banned: boolean | null
+          is_pro: boolean | null
+          is_verified: boolean | null
+          ls_subscription_id: string | null
+          ls_subscription_status: string | null
+          plan_expires_at: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          challenges_posted?: number | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          contact_email?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string | null
+          industry?: string | null
+          is_banned?: boolean | null
+          is_pro?: boolean | null
+          is_verified?: boolean | null
+          ls_subscription_id?: string | null
+          ls_subscription_status?: string | null
+          plan_expires_at?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          challenges_posted?: number | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          contact_email?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string | null
+          industry?: string | null
+          is_banned?: boolean | null
+          is_pro?: boolean | null
+          is_verified?: boolean | null
+          ls_subscription_id?: string | null
+          ls_subscription_status?: string | null
+          plan_expires_at?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      active_forge_challenges: {
+        Row: {
+          ai_weight: number | null
+          bounty_amount: number | null
+          challenge_type: string | null
+          checkout_url: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          difficulty: string | null
+          drop_time: string | null
+          employer_id: string | null
+          entry_count: number | null
+          escrow_status: string | null
+          expires_at: string | null
+          id: string | null
+          is_public: boolean | null
+          is_sponsored: boolean | null
+          ls_order_id: string | null
+          max_participants: number | null
+          payment_status: string | null
+          platform_fee: number | null
+          prize_description: string | null
+          prize_type: string | null
+          prize_value: number | null
+          purpose: string | null
+          sponsor_logo_url: string | null
+          sponsor_name: string | null
+          status: string | null
+          time_limit_minutes: number | null
+          title: string | null
+          updated_at: string | null
+          vote_weight: number | null
+        }
+        Insert: {
+          ai_weight?: number | null
+          bounty_amount?: number | null
+          challenge_type?: string | null
+          checkout_url?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          drop_time?: string | null
+          employer_id?: string | null
+          entry_count?: number | null
+          escrow_status?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_public?: boolean | null
+          is_sponsored?: boolean | null
+          ls_order_id?: string | null
+          max_participants?: number | null
+          payment_status?: string | null
+          platform_fee?: number | null
+          prize_description?: string | null
+          prize_type?: string | null
+          prize_value?: number | null
+          purpose?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name?: string | null
+          status?: string | null
+          time_limit_minutes?: number | null
+          title?: string | null
+          updated_at?: string | null
+          vote_weight?: number | null
+        }
+        Update: {
+          ai_weight?: number | null
+          bounty_amount?: number | null
+          challenge_type?: string | null
+          checkout_url?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          drop_time?: string | null
+          employer_id?: string | null
+          entry_count?: number | null
+          escrow_status?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_public?: boolean | null
+          is_sponsored?: boolean | null
+          ls_order_id?: string | null
+          max_participants?: number | null
+          payment_status?: string | null
+          platform_fee?: number | null
+          prize_description?: string | null
+          prize_type?: string | null
+          prize_value?: number | null
+          purpose?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name?: string | null
+          status?: string | null
+          time_limit_minutes?: number | null
+          title?: string | null
+          updated_at?: string | null
+          vote_weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forge_challenges_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "active_employers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forge_challenges_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "employers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      active_jobs: {
+        Row: {
+          benefits: string[] | null
+          category: string | null
+          city: string | null
+          company_name: string | null
+          country: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          employer_id: string | null
+          expires_at: string | null
+          external_apply_url: string | null
+          external_id: string | null
+          id: string | null
+          is_active: boolean | null
+          job_type: string | null
+          location: string | null
+          requirements: string[] | null
+          salary_amount: number | null
+          salary_currency: string | null
+          salary_period: string | null
+          salary_range: string | null
+          source: string | null
+          title: string | null
+          updated_at: string | null
+          views: number | null
+          work_mode: string | null
+        }
+        Insert: {
+          benefits?: string[] | null
+          category?: string | null
+          city?: string | null
+          company_name?: string | null
+          country?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          employer_id?: string | null
+          expires_at?: string | null
+          external_apply_url?: string | null
+          external_id?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          job_type?: string | null
+          location?: string | null
+          requirements?: string[] | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          salary_period?: string | null
+          salary_range?: string | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+          views?: number | null
+          work_mode?: string | null
+        }
+        Update: {
+          benefits?: string[] | null
+          category?: string | null
+          city?: string | null
+          company_name?: string | null
+          country?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          employer_id?: string | null
+          expires_at?: string | null
+          external_apply_url?: string | null
+          external_id?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          job_type?: string | null
+          location?: string | null
+          requirements?: string[] | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          salary_period?: string | null
+          salary_range?: string | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+          views?: number | null
+          work_mode?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "active_employers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "employers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_forge_entries: {
         Row: {
           ai_feedback: string | null
@@ -1047,6 +1377,13 @@ export type Database = {
           vote_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "forge_entries_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "active_forge_challenges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "forge_entries_challenge_id_fkey"
             columns: ["challenge_id"]
