@@ -4,12 +4,13 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   ArrowLeft, BarChart3, Star, Mail, CheckCircle, Eye,
-  X, Sparkles, BrainCircuit, ExternalLink, Trophy, Loader2, Inbox
+  X, Sparkles, BrainCircuit, ExternalLink, Trophy, Loader2, Inbox, Play
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
+import { ReplayPlayer } from "@/components/employer/ReplayPlayer";
 
 export default function EmployerWarRoom() {
   const params = useParams();
@@ -40,6 +41,7 @@ export default function EmployerWarRoom() {
           status: e.status || 'pending',
           ai_critique: e.ai_feedback || 'No AI analysis available yet.',
           repo: e.submission_url || '',
+          replay_json_url: e.replay_json_url || null,
         })));
       }
       setLoading(false);
@@ -187,6 +189,18 @@ export default function EmployerWarRoom() {
                             <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                          </a>
                       </div>
+
+                      {/* Code Replay */}
+                      {selectedEntry.replay_json_url && (
+                        <div>
+                          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                            <Play className="w-4 h-4 text-violet-400" /> Code Replay
+                          </h3>
+                          <div className="h-[360px]">
+                            <ReplayPlayer replayUrl={selectedEntry.replay_json_url} />
+                          </div>
+                        </div>
+                      )}
 
                       <div className="pt-6 border-t border-black/10 dark:border-white/10">
                          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick CRM Actions</h3>

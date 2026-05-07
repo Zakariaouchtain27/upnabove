@@ -93,12 +93,25 @@ export default function CreateChallengePage() {
     sponsor_logo_url: "",
     prize_type: "Cash" as PrizeType,
     announcement_style: "Public post" as AnnounceStyle,
-    
+
+    // Languages allowed in the code arena (only used when challenge_type === 'code')
+    allowed_languages: ["javascript", "python", "typescript"] as string[],
+
     tier: "standard" as Tier
   });
 
   const updateForm = (key: string, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const toggleLanguage = (lang: string) => {
+    setFormData(prev => {
+      const has = prev.allowed_languages.includes(lang);
+      const next = has
+        ? prev.allowed_languages.filter(l => l !== lang)
+        : [...prev.allowed_languages, lang];
+      return { ...prev, allowed_languages: next.length > 0 ? next : prev.allowed_languages };
+    });
   };
 
   const handleNext = () => {
@@ -224,7 +237,7 @@ export default function CreateChallengePage() {
            // Mimic sending them to Stripe/Lemon Squeezy by waiting
            // and instead immediately inserting directly here for mock purposes.
            const insertData = {
-              employer_id: user.id, 
+              employer_id: user.id,
               title: formData.title || "The Arena Challenge",
               description: formData.description || "Survive the brief.",
               challenge_type: formData.challenge_type,
@@ -240,7 +253,8 @@ export default function CreateChallengePage() {
               sponsor_name: formData.sponsor_name,
               sponsor_logo_url: formData.sponsor_logo_url || "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Square_Cash_app_logo.svg/2048px-Square_Cash_app_logo.svg.png",
               prize_type: formData.prize_type,
-              announcement_style: formData.announcement_style
+              announcement_style: formData.announcement_style,
+              allowed_languages: formData.challenge_type === 'code' ? formData.allowed_languages : null,
            };
 
            const { error } = await supabase.from('forge_challenges').insert(insertData);
@@ -253,7 +267,7 @@ export default function CreateChallengePage() {
 
        // Otherwise standard 'Free' push to supabase
        const insertData = {
-          employer_id: user.id, 
+          employer_id: user.id,
           title: formData.title,
           description: formData.description,
           challenge_type: formData.challenge_type,
@@ -265,7 +279,8 @@ export default function CreateChallengePage() {
           drop_time: new Date(formData.drop_time).toISOString(),
           expires_at: new Date(formData.expires_at).toISOString(),
           status: 'scheduled',
-          is_sponsored: false
+          is_sponsored: false,
+          allowed_languages: formData.challenge_type === 'code' ? formData.allowed_languages : null,
        };
 
        const { error } = await supabase.from('forge_challenges').insert(insertData);
@@ -388,6 +403,44 @@ export default function CreateChallengePage() {
                            ))}
                         </div>
                      </div>
+                     {/* Language picker — only visible for code challenges */}
+                     {formData.challenge_type === 'code' && (
+                       <div>
+                         <label className="block text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
+                           <Code2 className="w-4 h-4 text-violet-400" /> Allowed Languages
+                         </label>
+                         <p className="text-xs font-mono text-muted-foreground mb-4">Select which languages candidates can use. At least one must be selected.</p>
+                         <div className="flex flex-wrap gap-3">
+                           {[
+                             { id: "javascript", label: "JavaScript", badge: "JS" },
+                             { id: "python",     label: "Python",     badge: "PY" },
+                             { id: "typescript", label: "TypeScript", badge: "TS" },
+                             { id: "cpp",        label: "C++",        badge: "C++" },
+                             { id: "react",      label: "React",      badge: "JSX" },
+                           ].map(lang => {
+                             const active = formData.allowed_languages.includes(lang.id);
+                             return (
+                               <button
+                                 key={lang.id}
+                                 type="button"
+                                 onClick={() => toggleLanguage(lang.id)}
+                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-black uppercase tracking-wider transition-all ${
+                                   active
+                                     ? "bg-violet-500/20 border-violet-500 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
+                                     : "bg-surface border-white/10 text-muted-foreground hover:border-white/20"
+                                 }`}
+                               >
+                                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-black border ${active ? "bg-violet-500/30 border-violet-500/50 text-violet-300" : "bg-zinc-800 border-white/10 text-zinc-400"}`}>
+                                   {lang.badge}
+                                 </span>
+                                 {lang.label}
+                               </button>
+                             );
+                           })}
+                         </div>
+                       </div>
+                     )}
+
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                            <label className="block text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white mb-3">Difficulty</label>
