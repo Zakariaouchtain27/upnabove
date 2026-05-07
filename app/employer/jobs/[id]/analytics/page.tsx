@@ -15,7 +15,8 @@ export default async function JobAnalyticsPage({ params }: { params: Promise<{ i
   const { data, error } = await getJobAnalytics(jobId, user.id);
   if (error || !data) notFound();
 
-  const { job, applications, applicationTrend, funnel } = data;
+  // notFound() returns never, but TypeScript may not narrow the union — safe to assert
+  const { job, applications, applicationTrend, funnel } = data!;
   const views = job.views ?? 0;
   const conversionRate = views > 0 ? ((applications.length / views) * 100).toFixed(1) : "0.0";
 

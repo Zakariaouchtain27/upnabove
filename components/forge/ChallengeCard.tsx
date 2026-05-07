@@ -11,7 +11,7 @@ import { Database } from "@/lib/database.types";
 
 type BaseChallenge = Database['public']['Tables']['forge_challenges']['Row'];
 
-export interface ForgeChallenge extends Omit<BaseChallenge, 'difficulty' | 'status' | 'prize_type'> {
+export interface ForgeChallenge extends Omit<BaseChallenge, 'difficulty' | 'status' | 'prize_type' | 'sponsor_logo_url'> {
   difficulty: "junior" | "mid" | "senior" | string;
   status: ChallengeStatus | string;
   sponsor_logo_url?: string | null;
