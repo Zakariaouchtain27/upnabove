@@ -80,10 +80,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="relative z-10 min-h-screen">
-      <div className="mx-auto max-w-4xl px-6 py-8">
+      <div className="mx-auto max-w-3xl px-6 pt-12 pb-16">
 
         {/* ── Header ───────────────────────────────────────────── */}
-        <div className="mb-8">
+        <div className="mb-7">
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 mb-1">
             Candidate Portal
           </p>
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── Stats ────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
           {stats.map((s) => (
             <div
               key={s.label}
