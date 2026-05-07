@@ -79,7 +79,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="relative z-10 min-h-screen bg-[#09090b]">
+    <div className="relative z-10 min-h-screen">
       <div className="mx-auto max-w-4xl px-6 py-8">
 
         {/* ── Header ───────────────────────────────────────────── */}
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
           </p>
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              {firstName ? `Welcome back, ${firstName} 👋` : "Dashboard"}
+              {firstName ? `Welcome back, ${firstName}` : "Dashboard"}
             </h1>
             <Link
               href="/jobs"
@@ -109,7 +109,7 @@ export default async function DashboardPage() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className={`p-4 rounded-2xl border bg-zinc-900/60 ${s.border} flex items-center gap-3`}
+              className={`p-4 rounded-2xl border bg-zinc-900 ${s.border} flex items-center gap-3`}
             >
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${s.bg}`}>
                 <s.icon className={`w-4 h-4 ${s.color}`} />
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
               <Link
                 key={a.href}
                 href={a.href}
-                className={`group flex flex-col gap-3 p-5 rounded-2xl border bg-zinc-900/60 transition-all duration-200 ${a.border} ${a.hoverBorder} ${a.hoverGlow}`}
+                className={`group flex flex-col gap-3 p-5 rounded-2xl border bg-zinc-900 transition-all duration-200 ${a.border} ${a.hoverBorder} ${a.hoverGlow}`}
               >
                 <div className="flex items-center justify-between">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${a.bg} ${a.border} border`}>
