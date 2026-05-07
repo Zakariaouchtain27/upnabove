@@ -31,12 +31,12 @@ export async function POST(req: NextRequest) {
     const { data: employer } = challenge.employer_id
       ? await supabase
           .from('employers')
-          .select('email, company_name')
+          .select('contact_email, company_name')
           .eq('id', challenge.employer_id)
           .single()
       : { data: null };
 
-    if (!employer?.email) {
+    if (!employer?.contact_email) {
       return NextResponse.json({ error: "No sponsor email on file for this challenge" }, { status: 422 });
     }
 
@@ -82,12 +82,12 @@ export async function POST(req: NextRequest) {
     if (resend) {
       await resend.emails.send({
         from: 'The Forge <analytics@forge.upnabove.com>',
-        to: employer.email,
+        to: employer.contact_email,
         subject: `Your Forge Drop Analytics: ${challenge.title}`,
         html,
       });
     } else {
-      console.log('[DEV] Sponsor analytics email would be sent to:', employer.email);
+      console.log('[DEV] Sponsor analytics email would be sent to:', employer.contact_email);
     }
 
     return NextResponse.json({ success: true, message: "Analytics email dispatched.", totalEntries, avgScore });
