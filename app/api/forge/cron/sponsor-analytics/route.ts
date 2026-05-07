@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     // Aggregate real stats from forge_entries
     const { data: entries } = await supabase
       .from('forge_entries')
-      .select('ai_score, candidate_id, codename, final_rank')
+      .select('ai_score, candidate_id, codename, rank')
       .eq('challenge_id', challenge_id);
 
     const totalEntries = entries?.length ?? 0;
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const avgScore = scoredEntries.length > 0
       ? Math.round(scoredEntries.reduce((sum, e) => sum + (e.ai_score ?? 0), 0) / scoredEntries.length * 10) / 10
       : null;
-    const topEntry = entries?.find(e => e.final_rank === 1);
+    const topEntry = entries?.find(e => e.rank === 1);
 
     const statsHtml = `
       <tr><td style="padding:8px 0;color:#555;">Total Entries</td><td style="padding:8px 0;font-weight:bold;color:#111;">${totalEntries}</td></tr>

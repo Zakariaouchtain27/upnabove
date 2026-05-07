@@ -76,17 +76,17 @@ export async function processWinnerReveals() {
     // Fetch top 3 entries with candidate IDs to notify winners
     const { data: topEntries } = await supabase
       .from('forge_entries')
-      .select('candidate_id, final_rank, codename')
+      .select('candidate_id, rank, codename')
       .eq('challenge_id', challenge.id)
-      .not('final_rank', 'is', null)
-      .order('final_rank', { ascending: true })
+      .not('rank', 'is', null)
+      .order('rank', { ascending: true })
       .limit(3);
 
     const rankLabels: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd' };
 
     for (const entry of topEntries || []) {
       if (!entry.candidate_id) continue;
-      const rank = entry.final_rank as number;
+      const rank = entry.rank as number;
       const label = rankLabels[rank] ?? `#${rank}`;
 
       await sendNotification({
@@ -167,7 +167,7 @@ export async function awardSystemBadges() {
   const { data: firstWinEntries } = await supabase
     .from('forge_entries')
     .select('candidate_id')
-    .eq('final_rank', 1)
+    .eq('rank', 1)
     .not('candidate_id', 'is', null);
 
   const firstWinIds = [...new Set((firstWinEntries || []).map(e => e.candidate_id as string))];
