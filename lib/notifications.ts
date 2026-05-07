@@ -76,7 +76,7 @@ export async function sendNotification({
         <p style="color: #555; font-size: 15px; line-height: 1.6;">${body}</p>
         ${link ? `
           <div style="margin-top: 25px;">
-            <a href="https://upnabove.work${link}" style="background-color: #7C3AED; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://upnabove.work'}${link}" style="background-color: #7C3AED; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
               View Details in The Forge
             </a>
           </div>

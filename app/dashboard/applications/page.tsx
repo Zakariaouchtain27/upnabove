@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Building2, ExternalLink, Inbox } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
@@ -19,9 +20,10 @@ const statusVariant: Record<string, "primary" | "success" | "warning" | "danger"
 export default async function ApplicationsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/auth");
 
   let applications: any[] = [];
-  
+
   if (user) {
     const { data } = await supabase
       .from('applications')
