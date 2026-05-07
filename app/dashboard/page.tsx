@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   FileText, Send, Briefcase, Clock,
   TrendingUp, Star, Flame, ArrowRight, Search,
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/auth");
 
   let applicationCount = 0;
   let firstName = "";

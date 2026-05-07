@@ -1,6 +1,6 @@
-// Anthropic temporarily ripped out.
-// import Anthropic from "@anthropic-ai/sdk";
-// const client = ...
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export interface Criterion {
   name: string;
@@ -17,7 +17,6 @@ export interface ScoringResult {
   standout_factor: string;
 }
 
-// Default criteria used when a challenge has none specified
 function defaultCriteria(challengeType: string): Criterion[] {
   const byType: Record<string, Criterion[]> = {
     code: [
@@ -66,13 +65,61 @@ export async function scoreSubmission(params: {
   const { submissionText, submissionUrl, challengeTitle, challengeDescription, challengeType, difficulty, criteria } = params;
   const activeCriteria = (criteria && criteria.length > 0) ? criteria : defaultCriteria(challengeType);
 
-  // Mock the return gracefully for downstream dependencies to survive
-  return {
-    total_score: 85,
-    criterion_scores: activeCriteria.map(c => ({ name: c.name, score: 85, weight: c.weight })),
-    strengths: ["Clean code formatting", "Attempted the criteria closely"],
-    improvements: ["AI Scoring currently disabled."],
-    summary: "AI Automated Auditing is disabled. Score defaulted.",
-    standout_factor: "N/A - System update in progress.",
-  };
+  const criteriaBlock = activeCriteria
+    .map(c => `- ${c.name} (weight: ${c.weight}%): ${c.description}`)
+    .join("\n");
+
+  const submissionBlock = [
+    submissionText ? `Submission text:\n${submissionText}` : null,
+    submissionUrl ? `Submission URL: ${submissionUrl}` : null,
+  ].filter(Boolean).join("\n\n");
+
+  const prompt = `You are an expert technical evaluator for a competitive developer challenge platform called The Forge. Score the following submission objectively and return ONLY valid JSON.
+
+Challenge: ${challengeTitle}
+Type: ${challengeType}
+Difficulty level: ${difficulty}
+
+Challenge brief:
+${challengeDescription}
+
+Judging criteria:
+${criteriaBlock}
+
+---
+
+${submissionBlock}
+
+---
+
+Return a JSON object with exactly this shape:
+{
+  "total_score": <weighted average score 0-100, integer>,
+  "criterion_scores": [
+    { "name": "<criterion name>", "score": <0-100 integer>, "weight": <weight integer> }
+  ],
+  "strengths": ["<specific strength 1>", "<specific strength 2>", "<specific strength 3>"],
+  "improvements": ["<specific improvement 1>", "<specific improvement 2>"],
+  "summary": "<2-3 sentence overall evaluation>",
+  "standout_factor": "<one sentence describing the single most impressive or unique aspect, or 'Nothing stands out.' if score is below 50>"
+}
+
+Score calibration for difficulty=${difficulty}: junior=lenient (avg 65-75), mid=standard (avg 55-70), senior=strict (avg 45-65). Be honest and specific. Do not inflate scores.`;
+
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 1024,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const raw = (message.content[0] as { type: string; text: string }).text.trim();
+
+  // Strip markdown code fences if present
+  const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  const parsed = JSON.parse(jsonText) as ScoringResult;
+
+  // Clamp total_score to integer 0-100
+  parsed.total_score = Math.min(100, Math.max(0, Math.round(parsed.total_score)));
+
+  return parsed;
 }

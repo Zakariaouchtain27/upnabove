@@ -42,8 +42,7 @@ export default function CandidateForgeDashboard() {
     async function init() {
        const supabase = createClient();
        const { data: { user } } = await supabase.auth.getUser();
-       // Temporarily disabled for testing:
-       // if (!user) return router.push('/auth');
+       if (!user) return router.push('/auth');
 
        let c;
        if (user) {

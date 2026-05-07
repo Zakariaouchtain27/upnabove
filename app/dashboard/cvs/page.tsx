@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Upload, FileText, Trash2, Download, Loader2, Inbox, Star } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
@@ -16,6 +17,7 @@ interface CV {
 
 export default function CVsPage() {
   const supabase = createClient();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cvs, setCvs] = useState<CV[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function CVsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
-         setLoading(false);
+         router.push("/auth");
          return;
       }
       const user = session.user;
