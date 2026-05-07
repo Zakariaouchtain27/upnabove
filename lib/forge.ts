@@ -118,11 +118,11 @@ export async function awardSystemBadges() {
       .from('forge_badges')
       .select('id')
       .eq('candidate_id', candidate.id)
-      .eq('badge_id', 'streak_7')
+      .eq('badge_type', 'streak_7')
       .maybeSingle();
 
     if (!existing) {
-      await supabase.from('forge_badges').insert({ candidate_id: candidate.id, badge_id: 'streak_7' });
+      await supabase.from('forge_badges').insert({ candidate_id: candidate.id, badge_type: 'streak_7' });
       await sendNotification({
         candidateId: candidate.id,
         type: 'badge_earned',
@@ -146,11 +146,11 @@ export async function awardSystemBadges() {
       .from('forge_badges')
       .select('id')
       .eq('candidate_id', candidate.id)
-      .eq('badge_id', 'streak_30')
+      .eq('badge_type', 'streak_30')
       .maybeSingle();
 
     if (!existing) {
-      await supabase.from('forge_badges').insert({ candidate_id: candidate.id, badge_id: 'streak_30' });
+      await supabase.from('forge_badges').insert({ candidate_id: candidate.id, badge_type: 'streak_30' });
       await sendNotification({
         candidateId: candidate.id,
         type: 'badge_earned',
@@ -177,11 +177,11 @@ export async function awardSystemBadges() {
       .from('forge_badges')
       .select('id')
       .eq('candidate_id', candidateId)
-      .eq('badge_id', 'first_win')
+      .eq('badge_type', 'first_win')
       .maybeSingle();
 
     if (!existing) {
-      await supabase.from('forge_badges').insert({ candidate_id: candidateId, badge_id: 'first_win' });
+      await supabase.from('forge_badges').insert({ candidate_id: candidateId, badge_type: 'first_win' });
       await sendNotification({
         candidateId,
         type: 'badge_earned',
