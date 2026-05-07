@@ -85,6 +85,7 @@ export default async function JobsPage({
   }
 
   const displayJobs = jobs || [];
+  const hasActiveSearch = !!(queryText || locationText || categoryText || timeText !== 'any');
 
   return (
     <div className="min-h-screen bg-transparent relative pt-24 px-6 sm:px-10 pb-32">
@@ -130,15 +131,31 @@ export default async function JobsPage({
               <ScrollReveal delay={0.3} direction="up">
                 <div className="flex flex-col items-center justify-center py-24 bg-surface/50 border border-border border-dashed rounded-3xl text-center">
                   <Inbox className="w-16 h-16 text-muted mb-6" />
-                  <h3 className="text-2xl font-bold text-foreground mb-2">No Opportunities Yet</h3>
-                  <p className="text-muted max-w-md mb-8">
-                    Jobs will appear here once employers start posting. In the meantime, sharpen your skills in The Forge!
-                  </p>
-                  <Link href="/forge">
-                    <button className="px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:scale-105 transition-all shadow-sm">
-                      Enter The Forge
-                    </button>
-                  </Link>
+                  {hasActiveSearch ? (
+                    <>
+                      <h3 className="text-2xl font-bold text-foreground mb-2">No Results Found</h3>
+                      <p className="text-muted max-w-md mb-8">
+                        No jobs match your search. Try different keywords, a broader location, or remove the time filter.
+                      </p>
+                      <Link href="/jobs">
+                        <button className="px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:scale-105 transition-all shadow-sm">
+                          Clear Search
+                        </button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-2xl font-bold text-foreground mb-2">No Opportunities Yet</h3>
+                      <p className="text-muted max-w-md mb-8">
+                        Jobs will appear here once employers start posting. In the meantime, sharpen your skills in The Forge!
+                      </p>
+                      <Link href="/forge">
+                        <button className="px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:scale-105 transition-all shadow-sm">
+                          Enter The Forge
+                        </button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </ScrollReveal>
             ) : (
