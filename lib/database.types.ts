@@ -1098,6 +1098,7 @@ export type Database = {
       }
       generate_codename: { Args: { p_challenge_id: string }; Returns: string }
       increment_entry_count: { Args: { row_id: string }; Returns: undefined }
+      increment_job_views: { Args: { job_id: string }; Returns: undefined }
       increment_vote: { Args: { row_id: string }; Returns: undefined }
       reveal_top_entries: {
         Args: { p_challenge_id: string; p_top_n: number }
