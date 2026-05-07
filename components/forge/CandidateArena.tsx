@@ -365,7 +365,6 @@ export function CandidateArena({
                   scrollBeyondLastLine: false,
                   padding: { top: 16, bottom: 16 },
                   lineNumbers: "on",
-                  glowingLineWidth: 3,
                   renderLineHighlight: "line",
                   cursorBlinking: "smooth",
                   smoothScrolling: true,
