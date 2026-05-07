@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { codeExecutionLimiter, getClientIp } from "@/lib/rateLimit";
 
 // ── Piston API types ─────────────────────────────────────────────────────────
 interface PistonResponse {
@@ -40,6 +41,24 @@ const ALLOWED_LANGUAGES = new Set(["python", "javascript", "typescript", "c++", 
 const MAX_CODE_LENGTH = 50_000;
 
 export async function POST(req: Request) {
+  // Rate limit — checked before auth to reject abusers cheaply
+  const ip = getClientIp(req);
+  const { success, limit, remaining, reset } = await codeExecutionLimiter.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: "You are compiling too fast. Please wait a moment." },
+      {
+        status: 429,
+        headers: {
+          "X-RateLimit-Limit": String(limit),
+          "X-RateLimit-Remaining": String(remaining),
+          "X-RateLimit-Reset": String(reset),
+          "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
+
   // Auth guard — must be a signed-in user
   const { createClient } = await import("@/lib/supabase/server");
   const supabase = await createClient();
