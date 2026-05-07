@@ -12,7 +12,7 @@ import {
 } from "@codesandbox/sandpack-react";
 import { useLiveBroadcast } from "@/hooks/useLiveBroadcast";
 import { Shield, Zap, Terminal, Wifi, Play, ChevronDown, Loader2, CheckCircle, XCircle } from "lucide-react";
-import type { ExecuteResponse } from "@/app/api/execute/route";
+import type { ExecuteRequest, ExecuteResponse } from "@/app/api/execute/route";
 
 // ── Monaco dynamic import (avoids SSR crash) ────────────────────────────────
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -24,9 +24,10 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ),
 });
 
-// ── Language definitions ─────────────────────────────────────────────────────
+// ── Language definitions (Piston runtime names + versions) ──────────────────
 interface Language {
-  id: number;        // Judge0 language ID; 0 = Sandpack/React mode
+  pistonLang: string;   // Piston language name; "" = Sandpack/React mode
+  pistonVersion: string;
   name: string;
   badge: string;
   monacoLang: string;
@@ -35,35 +36,40 @@ interface Language {
 
 const LANGUAGES: Language[] = [
   {
-    id: 0,
+    pistonLang: "",
+    pistonVersion: "",
     name: "React",
     badge: "JSX",
     monacoLang: "javascript",
     defaultCode: `export default function App() {\n  return (\n    <div style={{ padding: "2rem", fontFamily: "sans-serif", background: "#0a0a0f", color: "white", minHeight: "100vh" }}>\n      <h1>Hello Forge</h1>\n      <p>Start coding to prove your skills...</p>\n    </div>\n  );\n}`,
   },
   {
-    id: 63,
+    pistonLang: "javascript",
+    pistonVersion: "18.15.0",
     name: "JavaScript",
     badge: "JS",
     monacoLang: "javascript",
-    defaultCode: `// JavaScript — run with Judge0\nconsole.log("Hello, Forge!");\n\nconst solve = (n) => {\n  return Array.from({ length: n }, (_, i) => i + 1)\n    .reduce((sum, x) => sum + x, 0);\n};\n\nconsole.log("Sum 1..10 =", solve(10));`,
+    defaultCode: `// JavaScript (Node 18)\nconsole.log("Hello, Forge!");\n\nconst solve = (n) =>\n  Array.from({ length: n }, (_, i) => i + 1).reduce((a, b) => a + b, 0);\n\nconsole.log("Sum 1..10 =", solve(10));`,
   },
   {
-    id: 71,
+    pistonLang: "python",
+    pistonVersion: "3.10.0",
     name: "Python",
     badge: "PY",
     monacoLang: "python",
-    defaultCode: `# Python — run with Judge0\nprint("Hello, Forge!")\n\ndef solve(n: int) -> int:\n    return sum(range(1, n + 1))\n\nprint(f"Sum 1..10 = {solve(10)}")`,
+    defaultCode: `# Python 3.10\nprint("Hello, Forge!")\n\ndef solve(n: int) -> int:\n    return sum(range(1, n + 1))\n\nprint(f"Sum 1..10 = {solve(10)}")`,
   },
   {
-    id: 74,
+    pistonLang: "typescript",
+    pistonVersion: "5.0.3",
     name: "TypeScript",
     badge: "TS",
     monacoLang: "typescript",
-    defaultCode: `// TypeScript — run with Judge0\nconst greet = (name: string): string => \`Hello, \${name}!\`;\nconsole.log(greet("Forge"));\n\nconst solve = (n: number): number =>\n  Array.from({ length: n }, (_, i) => i + 1).reduce((a, b) => a + b, 0);\n\nconsole.log("Sum 1..10 =", solve(10));`,
+    defaultCode: `// TypeScript 5\nconst greet = (name: string): string => \`Hello, \${name}!\`;\nconsole.log(greet("Forge"));\n\nconst solve = (n: number): number =>\n  Array.from({ length: n }, (_, i) => i + 1).reduce((a, b) => a + b, 0);\n\nconsole.log("Sum 1..10 =", solve(10));`,
   },
   {
-    id: 54,
+    pistonLang: "c++",
+    pistonVersion: "10.2.0",
     name: "C++",
     badge: "C++",
     monacoLang: "cpp",
@@ -92,7 +98,7 @@ function ArenaListener({
 function TerminalPanel({ result, isRunning }: { result: ExecuteResponse | null; isRunning: boolean }) {
   const output = result?.stdout?.trim();
   const errors = [result?.stderr, result?.compile_output].filter(Boolean).join("\n").trim();
-  const statusOk = result && result.status.id <= 3; // 1=queued 2=processing 3=accepted
+  const exitOk = result ? result.exit_code === 0 : null;
 
   return (
     <div className="flex flex-col border-t border-white/5">
@@ -108,13 +114,12 @@ function TerminalPanel({ result, isRunning }: { result: ExecuteResponse | null; 
         </span>
         {result && (
           <span className="ml-auto flex items-center gap-1 text-[10px] font-mono">
-            {statusOk ? (
-              <><CheckCircle className="w-3 h-3 text-emerald-400" /><span className="text-emerald-400">{result.status.description}</span></>
+            {exitOk ? (
+              <><CheckCircle className="w-3 h-3 text-emerald-400" /><span className="text-emerald-400">Exited 0</span></>
             ) : (
-              <><XCircle className="w-3 h-3 text-red-400" /><span className="text-red-400">{result.status.description}</span></>
+              <><XCircle className="w-3 h-3 text-red-400" /><span className="text-red-400">Exit {result.exit_code}</span></>
             )}
-            {result.time && <span className="text-zinc-600 ml-2">{result.time}s</span>}
-            {result.memory && <span className="text-zinc-600">{Math.round(result.memory / 1024)}KB</span>}
+            <span className="text-zinc-600 ml-2">{result.language} {result.version}</span>
           </span>
         )}
       </div>
@@ -177,19 +182,18 @@ export function CandidateArena({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const isReactMode = selectedLang.id === 0;
+  const isReactMode = selectedLang.pistonLang === "";
 
   const handleLangSelect = useCallback((lang: Language) => {
     setSelectedLang(lang);
     setLangMenuOpen(false);
     setResult(null);
     setRunError(null);
-    if (!isReactMode) {
-      const code = lang.defaultCode;
-      setMonacoCode(code);
-      onChange?.(code);
+    if (lang.pistonLang !== "") {
+      setMonacoCode(lang.defaultCode);
+      onChange?.(lang.defaultCode);
     }
-  }, [isReactMode, onChange]);
+  }, [onChange]);
 
   const handleMonacoChange = useCallback((value: string | undefined) => {
     const code = value ?? "";
@@ -204,10 +208,15 @@ export function CandidateArena({
     setRunError(null);
 
     try {
+      const payload: ExecuteRequest = {
+        source_code: monacoCode || selectedLang.defaultCode,
+        language:    selectedLang.pistonLang,
+        version:     selectedLang.pistonVersion,
+      };
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source_code: monacoCode, language_id: selectedLang.id }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
