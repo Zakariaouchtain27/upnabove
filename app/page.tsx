@@ -16,8 +16,8 @@ export default async function HomePage() {
 
       {/* Background */}
       <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
-      <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] bg-violet-700/10 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-700/8 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[200px] h-[200px] sm:w-[400px] sm:h-[400px] md:w-[700px] md:h-[700px] bg-violet-700/10 rounded-full blur-[60px] sm:blur-[100px] md:blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[180px] h-[180px] sm:w-[350px] sm:h-[350px] md:w-[600px] md:h-[600px] bg-cyan-700/8 rounded-full blur-[60px] sm:blur-[100px] md:blur-[130px] pointer-events-none" />
       <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
 
       {/* Main content */}
@@ -25,7 +25,7 @@ export default async function HomePage() {
 
         {/* Wordmark */}
         <div className="mb-10">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-zinc-50 mb-4 leading-none">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-zinc-50 mb-4 leading-none">
             up<span className="text-violet-400">N</span>above
           </h1>
           <p className="text-lg sm:text-xl text-zinc-300 font-normal leading-relaxed max-w-md mx-auto">

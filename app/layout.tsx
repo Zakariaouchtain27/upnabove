@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
@@ -15,6 +15,14 @@ const inter = Inter({
   variable: '--font-inter',
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: '#050a14',
+};
 
 export const metadata: Metadata = {
   title: "upNabove — Rise up. Find work. Go above.",
