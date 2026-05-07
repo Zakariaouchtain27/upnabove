@@ -146,7 +146,7 @@ export default async function JobDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <JobViewTracker jobId={id} />
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Back */}
       <Link
         href="/jobs"
