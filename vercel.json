@@ -1,2 +1,8 @@
 {
+  "crons": [
+    {
+      "path": "/api/jobs/cron/aggregate",
+      "schedule": "0 */6 * * *"
+    }
+  ]
 }
