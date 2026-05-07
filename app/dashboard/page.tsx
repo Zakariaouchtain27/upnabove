@@ -42,6 +42,8 @@ export default async function DashboardPage() {
   ];
 
   return (
+    /* Solid backing so the animated canvas doesn't bleed through gaps */
+    <div className="relative z-10 min-h-screen bg-background">
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 space-y-10">
 
       {/* ── Header ─────────────────────────────────────────────── */}
@@ -67,7 +69,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Stats ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div
             key={s.label}
@@ -184,6 +186,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
+    </div>
     </div>
   );
 }
