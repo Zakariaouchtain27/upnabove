@@ -76,11 +76,11 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
 
           {challenge.description ? (
             <div className="forge-panel p-7 rounded-2xl space-y-3">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 <FileText className="w-3.5 h-3.5" />
                 Mission Brief
               </div>
-              <p className="whitespace-pre-wrap font-mono leading-relaxed text-zinc-300 text-sm">
+              <p className="whitespace-pre-wrap font-mono leading-relaxed text-zinc-100 text-sm">
                 {challenge.description}
               </p>
             </div>
@@ -95,12 +95,12 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
 
 
           <div className="forge-panel p-7 rounded-2xl">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500 mb-6">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-400 mb-6">
               Mission Intel
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="space-y-1.5">
-                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
                   <Clock className="w-3 h-3" /> Time Limit
                 </span>
                 <span className="font-black text-white text-2xl font-mono">
@@ -108,7 +108,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
                 </span>
               </div>
               <div className="space-y-1.5">
-                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
                   <Trophy className="w-3 h-3" /> Bounty
                 </span>
                 <span className="font-black text-amber-400 text-2xl font-mono">
@@ -116,7 +116,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
                 </span>
               </div>
               <div className="space-y-1.5">
-                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
                   <Users className="w-3 h-3" /> Entrants
                 </span>
                 <span className="font-black text-violet-400 text-2xl font-mono">
@@ -124,7 +124,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
                 </span>
               </div>
               <div className="space-y-1.5">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold block">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold block">
                   Spectating
                 </span>
                 <div className="mt-0.5">
@@ -139,7 +139,7 @@ export function LiveChallenge({ challenge, userId, hasEntered = false, referralL
 
           {/* Countdown */}
           <div className="forge-panel rounded-2xl overflow-hidden">
-            <div className="px-6 pt-5 pb-1 text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500">
+            <div className="px-6 pt-5 pb-1 text-[10px] font-black tracking-[0.3em] uppercase text-zinc-400">
               Time Remaining
             </div>
             <div className="flex items-center justify-center py-6">
