@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { fetchRemotiveJobs } from "@/lib/adapters/jobs/remotive";
 import { fetchHimalayasJobs } from "@/lib/adapters/jobs/himalayas";
+import { fetchRapidApiJobs } from "@/lib/adapters/jobs/rapidapi";
 import type { NormalizedJob } from "@/lib/types/jobs";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export async function GET(req: Request) {
   const adapters: Array<() => Promise<NormalizedJob[]>> = [
     () => fetchRemotiveJobs(100),
     () => fetchHimalayasJobs(20),
+    () => fetchRapidApiJobs("software engineer"),
   ];
 
   const results = await Promise.allSettled(adapters.map((fn) => fn()));
