@@ -11,7 +11,7 @@ export default async function EmployerLayout({
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth");
+  if (!user) redirect("/login");
 
   const { data: employer } = await supabase
     .from("employers")
@@ -19,7 +19,7 @@ export default async function EmployerLayout({
     .eq("id", user.id)
     .single();
 
-  if (!employer) redirect("/auth");
+  if (!employer) redirect("/login");
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row pt-16">

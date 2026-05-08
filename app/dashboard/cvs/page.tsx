@@ -29,7 +29,7 @@ export default function CVsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
-         router.push("/auth");
+         router.push("/login");
          return;
       }
       const user = session.user;

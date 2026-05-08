@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function SquadDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth");
+  if (!user) redirect("/login");
 
   // Find the squad this user belongs to (as leader or member)
   const { data: membership } = await supabase

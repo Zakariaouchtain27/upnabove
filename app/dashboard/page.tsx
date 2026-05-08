@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth");
+  if (!user) redirect("/login");
 
   let applicationCount = 0;
   let firstName = "";

@@ -15,6 +15,8 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   const signupSuccess = searchParams?.get('signup') === 'success'
+  const authError = searchParams?.get('error')
+  const nextPath = searchParams?.get('next') ?? null
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,16 +43,17 @@ export default function LoginPage() {
     }
 
     if (data.user) {
-      // Explicitly fetch profile so we don't rely only on middleware race conditions
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single()
-        
+
       router.refresh()
-      
-      if (!profile?.role) {
+
+      if (nextPath) {
+        router.push(nextPath)
+      } else if (!profile?.role) {
         router.push('/onboarding')
       } else if (profile.role === 'employer') {
         router.push('/employer')
@@ -94,6 +97,12 @@ export default function LoginPage() {
           <div className="mb-4 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm text-center">
             <h3 className="font-bold text-green-300 mb-1">Account Created!</h3>
             <p>Please check your email inbox to confirm your account before signing in.</p>
+          </div>
+        )}
+
+        {authError && !error && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
+            Authentication failed. Please try signing in again.
           </div>
         )}
 

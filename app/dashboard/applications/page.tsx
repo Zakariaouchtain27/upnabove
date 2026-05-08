@@ -20,7 +20,7 @@ const statusVariant: Record<string, "primary" | "success" | "warning" | "danger"
 export default async function ApplicationsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth");
+  if (!user) redirect("/login");
 
   let applications: any[] = [];
 

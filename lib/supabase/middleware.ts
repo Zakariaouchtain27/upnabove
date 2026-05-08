@@ -61,8 +61,17 @@ export async function updateSession(request: NextRequest) {
 
   } else {
     // If not authenticated and trying to access protected routes
-    if (path.startsWith('/dashboard') || path.startsWith('/employer') || path === '/onboarding') {
-      return NextResponse.redirect(new URL('/login', request.url))
+    const isProtected =
+      path.startsWith('/dashboard') ||
+      path.startsWith('/employer') ||
+      path.startsWith('/forge') ||
+      path === '/onboarding';
+
+    if (isProtected) {
+      const loginUrl = new URL('/login', request.url);
+      // Preserve the intended destination so we can redirect back after login
+      loginUrl.searchParams.set('next', path);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
