@@ -24,26 +24,79 @@ export const viewport: Viewport = {
   themeColor: '#050a14',
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
+
 export const metadata: Metadata = {
-  title: "upNabove — Rise up. Find work. Go above.",
+  metadataBase: new URL(BASE_URL),
+
+  title: {
+    default: "upNabove — Rise up. Find work. Go above.",
+    template: "%s | upNabove",
+  },
   description:
-    "upNabove is a global job marketplace connecting top talent with the world's best employers. Search jobs, build your career, and go above.",
-  keywords: ["jobs", "careers", "hiring", "remote work", "job marketplace"],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work"),
+    "upNabove is a global tech job marketplace and skills arena. Search thousands of remote & on-site engineering, design, and product jobs. Prove your skills in live coding challenges and get hired.",
+  keywords: [
+    "tech jobs",
+    "software engineer jobs",
+    "remote developer jobs",
+    "coding challenges",
+    "developer job board",
+    "programming jobs",
+    "startup jobs",
+    "hire developers",
+    "job marketplace",
+  ],
+  authors: [{ name: "upNabove", url: BASE_URL }],
+  applicationName: "upNabove",
+  creator: "upNabove",
+  publisher: "upNabove",
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+
+  alternates: {
+    canonical: BASE_URL,
+  },
+
   verification: {
     google: "_6ky2YebI_Uhfek75-H0VrlreE9bXYm4eEQtraGcasU",
   },
+
   openGraph: {
     title: "upNabove — Rise up. Find work. Go above.",
-    description: "A global job marketplace connecting talent with opportunity.",
-    url: process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work",
+    description:
+      "Find your next tech role or prove your skills in live coding challenges. The job board built for developers.",
+    url: BASE_URL,
     siteName: "upNabove",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: `${BASE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "upNabove — Tech Jobs & Coding Challenges",
+      },
+    ],
   },
+
   twitter: {
     card: "summary_large_image",
     title: "upNabove — Rise up. Find work. Go above.",
-    description: "A global job marketplace connecting talent with opportunity.",
+    description:
+      "Find your next tech role or prove your skills in live coding challenges.",
+    images: [`${BASE_URL}/og-image.png`],
+    creator: "@upnabove",
+    site: "@upnabove",
   },
 };
 

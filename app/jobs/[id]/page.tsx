@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import OneClickApply from "@/components/jobs/OneClickApply";
 import JobViewTracker from "@/components/jobs/JobViewTracker";
 
-const BASE_URL = 'https://upnabove-zeta.vercel.app';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
 
 // ─── Dynamic SEO Metadata ────────────────────────────────────────────────────
 export async function generateMetadata({
@@ -30,36 +30,39 @@ export async function generateMetadata({
   const supabase = await createClient();
 
   const { data: job } = await supabase
-    .from('jobs')
-    .select('title, description, location, company_name, category, salary_range, job_type')
-    .eq('id', id)
+    .from("jobs")
+    .select("title, description, location, company_name, category, salary_range, job_type, work_mode")
+    .eq("id", id)
     .single();
 
-  if (!job) return { title: 'Job Not Found | UpnAbove' };
+  if (!job) return { title: "Job Not Found" };
 
-  const companyName = job.company_name || 'Confidential Company';
-  const title = `${job.title} at ${companyName} | UpnAbove`;
+  const company = job.company_name ?? "Confidential Company";
+  const location = job.work_mode === "remote" ? "Remote" : job.location ?? "Worldwide";
+
+  const title = `${job.title} at ${company} (${location})`;
   const description = job.description
-    ? job.description.slice(0, 155).replace(/\s\S*$/, '…')
-    : `Apply for ${job.title} at ${companyName} in ${job.location} on UpnAbove.`;
+    ? `${job.description.slice(0, 148).trimEnd()}…`
+    : `Apply for ${job.title} at ${company} — ${location}. Browse tech jobs on upNabove.`;
+
+  const canonical = `${BASE_URL}/jobs/${id}`;
 
   return {
     title,
     description,
+    alternates: { canonical },
+    robots: { index: true, follow: true },
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/jobs/${id}`,
-      siteName: 'UpnAbove',
-      type: 'website',
+      url: canonical,
+      siteName: "upNabove",
+      type: "website",
     },
     twitter: {
-      card: 'summary',
+      card: "summary_large_image",
       title,
       description,
-    },
-    alternates: {
-      canonical: `${BASE_URL}/jobs/${id}`,
     },
   };
 }
@@ -106,35 +109,68 @@ export default async function JobDetailPage({
   }
 
   // ─── JSON-LD JobPosting Schema (Google Rich Results) ────────────────────────
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
+  const employmentTypeMap: Record<string, string> = {
+    "full-time": "FULL_TIME",
+    "part-time": "PART_TIME",
+    contract: "CONTRACTOR",
+    freelance: "CONTRACTOR",
+    internship: "INTERN",
+    temporary: "TEMPORARY",
+    volunteer: "VOLUNTEER",
+  };
+
+  const isRemote = job.work_mode === "remote" || job.location?.toLowerCase().includes("remote");
+
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    identifier: {
+      "@type": "PropertyValue",
+      name: "upNabove",
+      value: id,
+    },
     title: job.title,
-    description: job.description || `${job.title} position at ${job.company_name || 'a top company'}.`,
-    datePosted: job.created_at ? new Date(job.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    description: job.description ?? `${job.title} position at ${job.company_name ?? "a top company"}.`,
+    datePosted: job.created_at
+      ? new Date(job.created_at).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
+    ...(job.expires_at && {
+      validThrough: new Date(job.expires_at).toISOString(),
+    }),
+    employmentType: employmentTypeMap[job.job_type?.toLowerCase() ?? ""] ?? "FULL_TIME",
+    directApply: job.source !== "adzuna",
     hiringOrganization: {
-      '@type': 'Organization',
-      name: job.company_name || employer?.company_name || 'Confidential',
+      "@type": "Organization",
+      name: job.company_name ?? employer?.company_name ?? "Confidential",
+      ...(employer?.company_logo_url && { logo: employer.company_logo_url }),
     },
-    jobLocation: {
-      '@type': 'Place',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: job.location || 'Remote',
-      },
-    },
-    employmentType: job.job_type === 'part-time' ? 'PART_TIME' : 'FULL_TIME',
+    jobLocation: isRemote
+      ? { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: "Remote" } }
+      : {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: job.city ?? job.location,
+            addressCountry: job.country ?? undefined,
+          },
+        },
+    ...(isRemote && { jobLocationType: "TELECOMMUTE" }),
     ...(job.salary_range && {
       baseSalary: {
-        '@type': 'MonetaryAmount',
-        currency: 'USD',
+        "@type": "MonetaryAmount",
+        currency: job.salary_currency ?? "USD",
         value: {
-          '@type': 'QuantitativeValue',
+          "@type": "QuantitativeValue",
           description: job.salary_range,
+          ...(job.salary_amount && { value: job.salary_amount }),
+          ...(job.salary_period && {
+            unitText: job.salary_period.toUpperCase(),
+          }),
         },
       },
     }),
-    ...(job.external_apply_url && { url: job.external_apply_url }),
+    url: `${BASE_URL}/jobs/${id}`,
+    ...(job.external_apply_url && { sameAs: job.external_apply_url }),
   };
 
 
