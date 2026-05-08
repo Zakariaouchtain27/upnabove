@@ -49,25 +49,27 @@ export default function LoginPage() {
         .eq('id', data.user.id)
         .single()
 
-      router.refresh()
-
+      let destination: string
       if (nextPath) {
-        router.push(nextPath)
+        destination = nextPath
       } else if (!profile?.role) {
-        router.push('/onboarding')
+        destination = '/onboarding'
       } else if (profile.role === 'employer') {
-        router.push('/employer')
+        destination = '/employer'
       } else {
-        router.push('/dashboard')
+        destination = '/dashboard'
       }
+
+      window.location.href = destination
     }
   }
 
   const handleGoogleLogin = async () => {
+    const next = nextPath ?? '/dashboard'
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     })
   }
