@@ -2,16 +2,24 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const rawNext = searchParams.get("next") ?? "/dashboard";
+
+  // Derive origin reliably — request.nextUrl respects X-Forwarded-Proto on Vercel
+  const origin = request.nextUrl.origin;
+
+  // Validate `next` is a safe relative path to prevent open-redirect attacks
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_code`);
+    return NextResponse.redirect(new URL(`/login?error=missing_code`, origin));
   }
 
-  // Build a response we can attach cookies to before redirecting
-  const response = NextResponse.redirect(`${origin}${next}`);
+  // Build the redirect response before exchanging the code so we can
+  // attach session cookies directly onto it before it is sent.
+  const redirectResponse = NextResponse.redirect(new URL(next, origin));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,9 +30,10 @@ export async function GET(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // Write cookies onto the redirect response so they survive the browser hop
+          // Cookies must be written onto the redirect response so the browser
+          // receives them during the 302 hop — not on a subsequent request.
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            redirectResponse.cookies.set(name, value, options)
           );
         },
       },
@@ -35,8 +44,8 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error("[Auth Callback] exchangeCodeForSession failed:", error.message);
-    return NextResponse.redirect(`${origin}/login?error=auth`);
+    return NextResponse.redirect(new URL(`/login?error=auth`, origin));
   }
 
-  return response;
+  return redirectResponse;
 }
