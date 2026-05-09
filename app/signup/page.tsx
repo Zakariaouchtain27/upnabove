@@ -54,6 +54,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-24">
       <div className="w-full max-w-sm">
 
+        {/* Wordmark */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2 group">
             <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center group-hover:bg-violet-500 transition-colors">
@@ -68,6 +69,7 @@ export default function SignupPage() {
           </Link>
         </div>
 
+        {/* Card */}
         <div className="bg-zinc-950/70 backdrop-blur-2xl border border-white/[0.07] rounded-2xl p-8 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
           <h1 className="text-xl font-bold text-white tracking-tight mb-1">

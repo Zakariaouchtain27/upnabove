@@ -95,12 +95,6 @@ export default async function ForgePage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative w-full flex items-center justify-center pt-24 pb-28 overflow-hidden">
 
-        {/* Background */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
-        <div className="glow-orb-primary top-[-15%] left-[-8%] opacity-60" />
-        <div className="glow-orb-cyan bottom-[5%] right-[-8%] opacity-40" />
-        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
-
         <div className="section-container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
 
@@ -285,7 +279,6 @@ export default async function ForgePage() {
             {howItWorks.map((step, i) => (
               <ScrollReveal key={step.step} delay={0.08 * i} direction="up">
                 <div className="relative flex flex-col p-6 rounded-2xl border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 hover:-translate-y-1 transition-all duration-300 group h-full">
-                  {/* Step number */}
                   <span className="absolute top-4 right-5 text-[11px] font-black font-mono text-zinc-700">{step.step}</span>
 
                   <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-5 ${step.iconBg}`}>

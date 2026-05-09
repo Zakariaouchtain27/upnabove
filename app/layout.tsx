@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ToastProvider } from '@/components/ui/Toast';
-import { GlobalBackground } from '@/components/GlobalBackground';
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -109,7 +109,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`dark ${inter.variable} ${GeistMono.variable}`}>
       <body className="font-sans min-h-screen flex flex-col antialiased bg-transparent text-foreground transition-colors duration-300">
-        <GlobalBackground />
+        <AnimatedBackground />
 
         <ThemeProvider
           attribute="class"
