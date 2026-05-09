@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SearchForm } from "@/components/home/SearchForm";
 import { BentoGrid } from "@/components/home/BentoGrid";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { AnimatedBackground } from "@/components/home/AnimatedBackground";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
 
@@ -13,8 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: BASE_URL },
   openGraph: {
     title: "upNabove — Skill issue.",
-    description:
-      "The job board where you prove your code, not your resume.",
+    description: "The job board where you prove your code, not your resume.",
     url: BASE_URL,
     type: "website",
   },
@@ -31,11 +31,8 @@ export default async function HomePage() {
   return (
     <main className="relative min-h-screen flex flex-col items-center bg-black overflow-hidden">
 
-      {/* Subtle atmospheric depth */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-violet-600/6 rounded-full blur-[180px]" />
-        <div className="absolute top-[20%] right-[10%] w-[400px] h-[400px] bg-violet-900/5 rounded-full blur-[140px]" />
-      </div>
+      {/* Generative art background — aurora void */}
+      <AnimatedBackground />
 
       {/* Hero */}
       <section className="relative z-10 w-full flex flex-col items-center justify-center text-center px-5 pt-40 pb-24 min-h-[82vh]">
@@ -51,7 +48,7 @@ export default async function HomePage() {
 
         <FadeIn delay={0.08} className="mb-14">
           <p
-            className="text-base sm:text-lg text-zinc-500 tracking-wide"
+            className="text-base sm:text-lg text-zinc-400 tracking-wide"
             style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 300 }}
           >
             Find the job. Prove you&rsquo;re not mid.
@@ -68,7 +65,8 @@ export default async function HomePage() {
               className="mt-7 text-sm text-zinc-600"
               style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 300 }}
             >
-              <span className="text-zinc-400">{jobCount.toLocaleString()}</span> open positions live right now
+              <span className="text-zinc-400">{jobCount.toLocaleString()}</span>{" "}
+              open positions live right now
             </p>
           </FadeIn>
         )}
