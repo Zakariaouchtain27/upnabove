@@ -84,16 +84,20 @@
   }
 
   html, body {
-    background-color: var(--background);
+    background-color: #000;
     color: var(--foreground);
-    font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
-    /* Ensure body text is never below zinc-300 equivalent on dark bg */
     font-size: 16px;
     line-height: 1.6;
+  }
+
+  /* Ensure every element inherits Helvetica unless explicitly overridden */
+  *, *::before, *::after {
+    font-family: inherit;
   }
 
   /* Small text helpers — enforce minimum readable size */
@@ -287,6 +291,18 @@
 /* ==========================================================================
    KEYFRAMES
    ========================================================================== */
+
+/* ── Global void background animations ── */
+@keyframes void-breathe {
+  0%, 100% { transform: translateX(-50%) scale(1);    opacity: 1;    }
+  50%       { transform: translateX(-50%) scale(1.14) translateY(-2%); opacity: 0.72; }
+}
+
+@keyframes void-drift {
+  0%, 100% { transform: translate(0, 0)       scale(1);    }
+  33%       { transform: translate(-4%, 6%)   scale(1.07); }
+  66%       { transform: translate(3%, -4%)   scale(0.93); }
+}
 
 @keyframes float1 {
   0%, 100% { transform: translate(0, 0) scale(1); }

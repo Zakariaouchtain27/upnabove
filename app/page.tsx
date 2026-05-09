@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { SearchForm } from "@/components/home/SearchForm";
 import { BentoGrid } from "@/components/home/BentoGrid";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { AnimatedBackground } from "@/components/home/AnimatedBackground";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
 
@@ -29,10 +28,7 @@ export default async function HomePage() {
     .eq("is_active", true);
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center bg-black overflow-hidden">
-
-      {/* Generative art background — aurora void */}
-      <AnimatedBackground />
+    <main className="relative min-h-screen flex flex-col items-center overflow-hidden">
 
       {/* Hero */}
       <section className="relative z-10 w-full flex flex-col items-center justify-center text-center px-5 pt-40 pb-24 min-h-[82vh]">
@@ -40,17 +36,14 @@ export default async function HomePage() {
         <FadeIn delay={0}>
           <h1
             className="text-[clamp(4rem,14vw,9rem)] font-bold text-white tracking-tight leading-none select-none mb-4"
-            style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700 }}
+            style={{ fontWeight: 700 }}
           >
             Skill issue.
           </h1>
         </FadeIn>
 
         <FadeIn delay={0.08} className="mb-14">
-          <p
-            className="text-base sm:text-lg text-zinc-400 tracking-wide"
-            style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 300 }}
-          >
+          <p className="text-base sm:text-lg text-zinc-400 tracking-wide font-light">
             Find the job. Prove you&rsquo;re not mid.
           </p>
         </FadeIn>
@@ -61,10 +54,7 @@ export default async function HomePage() {
 
         {jobCount !== null && jobCount > 0 && (
           <FadeIn delay={0.22}>
-            <p
-              className="mt-7 text-sm text-zinc-600"
-              style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 300 }}
-            >
+            <p className="mt-7 text-sm text-zinc-600 font-light">
               <span className="text-zinc-400">{jobCount.toLocaleString()}</span>{" "}
               open positions live right now
             </p>
