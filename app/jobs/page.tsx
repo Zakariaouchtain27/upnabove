@@ -61,7 +61,6 @@ export default async function JobsPage({
   let jobs: any = [];
   let jobCount = 0;
   try {
-    // Increased limit to 100 to satisfy "full set" requirement
     const res = await query.limit(100);
     jobs = res.data;
     jobCount = res.count || 0;
@@ -69,19 +68,20 @@ export default async function JobsPage({
     // 
   }
 
-  // Fetch user's applied jobs to pass down
+  // Fetch user auth state, applied jobs, and resume status in parallel
   let appliedJobIds = new Set<string>();
+  let hasResume = false;
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (user) {
-    const { data: userApps } = await supabase
-      .from('applications')
-      .select('job_id')
-      .eq('candidate_id', user.id);
-      
-    if (userApps) {
-      appliedJobIds = new Set(userApps.map(a => a.job_id).filter((id): id is string => id !== null));
+    const [appsResult, candidateResult] = await Promise.all([
+      supabase.from('applications').select('job_id').eq('candidate_id', user.id),
+      supabase.from('candidates').select('resume_url').eq('id', user.id).maybeSingle(),
+    ]);
+    if (appsResult.data) {
+      appliedJobIds = new Set(appsResult.data.map(a => a.job_id).filter((id): id is string => id !== null));
     }
+    hasResume = !!candidateResult.data?.resume_url;
   }
 
   const displayJobs = jobs || [];
@@ -195,10 +195,12 @@ export default async function JobsPage({
                                       Apply on {companyName} &rarr;
                                    </a>
                                 ) : (
-                                   <OneClickApply 
-                                      jobId={job.id} 
-                                      jobTitle={job.title} 
+                                   <OneClickApply
+                                      jobId={job.id}
+                                      jobTitle={job.title}
+                                      userId={user?.id}
                                       hasApplied={appliedJobIds.has(job.id)}
+                                      hasResume={hasResume}
                                    />
                                 )}
                              </div>
