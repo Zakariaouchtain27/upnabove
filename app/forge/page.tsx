@@ -95,12 +95,6 @@ export default async function ForgePage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative w-full flex items-center justify-center pt-24 pb-28 overflow-hidden">
 
-        {/* Background */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
-        <div className="glow-orb-primary top-[-15%] left-[-8%] opacity-60" />
-        <div className="glow-orb-cyan bottom-[5%] right-[-8%] opacity-40" />
-        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
-
         <div className="section-container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
 
