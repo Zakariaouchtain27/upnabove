@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { GlobalBackground } from '@/components/GlobalBackground';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -125,6 +126,7 @@ export default function RootLayout({
             </NuqsAdapter>
           </ToastProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
