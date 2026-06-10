@@ -3,6 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import { fetchRemotiveJobs } from "@/lib/adapters/jobs/remotive";
 import { fetchHimalayasJobs } from "@/lib/adapters/jobs/himalayas";
 import { fetchRapidApiJobs } from "@/lib/adapters/jobs/rapidapi";
+import { fetchArbeitnowJobs } from "@/lib/adapters/jobs/arbeitnow";
+import { fetchJobicyJobs } from "@/lib/adapters/jobs/jobicy";
+import { fetchRemoteOkJobs } from "@/lib/adapters/jobs/remoteok";
+import { fetchMuseJobs } from "@/lib/adapters/jobs/themuse";
 import type { NormalizedJob } from "@/lib/types/jobs";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +27,10 @@ export async function GET(req: Request) {
     () => fetchRemotiveJobs(100),
     () => fetchHimalayasJobs(20),
     () => fetchRapidApiJobs("software engineer"),
+    () => fetchArbeitnowJobs(50),
+    () => fetchJobicyJobs(50),
+    () => fetchRemoteOkJobs(50),
+    () => fetchMuseJobs(2),
   ];
 
   const results = await Promise.allSettled(adapters.map((fn) => fn()));

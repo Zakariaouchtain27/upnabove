@@ -15,6 +15,7 @@ const statusVariant: Record<string, "primary" | "success" | "warning" | "danger"
   applied: "primary",
   rejected: "danger",
   hired: "success",
+  redirected: "default",
 };
 
 export default async function ApplicationsPage() {
