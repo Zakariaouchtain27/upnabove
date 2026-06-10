@@ -312,7 +312,9 @@ export type Database = {
           purpose: string | null
           sponsor_logo_url: string | null
           sponsor_name: string | null
+          starter_code: Json
           status: string
+          test_cases: Json
           time_limit_minutes: number
           title: string
           updated_at: string | null
@@ -346,7 +348,9 @@ export type Database = {
           purpose?: string | null
           sponsor_logo_url?: string | null
           sponsor_name?: string | null
+          starter_code?: Json
           status: string
+          test_cases?: Json
           time_limit_minutes: number
           title: string
           updated_at?: string | null
@@ -380,7 +384,9 @@ export type Database = {
           purpose?: string | null
           sponsor_logo_url?: string | null
           sponsor_name?: string | null
+          starter_code?: Json
           status?: string
+          test_cases?: Json
           time_limit_minutes?: number
           title?: string
           updated_at?: string | null
@@ -518,6 +524,9 @@ export type Database = {
           submission_file_url: string | null
           submission_text: string | null
           submission_url: string | null
+          test_results: Json | null
+          tests_passed: number | null
+          tests_total: number | null
           vote_count: number | null
           vote_score: number | null
         }
@@ -541,6 +550,9 @@ export type Database = {
           submission_file_url?: string | null
           submission_text?: string | null
           submission_url?: string | null
+          test_results?: Json | null
+          tests_passed?: number | null
+          tests_total?: number | null
           vote_count?: number | null
           vote_score?: number | null
         }
@@ -564,6 +576,9 @@ export type Database = {
           submission_file_url?: string | null
           submission_text?: string | null
           submission_url?: string | null
+          test_results?: Json | null
+          tests_passed?: number | null
+          tests_total?: number | null
           vote_count?: number | null
           vote_score?: number | null
         }
@@ -1430,6 +1445,9 @@ export type Database = {
           submission_file_url: string | null
           submission_text: string | null
           submission_url: string | null
+          test_results: Json | null
+          tests_passed: number | null
+          tests_total: number | null
           vote_count: number | null
           vote_score: number | null
         }[]
@@ -1466,6 +1484,9 @@ export type Database = {
           submission_file_url: string | null
           submission_text: string | null
           submission_url: string | null
+          test_results: Json | null
+          tests_passed: number | null
+          tests_total: number | null
           vote_count: number | null
           vote_score: number | null
         }[]

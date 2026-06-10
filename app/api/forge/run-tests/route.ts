@@ -101,7 +101,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Challenge not found" }, { status: 404 });
   }
 
-  const testCases: TestCase[] = challenge.test_cases ?? [];
+  const testCases: TestCase[] = Array.isArray(challenge.test_cases)
+    ? (challenge.test_cases as unknown as TestCase[])
+    : [];
   if (testCases.length === 0) {
     return NextResponse.json({ error: "This challenge has no test cases yet" }, { status: 404 });
   }
