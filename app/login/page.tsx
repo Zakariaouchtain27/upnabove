@@ -98,12 +98,14 @@ export default function LoginPage() {
             Sign in to continue
           </p>
 
+          {/* Success toast */}
           {signupSuccess && (
             <div className="mb-5 p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/20 text-emerald-400 text-sm">
               Account created — check your inbox to confirm.
             </div>
           )}
 
+          {/* Error toast */}
           {(error || (authError && !error)) && (
             <div className="mb-5 p-3.5 rounded-xl bg-red-950/60 border border-red-500/20 text-red-400 text-sm">
               {error ?? "Authentication failed. Please try again."}
@@ -156,12 +158,14 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {/* Divider */}
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-white/[0.06]" />
             <span className="text-[10px] text-zinc-600 uppercase tracking-widest">or</span>
             <div className="flex-1 h-px bg-white/[0.06]" />
           </div>
 
+          {/* Google */}
           <button
             onClick={handleGoogleLogin}
             type="button"

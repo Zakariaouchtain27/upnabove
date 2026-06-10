@@ -5,6 +5,7 @@ import { Twitter, Linkedin, Github } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="border-t border-white/[0.05] bg-black relative overflow-hidden">
+      {/* Subtle gradient line at the top edge */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
 
       <div className="layout-wrapper">
@@ -12,6 +13,7 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-16 mb-14">
 
+            {/* Brand */}
             <div className="col-span-2">
               <Link href="/" className="inline-flex items-center gap-2 mb-5 group">
                 <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center group-hover:bg-violet-500 transition-colors">
@@ -40,6 +42,7 @@ export default function Footer() {
               </div>
             </div>
 
+            {/* Platform */}
             <div>
               <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Platform</h4>
               <ul className="space-y-3">
@@ -48,6 +51,7 @@ export default function Footer() {
               </ul>
             </div>
 
+            {/* Employers */}
             <div>
               <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Employers</h4>
               <ul className="space-y-3">
@@ -55,6 +59,7 @@ export default function Footer() {
               </ul>
             </div>
 
+            {/* Account */}
             <div>
               <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Account</h4>
               <ul className="space-y-3">

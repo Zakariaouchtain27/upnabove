@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { JobSearchForm } from "@/components/jobs/JobSearchForm";
 import { JobSortSelect } from "@/components/jobs/JobSortSelect";
 import OneClickApply from "@/components/jobs/OneClickApply";
+import ExternalApplyButton from "@/components/jobs/ExternalApplyButton";
 
 export default async function JobsPage({
   searchParams,
@@ -190,10 +191,12 @@ export default async function JobsPage({
                               </div>
                             </div>
                              <div className="shrink-0 flex items-center">
-                                {job.source === 'adzuna' && job.external_apply_url ? (
-                                   <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="px-5 py-2.5 bg-violet-700 text-white text-sm font-semibold rounded-xl hover:-translate-y-px transition-all shadow-lg shadow-violet-900/40 hover:bg-violet-600">
-                                      Apply on {companyName} &rarr;
-                                   </a>
+                                {job.source && job.external_apply_url ? (
+                                   <ExternalApplyButton
+                                      jobId={job.id}
+                                      companyName={companyName}
+                                      url={job.external_apply_url}
+                                   />
                                 ) : (
                                    <OneClickApply
                                       jobId={job.id}

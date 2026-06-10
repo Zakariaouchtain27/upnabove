@@ -16,6 +16,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/server";
 import OneClickApply from "@/components/jobs/OneClickApply";
+import ExternalApplyButton from "@/components/jobs/ExternalApplyButton";
 import JobViewTracker from "@/components/jobs/JobViewTracker";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
@@ -138,7 +139,7 @@ export default async function JobDetailPage({
       validThrough: new Date(job.expires_at).toISOString(),
     }),
     employmentType: employmentTypeMap[job.job_type?.toLowerCase() ?? ""] ?? "FULL_TIME",
-    directApply: job.source !== "adzuna",
+    directApply: !job.source,
     hiringOrganization: {
       "@type": "Organization",
       name: job.company_name ?? employer?.company_name ?? "Confidential",
@@ -235,10 +236,13 @@ export default async function JobDetailPage({
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-border">
-              {job.source === 'adzuna' && job.external_apply_url ? (
-                 <a href={job.external_apply_url} target="_blank" rel="noreferrer" className="w-full sm:w-auto px-6 py-3 bg-violet-600 text-white text-center font-bold rounded-xl hover:bg-violet-500 hover:scale-105 transition-all shadow-lg shadow-violet-900/40">
-                    Apply on {job.company_name || 'External Site'} &rarr;
-                 </a>
+              {job.source && job.external_apply_url ? (
+                 <ExternalApplyButton
+                    jobId={job.id}
+                    companyName={job.company_name || 'External Site'}
+                    url={job.external_apply_url}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 text-white text-center font-bold rounded-xl hover:bg-violet-500 hover:scale-105 transition-all shadow-lg shadow-violet-900/40"
+                 />
               ) : (
                  <OneClickApply 
                     jobId={job.id} 
@@ -265,8 +269,8 @@ export default async function JobDetailPage({
             <div className="prose prose-sm text-muted max-w-none space-y-4 overflow-visible">
               <p className="whitespace-pre-wrap leading-relaxed">{job.description}</p>
 
-              {/* Adzuna jobs: prompt user to view full description externally */}
-              {job.source === 'adzuna' && job.external_apply_url && (
+              {/* Aggregated jobs: prompt user to view full description externally */}
+              {job.source && job.external_apply_url && (
                 <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground">Want the full job description?</p>

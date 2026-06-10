@@ -17,7 +17,26 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Get candidate profile via admin client (bypasses RLS)
+    // 2. External (aggregated) jobs cannot be applied to in-platform —
+    //    the company never sees in-platform applications for those.
+    const { data: job, error: jobErr } = await db
+      .from('jobs')
+      .select('id, source, external_apply_url')
+      .eq('id', jobId)
+      .single();
+
+    if (jobErr || !job) {
+      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+
+    if (job.source && job.external_apply_url) {
+      return NextResponse.json({
+        error: "This job is hosted externally. Apply on the company's site.",
+        external_apply_url: job.external_apply_url,
+      }, { status: 400 });
+    }
+
+    // 3. Get candidate profile via admin client (bypasses RLS)
     const { data: candidate, error: candErr } = await db
       .from('candidates')
       .select('id, resume_url')
@@ -32,7 +51,7 @@ export async function POST(
       return NextResponse.json({ error: "No CV found in your profile. Please upload one first." }, { status: 400 });
     }
 
-    // 3. Insert application via admin client
+    // 4. Insert application via admin client
     const { error: appErr } = await db.from('applications').insert({
       job_id: jobId,
       candidate_id: candidate.id,
