@@ -92,7 +92,7 @@ export default async function SquadProfilePage({ params }: { params: { id: strin
                    const c = member.candidates as any;
                    return (
                    <div key={idx} className="bg-surface/30 border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:border-white/10 transition-colors">
-                      <img src={c.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-12 h-12 rounded-xl bg-black border border-white/10 shrink-0" />
+                      <img src={c.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} alt={c.codename || "Member avatar"} className="w-12 h-12 rounded-xl bg-black border border-white/10 shrink-0" />
                       <div>
                          <div className="font-bold text-white tracking-wide">{c.first_name} {c.last_name}</div>
                          <div className={`text-[10px] font-mono uppercase tracking-[0.2em] mt-1 ${member.role === 'leader' ? 'text-amber-500' : 'text-primary-light'}`}>

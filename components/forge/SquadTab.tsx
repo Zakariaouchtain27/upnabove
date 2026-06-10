@@ -174,7 +174,7 @@ export function SquadTab({ candidateProfile }: { candidateProfile: any }) {
                          const c = member.candidates as any;
                          return (
                          <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border ${member.status === 'pending' ? 'bg-black/20 border-black/5 dark:border-white/5 opacity-50' : 'bg-white/40 dark:bg-black/40 border-black/10 dark:border-white/10'}`}>
-                            <img src={c.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-10 h-10 rounded-full bg-white dark:bg-black border border-white/20 shrink-0" />
+                            <img src={c.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} alt={c.codename || "Squad member"} className="w-10 h-10 rounded-full bg-white dark:bg-black border border-white/20 shrink-0" />
                             <div className="flex-1 min-w-0">
                                <div className="font-bold text-zinc-900 dark:text-white truncate text-sm flex items-center gap-2">
                                   {c.first_name} {c.last_name}

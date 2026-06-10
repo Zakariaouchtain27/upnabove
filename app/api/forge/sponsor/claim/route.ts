@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         html,
       });
     } else {
-      console.log(`[DEV] Prize claim email would be sent to: ${candidate.email}`);
+      // No RESEND_API_KEY — email skipped in this environment
     }
 
     return NextResponse.json({ success: true, message: "Prize claim email sent to candidate." });

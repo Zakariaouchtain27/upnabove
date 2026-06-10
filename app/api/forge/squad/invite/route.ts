@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
         });
         dispatched++;
       } else {
-        console.log(`[DEV] Squad invite email would be sent to: ${candidate.email}`);
+        // No RESEND_API_KEY — email skipped in this environment
         dispatched++;
       }
     }

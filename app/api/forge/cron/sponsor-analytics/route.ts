@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         html,
       });
     } else {
-      console.log('[DEV] Sponsor analytics email would be sent to:', employer.contact_email);
+      // No RESEND_API_KEY — email skipped in this environment
     }
 
     return NextResponse.json({ success: true, message: "Analytics email dispatched.", totalEntries, avgScore });
