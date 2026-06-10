@@ -209,6 +209,8 @@ export default function SubmitForgePage() {
                       challenge={{
                         description: challenge.description ?? "",
                         allowed_languages: challenge.allowed_languages ?? null,
+                        test_cases: challenge.test_cases ?? [],
+                        starter_code: challenge.starter_code ?? null,
                       }}
                       entryId={entryInfo?.id}
                       userId={userId ?? undefined}
