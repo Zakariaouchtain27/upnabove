@@ -326,7 +326,146 @@
   100% { transform: translateY(500%); }
 }
 
-.animate-soft-pulse { animation: soft-pulse 3s ease-in-out infinite; }
+
+/* Slide up from below (scroll reveal) */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Fade in — pure opacity */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Scale up entry — for cards */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Counter shimmer — number counting effect */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Marquee — horizontal scroll for strips */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-soft-pulse    { animation: soft-pulse    3s   ease-in-out infinite; }
+.animate-slide-up      { animation: slide-up      0.55s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in       { animation: fade-in       0.4s  ease-out both; }
+.animate-scale-in      { animation: scale-in      0.45s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-marquee       { animation: marquee       24s   linear infinite; }
+
+/* Stagger delay utilities */
+.delay-75  { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* ==========================================================================
+   GRADIENT MESH BACKGROUND
+   Large, heavily-blurred color fields that drift at imperceptible speed.
+   Grain texture adds the tactile depth that flat gradients lack.
+   GPU-composited — no canvas, no JavaScript.
+   ========================================================================== */
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Top-left — dominant field, deep indigo-violet */
+.mesh-blob-a {
+  width: 80vw;
+  height: 80vw;
+  top: -22%;
+  left: -18%;
+  background: radial-gradient(circle at 58% 48%, rgba(50, 18, 115, 0.52) 0%, transparent 62%);
+  filter: blur(96px);
+  animation: mesh-drift-a 62s ease-in-out infinite;
+}
+
+/* Bottom-right — secondary field, deep navy-indigo */
+.mesh-blob-b {
+  width: 68vw;
+  height: 68vw;
+  bottom: -18%;
+  right: -14%;
+  background: radial-gradient(circle at 42% 52%, rgba(12, 22, 82, 0.50) 0%, transparent 62%);
+  filter: blur(110px);
+  animation: mesh-drift-b 78s ease-in-out infinite;
+}
+
+/* Upper-right — chromatic accent, very faint warm violet */
+.mesh-blob-c {
+  width: 48vw;
+  height: 48vw;
+  top: 20%;
+  right: 5%;
+  background: radial-gradient(circle at 50% 50%, rgba(80, 12, 82, 0.20) 0%, transparent 65%);
+  filter: blur(88px);
+  animation: mesh-drift-c 50s ease-in-out infinite;
+}
+
+/* SVG feTurbulence noise — renders as a tiled static grain */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.038;
+  /* stylelint-disable-next-line */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}
+
+@keyframes mesh-drift-a {
+  0%, 100% { transform: translate(0, 0)         scale(1);    }
+  25%       { transform: translate(2%, 4%)       scale(1.03); }
+  55%       { transform: translate(-1.5%, 6.5%)  scale(0.97); }
+  80%       { transform: translate(3%, 1.5%)     scale(1.02); }
+}
+
+@keyframes mesh-drift-b {
+  0%, 100% { transform: translate(0, 0)          scale(1);    }
+  30%       { transform: translate(-3%, -2.5%)   scale(1.04); }
+  62%       { transform: translate(2.5%, -5%)    scale(0.96); }
+  85%       { transform: translate(-2%, 3%)      scale(1.02); }
+}
+
+@keyframes mesh-drift-c {
+  0%, 100% { transform: translate(0, 0)     scale(1);    }
+  42%       { transform: translate(3%, -3%) scale(1.06); }
+  72%       { transform: translate(-2%, 2%) scale(0.94); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesh-blob { animation: none; }
+}
+
+/* ==========================================================================
+   PAGE TRANSITIONS — applied to <main> via layout
+   ========================================================================== */
+
+.page-enter {
+  animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
 /* ==========================================================================
    MISC COMPAT
