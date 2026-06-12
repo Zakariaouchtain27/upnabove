@@ -26,7 +26,7 @@ export default async function AdminLayout({
   if (!adminCheck) notFound();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row pt-16">
+    <div className="min-h-screen bg-transparent flex flex-col md:flex-row pt-16">
       
       {/* Admin Sidebar Navigation */}
       <aside className="w-full md:w-64 border-r border-border bg-surface flex-shrink-0 md:sticky md:top-16 h-auto md:h-[calc(100vh-4rem)] overflow-y-auto">

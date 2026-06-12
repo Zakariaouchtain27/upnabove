@@ -29,7 +29,7 @@ export default async function ForgeFeedPage() {
     .limit(100);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black pt-20 pb-32">
+    <div className="min-h-screen bg-transparent pt-20 pb-32">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="py-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-bold uppercase tracking-widest mb-6">

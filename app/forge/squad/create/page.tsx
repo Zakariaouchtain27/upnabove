@@ -99,7 +99,7 @@ export default function CreateSquadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans pt-24 pb-32">
+    <div className="min-h-screen bg-transparent text-foreground font-sans pt-24 pb-32">
        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
        
        <div className="max-w-3xl mx-auto px-6 relative z-10 space-y-8">

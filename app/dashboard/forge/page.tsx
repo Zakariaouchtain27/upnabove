@@ -110,13 +110,13 @@ export default function CandidateForgeDashboard() {
     init();
   }, [router]);
 
-  if (loading) return <div className="min-h-screen bg-[#05050a] flex items-center justify-center font-mono text-primary animate-pulse uppercase tracking-widest text-sm">Synchronizing Data...</div>;
+  if (loading) return <div className="min-h-screen bg-transparent flex items-center justify-center font-mono text-primary animate-pulse uppercase tracking-widest text-sm">Synchronizing Data...</div>;
 
   const unlockedBadges = FORGE_BADGES.filter(b => myBadges.includes(b.id)).sort((a,b) => b.rank - a.rank);
   const top3 = unlockedBadges.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans pt-24 pb-32">
+    <div className="min-h-screen bg-transparent text-foreground font-sans pt-24 pb-32">
        
        <div className="max-w-6xl mx-auto px-6 space-y-8">
           

@@ -125,7 +125,7 @@ export default function CreateJobPage() {
   // ── TEMPLATE PICKER ──────────────────────────────────────────────────────────
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-background pt-12 pb-32 px-6">
+      <div className="min-h-screen bg-transparent pt-12 pb-32 px-6">
         <div className="max-w-4xl mx-auto">
           <Link href="/employer/jobs" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-primary transition-all mb-8 group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back
@@ -144,7 +144,7 @@ export default function CreateJobPage() {
   const currentStep = step - 1; // steps 1,2,3 map to STEPS[0,1,2]
 
   return (
-    <div className="min-h-screen bg-background pt-12 pb-32 px-6">
+    <div className="min-h-screen bg-transparent pt-12 pb-32 px-6">
       <div className="max-w-3xl mx-auto">
         <button onClick={() => setStep(s => Math.max(0, s - 1))} className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-primary transition-all mb-8 group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

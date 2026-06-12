@@ -6,7 +6,7 @@ export default function EmployerForgeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dark min-h-screen bg-[#05050a] text-white font-sans w-full relative">
+    <div className="dark min-h-screen bg-transparent text-white font-sans w-full relative">
        {children}
     </div>
   );

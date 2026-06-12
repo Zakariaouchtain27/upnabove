@@ -383,16 +383,16 @@
 
 .aurora-a {
   background:
-    radial-gradient(ellipse 55% 45% at 22% 16%, rgba(109, 40, 217, 0.17) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 38% at 78% 70%, rgba(67, 56, 202, 0.12) 0%, transparent 65%);
+    radial-gradient(ellipse 55% 45% at 22% 16%, rgba(109, 40, 217, 0.28) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 38% at 78% 70%, rgba(67, 56, 202, 0.20) 0%, transparent 65%);
   animation: aurora-breathe-a 26s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
 .aurora-b {
   background:
-    radial-gradient(ellipse 42% 40% at 68% 22%, rgba(124, 58, 237, 0.10) 0%, transparent 62%),
-    radial-gradient(ellipse 48% 42% at 28% 82%, rgba(91, 33, 182, 0.10) 0%, transparent 62%);
+    radial-gradient(ellipse 42% 40% at 68% 22%, rgba(124, 58, 237, 0.18) 0%, transparent 62%),
+    radial-gradient(ellipse 48% 42% at 28% 82%, rgba(91, 33, 182, 0.16) 0%, transparent 62%);
   animation: aurora-breathe-b 34s ease-in-out infinite;
   will-change: transform, opacity;
 }

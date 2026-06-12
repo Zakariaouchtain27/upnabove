@@ -57,7 +57,7 @@ export default function EmployerWarRoom() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-[#05050a] relative">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-transparent relative">
        
        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
 

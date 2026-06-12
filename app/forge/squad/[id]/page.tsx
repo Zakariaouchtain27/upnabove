@@ -42,7 +42,7 @@ export default async function SquadProfilePage({ params }: { params: { id: strin
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans pt-32 pb-32 relative">
+    <div className="min-h-screen bg-transparent text-foreground font-sans pt-32 pb-32 relative">
        {/* Holographic BG */}
        <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-amber-500/10 via-transparent to-transparent pointer-events-none" />
        

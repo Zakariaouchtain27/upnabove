@@ -26,7 +26,7 @@ interface Node {
   hub: boolean;
 }
 
-const LINK_DIST = 150;
+const LINK_DIST = 170;
 const MOUSE_DIST = 220;
 const BASE_SPEED = 0.18;
 
@@ -63,7 +63,7 @@ export function AnimatedBackground() {
 
     const seed = () => {
       // Density scales with viewport area, clamped for perf
-      const count = Math.min(Math.round((width * height) / 16000), 110);
+      const count = Math.min(Math.round((width * height) / 13500), 130);
       nodes = Array.from({ length: count }, () => {
         const hub = Math.random() < 0.08;
         return {
@@ -71,7 +71,7 @@ export function AnimatedBackground() {
           y: Math.random() * height,
           vx: (Math.random() - 0.5) * BASE_SPEED * 2,
           vy: (Math.random() - 0.5) * BASE_SPEED * 2,
-          r: hub ? 2.2 + Math.random() * 0.8 : 0.8 + Math.random() * 1.1,
+          r: hub ? 2.6 + Math.random() * 1.0 : 1.0 + Math.random() * 1.3,
           pulse: Math.random() * Math.PI * 2,
           hub,
         };
@@ -94,7 +94,7 @@ export function AnimatedBackground() {
           const d = Math.sqrt(d2);
           const strength = 1 - d / LINK_DIST;
           // Links involving a hub glow warmer violet; ordinary links stay faint
-          const alpha = strength * (a.hub || b.hub ? 0.14 : 0.07);
+          const alpha = strength * (a.hub || b.hub ? 0.22 : 0.12);
           ctx.strokeStyle = a.hub || b.hub
             ? `rgba(167, 139, 250, ${alpha})`
             : `rgba(148, 163, 184, ${alpha})`;
@@ -113,7 +113,7 @@ export function AnimatedBackground() {
           if (d2 < MOUSE_DIST * MOUSE_DIST) {
             const d = Math.sqrt(d2);
             const strength = 1 - d / MOUSE_DIST;
-            ctx.strokeStyle = `rgba(139, 92, 246, ${strength * 0.22})`;
+            ctx.strokeStyle = `rgba(139, 92, 246, ${strength * 0.32})`;
             ctx.lineWidth = strength * 1.1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -133,7 +133,7 @@ export function AnimatedBackground() {
         if (n.hub) {
           // Hubs get a soft halo
           const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 6);
-          grad.addColorStop(0, `rgba(167, 139, 250, ${0.35 * pulse})`);
+          grad.addColorStop(0, `rgba(167, 139, 250, ${0.5 * pulse})`);
           grad.addColorStop(1, "rgba(167, 139, 250, 0)");
           ctx.fillStyle = grad;
           ctx.beginPath();
@@ -141,7 +141,7 @@ export function AnimatedBackground() {
           ctx.fill();
           ctx.fillStyle = `rgba(196, 181, 253, ${0.9 * pulse})`;
         } else {
-          ctx.fillStyle = `rgba(161, 161, 170, ${0.55 * pulse})`;
+          ctx.fillStyle = `rgba(161, 161, 170, ${0.8 * pulse})`;
         }
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);

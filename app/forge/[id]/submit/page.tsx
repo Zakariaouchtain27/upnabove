@@ -163,11 +163,11 @@ export default function SubmitForgePage() {
     frame();
   };
 
-  if (loading) return <div className="min-h-screen bg-[#05050a] flex items-center justify-center font-mono text-primary animate-pulse">BOOTING TERMINAL...</div>;
+  if (loading) return <div className="min-h-screen bg-transparent flex items-center justify-center font-mono text-primary animate-pulse">BOOTING TERMINAL...</div>;
 
   if (isSuccess) {
     return (
-       <div className="min-h-screen bg-[#05050a] flex items-center justify-center p-6 relative overflow-hidden">
+       <div className="min-h-screen bg-transparent flex items-center justify-center p-6 relative overflow-hidden">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
           <div className="w-full max-w-2xl bg-black border border-emerald-500/30 rounded-3xl p-12 text-center shadow-[0_0_80px_rgba(16,185,129,0.1)] relative z-10">
              <div className="w-24 h-24 bg-emerald-500/10 rounded-full border border-emerald-500/50 flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -305,7 +305,7 @@ export default function SubmitForgePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans flex flex-col pt-16">
+    <div className="min-h-screen bg-transparent text-foreground font-sans flex flex-col pt-16">
        
        {/* Top Status Bar */}
        <div className="fixed top-0 inset-x-0 h-16 bg-black/80 backdrop-blur-md border-b border-white/10 z-40 flex items-center justify-between px-6">
