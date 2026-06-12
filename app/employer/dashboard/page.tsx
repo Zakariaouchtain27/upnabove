@@ -28,7 +28,7 @@ export default async function CommandCenterPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-[#05050a] text-white font-sans pt-8 pb-32 relative overflow-hidden">
+      <div className="min-h-screen bg-transparent text-white font-sans pt-8 pb-32 relative overflow-hidden">
         {/* Background Aesthetics */}
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
         <div className="glow-orb-primary -top-40 -right-40 opacity-20" />

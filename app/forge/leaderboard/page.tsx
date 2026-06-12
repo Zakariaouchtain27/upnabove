@@ -41,7 +41,7 @@ export default async function ForgeLeaderboardPage() {
   const squadsList = squadsRes.data || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black pt-24 pb-32">
+    <div className="min-h-screen bg-transparent pt-24 pb-32">
        <div className="max-w-[1400px] mx-auto px-4 md:px-8">
           
           <div className="mb-12 text-center max-w-2xl mx-auto space-y-4">

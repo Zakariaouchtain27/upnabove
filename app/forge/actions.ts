@@ -35,7 +35,7 @@ export async function getReferralLink(): Promise<{ url: string; code: string } |
     candidate = { referral_code: code };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://upnabove.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://upnabove.work';
   return {
     code: candidate.referral_code || "",
     url: `${baseUrl}/forge?ref=${candidate.referral_code}`,

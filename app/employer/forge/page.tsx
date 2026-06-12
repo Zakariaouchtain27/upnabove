@@ -80,14 +80,14 @@ export default function EmployerForgeOverview() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#05050a] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-white font-sans pt-24 pb-32 relative overflow-hidden">
+    <div className="min-h-screen bg-transparent text-white font-sans pt-24 pb-32 relative overflow-hidden">
        {/* Background Aesthetics */}
        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
        <div className="glow-orb-primary -top-40 -right-40 opacity-20" />

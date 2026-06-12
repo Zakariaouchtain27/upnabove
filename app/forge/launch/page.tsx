@@ -70,7 +70,7 @@ export default function LaunchChecklistPage() {
   if (!isClient) return null;
 
   return (
-    <div className="layout-wrapper min-h-screen pt-24 pb-32 bg-[#05050a] text-white relative w-full z-10 overflow-hidden">
+    <div className="layout-wrapper min-h-screen pt-24 pb-32 bg-transparent text-white relative w-full z-10 overflow-hidden">
        {/* Ambient glow matching The Forge */}
        <div className="absolute inset-0 z-0 bg-grid-pattern opacity-30 pointer-events-none" />
        <div className="glow-orb-primary top-[10%] left-[20%] opacity-20 pointer-events-none mix-blend-screen" />

@@ -99,7 +99,7 @@ export default async function SubmissionsPage({ params }: { params: Promise<{ id
   };
 
   return (
-    <div className="layout-wrapper relative z-10 bg-white dark:bg-[#05050a] min-h-screen pb-32">
+    <div className="layout-wrapper relative z-10 bg-transparent min-h-screen pb-32">
        {/* Background Orbs */}
        <div className="glow-orb-primary top-[10%] left-[-10%] opacity-20 pointer-events-none" />
        

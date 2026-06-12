@@ -279,7 +279,6 @@ export default async function ForgePage() {
             {howItWorks.map((step, i) => (
               <ScrollReveal key={step.step} delay={0.08 * i} direction="up">
                 <div className="relative flex flex-col p-6 rounded-2xl border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 hover:-translate-y-1 transition-all duration-300 group h-full">
-                  {/* Step number */}
                   <span className="absolute top-4 right-5 text-[11px] font-black font-mono text-zinc-700">{step.step}</span>
 
                   <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-5 ${step.iconBg}`}>

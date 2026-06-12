@@ -471,5 +471,4 @@
    MISC COMPAT
    ========================================================================== */
 
-button, a { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-
+button, a { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease; }

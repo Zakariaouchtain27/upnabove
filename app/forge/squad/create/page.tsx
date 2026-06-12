@@ -99,7 +99,7 @@ export default function CreateSquadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05050a] text-foreground font-sans pt-24 pb-32">
+    <div className="min-h-screen bg-transparent text-foreground font-sans pt-24 pb-32">
        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
        
        <div className="max-w-3xl mx-auto px-6 relative z-10 space-y-8">
@@ -199,7 +199,7 @@ export default function CreateSquadPage() {
                                      searchResults.map(res => (
                                         <div key={res.id} className="flex items-center justify-between p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
                                            <div className="flex items-center gap-3">
-                                              <img src={res.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-8 h-8 rounded-full bg-black" />
+                                              <img src={res.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} alt={[res.first_name, res.last_name].filter(Boolean).join(" ") || "Candidate avatar"} className="w-8 h-8 rounded-full bg-black" />
                                               <span className="text-sm font-bold text-white">{res.first_name} {res.last_name}</span>
                                            </div>
                                            <button 
@@ -223,7 +223,7 @@ export default function CreateSquadPage() {
                          {invites.map(invite => (
                             <div key={invite.id} className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10 animate-in fade-in zoom-in-95 duration-300">
                                <div className="flex items-center gap-3">
-                                  <img src={invite.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-8 h-8 rounded-full bg-black" />
+                                  <img src={invite.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} alt={[invite.first_name, invite.last_name].filter(Boolean).join(" ") || "Invite avatar"} className="w-8 h-8 rounded-full bg-black" />
                                   <span className="text-sm font-bold text-gray-300">{invite.first_name} {invite.last_name}</span>
                                   <span className="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">Pending Invite</span>
                                </div>

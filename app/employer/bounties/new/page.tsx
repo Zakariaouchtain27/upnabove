@@ -108,7 +108,7 @@ export default function NewBountyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 px-4 py-10 md:px-8">
+    <div className="min-h-screen bg-transparent px-4 py-10 md:px-8">
 
       {/* Back link */}
       <Link

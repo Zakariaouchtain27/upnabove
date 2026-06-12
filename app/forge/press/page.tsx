@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ForgePressPage() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#05050a] pt-24 pb-32">
+    <div className="min-h-screen bg-transparent pt-24 pb-32">
        <div className="max-w-4xl mx-auto px-4 md:px-8 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
           
           {/* Header */}

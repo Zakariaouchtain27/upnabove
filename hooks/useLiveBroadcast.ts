@@ -22,7 +22,7 @@ export function useLiveBroadcast(challengeId: string, code: string) {
 
     channel.subscribe((status) => {
       if (status === "SUBSCRIBED") {
-        console.log(`[Forge Arena] Broadcast Active: room-${challengeId}`);
+        // Broadcast channel active
       }
     });
 

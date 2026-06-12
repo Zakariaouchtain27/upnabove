@@ -17,7 +17,7 @@ export default async function ForgeCodeCategory() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#05050a] pt-24 pb-32">
+    <div className="min-h-screen bg-transparent pt-24 pb-32">
        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="mb-16 text-center max-w-3xl mx-auto">
              <h1 className="text-5xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Code Bounties</h1>
