@@ -326,10 +326,66 @@
   100% { transform: translateY(500%); }
 }
 
-.animate-soft-pulse { animation: soft-pulse 3s ease-in-out infinite; }
+/* Slide up from below (scroll reveal) */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Fade in — pure opacity */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Scale up entry — for cards */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Counter shimmer — number counting effect */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Marquee — horizontal scroll for strips */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-soft-pulse    { animation: soft-pulse    3s   ease-in-out infinite; }
+.animate-slide-up      { animation: slide-up      0.55s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in       { animation: fade-in       0.4s  ease-out both; }
+.animate-scale-in      { animation: scale-in      0.45s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-marquee       { animation: marquee       24s   linear infinite; }
+
+/* Stagger delay utilities */
+.delay-75  { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* ==========================================================================
+   PAGE TRANSITIONS — applied to <main> via layout
+   ========================================================================== */
+
+.page-enter {
+  animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
 /* ==========================================================================
    MISC COMPAT
    ========================================================================== */
 
-button, a { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+button, a { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease; }

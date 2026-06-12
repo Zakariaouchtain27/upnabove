@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { SearchForm } from "@/components/home/SearchForm";
-import { BentoGrid } from "@/components/home/BentoGrid";
-import { FadeIn } from "@/components/ui/FadeIn";
+import { HomeFeatures } from "@/components/home/HomeFeatures";
+import { HomeHero } from "@/components/home/HomeHero";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://upnabove.work";
 
 export const metadata: Metadata = {
-  title: "upNabove — Skill issue.",
+  title: "upNabove — Tech Jobs & The Forge",
   description:
     "Find remote and on-site software engineering jobs. Prove your skills in live anonymous coding challenges and get hired by top companies.",
   alternates: { canonical: BASE_URL },
   openGraph: {
-    title: "upNabove — Skill issue.",
+    title: "upNabove — Tech Jobs & The Forge",
     description: "The job board where you prove your code, not your resume.",
     url: BASE_URL,
     type: "website",
@@ -28,45 +28,20 @@ export default async function HomePage() {
     .eq("is_active", true);
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center overflow-hidden">
+    <main className="relative flex flex-col overflow-hidden">
+      <HomeHero jobCount={jobCount} />
 
-      {/* Hero */}
-      <section className="relative z-10 w-full flex flex-col items-center justify-center text-center px-5 pt-40 pb-24 min-h-[82vh]">
-
-        <FadeIn delay={0}>
-          <h1
-            className="text-[clamp(4rem,14vw,9rem)] font-bold text-white tracking-tight leading-none select-none mb-4"
-            style={{ fontWeight: 700 }}
-          >
-            Skill issue.
-          </h1>
-        </FadeIn>
-
-        <FadeIn delay={0.08} className="mb-14">
-          <p className="text-base sm:text-lg text-zinc-400 tracking-wide font-light">
-            Find the job. Prove you&rsquo;re not mid.
+      {/* Search anchor — visible below the fold */}
+      <section className="relative z-10 w-full border-y border-white/[0.05] py-10 px-5" style={{ background: "rgba(0,0,0,0.45)" }}>
+        <div className="max-w-3xl mx-auto">
+          <p className="text-xs text-zinc-600 uppercase tracking-widest font-medium mb-5 text-center">
+            Search {jobCount ? jobCount.toLocaleString() : "thousands of"} open positions
           </p>
-        </FadeIn>
-
-        <FadeIn delay={0.15} className="w-full max-w-2xl mx-auto">
           <SearchForm />
-        </FadeIn>
-
-        {jobCount !== null && jobCount > 0 && (
-          <FadeIn delay={0.22}>
-            <p className="mt-7 text-sm text-zinc-600 font-light">
-              <span className="text-zinc-400">{jobCount.toLocaleString()}</span>{" "}
-              open positions live right now
-            </p>
-          </FadeIn>
-        )}
+        </div>
       </section>
 
-      {/* Feature bento grid */}
-      <section className="relative z-10 w-full pb-32 px-0">
-        <BentoGrid jobCount={jobCount} />
-      </section>
-
+      <HomeFeatures />
     </main>
   );
 }

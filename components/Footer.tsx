@@ -1,82 +1,107 @@
 import React from "react";
 import Link from "next/link";
-import { Twitter, Linkedin, Github } from "lucide-react";
+import { Twitter, Linkedin, Github, ArrowUpRight } from "lucide-react";
+
+const Logo = () => (
+  <Link href="/" className="inline-flex items-center gap-2 group">
+    <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center group-hover:bg-violet-500 transition-colors duration-200">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 12L7 2L12 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4 8.5H10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    </div>
+    <span className="text-sm font-black text-zinc-100 tracking-tight">
+      up<span className="text-violet-400">N</span>above
+    </span>
+  </Link>
+);
+
+const footerLinks = {
+  Platform: [
+    { label: "Find Jobs",    href: "/jobs" },
+    { label: "The Forge",    href: "/forge" },
+    { label: "Leaderboard",  href: "/forge/leaderboard" },
+    { label: "For Employers", href: "/employer" },
+  ],
+  Account: [
+    { label: "Dashboard",   href: "/dashboard" },
+    { label: "Sign in",     href: "/login" },
+    { label: "Create account", href: "/signup" },
+  ],
+};
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.05] bg-black relative overflow-hidden">
-      {/* Subtle gradient line at the top edge */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
+    <footer className="relative border-t border-white/[0.06] bg-black overflow-hidden">
 
-      <div className="layout-wrapper">
-        <div className="section-container py-16">
+      {/* Top accent line */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-violet-500/15 to-transparent" />
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-16 mb-14">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8">
 
-            {/* Brand */}
-            <div className="col-span-2">
-              <Link href="/" className="inline-flex items-center gap-2 mb-5 group">
-                <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center group-hover:bg-violet-500 transition-colors">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M2 12L7 2L12 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M4 8.5H10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <span className="text-sm font-black text-zinc-100 tracking-tight">
-                  up<span className="text-violet-400">N</span>above
-                </span>
-              </Link>
-              <p className="text-sm text-zinc-600 leading-relaxed max-w-xs font-light">
-                The global job marketplace for top-tier talent. Prove your code. Get hired.
-              </p>
-              <div className="flex items-center gap-3 mt-7">
-                {([Twitter, Linkedin, Github] as React.ComponentType<{ className?: string }>[]).map((Icon, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.07] flex items-center justify-center text-zinc-600 hover:text-zinc-300 hover:border-white/[0.15] transition-all"
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                  </a>
-                ))}
-              </div>
-            </div>
+        {/* Main grid */}
+        <div className="py-16 grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr] gap-10 lg:gap-20">
 
-            {/* Platform */}
-            <div>
-              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Platform</h4>
-              <ul className="space-y-3">
-                <li><Link href="/jobs"  className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors font-light">Find Jobs</Link></li>
-                <li><Link href="/forge" className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors font-light">The Forge</Link></li>
-              </ul>
-            </div>
-
-            {/* Employers */}
-            <div>
-              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Employers</h4>
-              <ul className="space-y-3">
-                <li><Link href="/employer" className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors font-light">Employer Hub</Link></li>
-              </ul>
-            </div>
-
-            {/* Account */}
-            <div>
-              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-5">Account</h4>
-              <ul className="space-y-3">
-                <li><Link href="/dashboard" className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors font-light">Dashboard</Link></li>
-                <li><Link href="/login"     className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors font-light">Sign In</Link></li>
-              </ul>
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <Logo />
+            <p className="text-sm text-zinc-600 leading-relaxed mt-4 max-w-xs font-light">
+              The job board for engineers who let their work speak for itself.
+              Prove your skills in the arena. Get hired on merit.
+            </p>
+            <div className="flex items-center gap-2.5 mt-6">
+              {[Twitter, Linkedin, Github].map((Icon, i) => (
+                <a
+                  key={i}
+                  href="#"
+                  className="w-8 h-8 rounded-lg border border-zinc-800 bg-zinc-900/40 flex items-center justify-center text-zinc-600 hover:text-zinc-300 hover:border-zinc-700 transition-all duration-150"
+                  aria-label="Social link"
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </a>
+              ))}
             </div>
           </div>
 
-          <div className="pt-7 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-zinc-700 font-light">
-              © {new Date().getFullYear()} upNabove Inc. All rights reserved.
-            </p>
-            <span className="flex items-center gap-2 text-xs text-zinc-700 font-light">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+          {/* Link columns */}
+          {Object.entries(footerLinks).map(([section, links]) => (
+            <div key={section}>
+              <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-[0.18em] mb-5">
+                {section}
+              </h4>
+              <ul className="space-y-3">
+                {links.map(link => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-zinc-600 hover:text-zinc-300 transition-colors duration-150 font-light"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="py-6 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-zinc-700 font-light">
+            © {new Date().getFullYear()} upNabove. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-5">
+            <span className="flex items-center gap-1.5 text-xs text-zinc-700 font-light">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               All systems operational
             </span>
+            <Link
+              href="/employer"
+              className="flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 transition-colors font-light"
+            >
+              Post a job <ArrowUpRight className="w-3 h-3" />
+            </Link>
           </div>
         </div>
       </div>

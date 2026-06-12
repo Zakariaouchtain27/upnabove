@@ -1,97 +1,52 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useMotionTemplate,
-} from "framer-motion";
+import { motion, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
 
-// ─── Orb definitions ────────────────────────────────────────────────────────
-// Each orb has a starting position, size, color, and a unique drift path.
-// Paths are expressed as x/y keyframe sequences that start and end at [0,0]
-// so the loop is perfectly seamless.
+interface OrbDef {
+  w: number;
+  h: number;
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+  bg: string;
+  blur: string;
+  ax: number[];
+  ay: number[];
+  dur: number;
+}
 
-const ORBS = [
+const ORBS: OrbDef[] = [
   {
-    // Large primary violet — anchored upper-left, sweeps toward center
-    style: {
-      width: 700,
-      height: 700,
-      top: "2%",
-      left: "8%",
-      background:
-        "radial-gradient(circle, rgba(124,58,237,0.22) 0%, rgba(109,40,217,0.08) 50%, transparent 70%)",
-      filter: "blur(130px)",
-    },
-    animate: {
-      x: [0, 90, 20, -70, 40, 0],
-      y: [0, -60, 110, 50, -90, 0],
-    },
-    duration: 22,
+    w: 800, h: 800,
+    top: "-5%", left: "-10%",
+    bg: "radial-gradient(circle, rgba(109,40,217,0.13) 0%, rgba(91,33,182,0.04) 55%, transparent 70%)",
+    blur: "blur(140px)",
+    ax: [0, 60, -40, 80, 0], ay: [0, -50, 90, 30, 0],
+    dur: 28,
   },
   {
-    // Indigo — right edge, counter-drifts against orb 1
-    style: {
-      width: 580,
-      height: 580,
-      top: "28%",
-      right: "4%",
-      background:
-        "radial-gradient(circle, rgba(99,102,241,0.18) 0%, rgba(79,70,229,0.06) 50%, transparent 70%)",
-      filter: "blur(120px)",
-    },
-    animate: {
-      x: [0, -100, -30, 80, -20, 0],
-      y: [0, 80, -100, -30, 80, 0],
-    },
-    duration: 26,
+    w: 600, h: 600,
+    top: "40%", right: "-8%",
+    bg: "radial-gradient(circle, rgba(79,70,229,0.10) 0%, rgba(67,56,202,0.03) 55%, transparent 70%)",
+    blur: "blur(120px)",
+    ax: [0, -70, -20, 60, 0], ay: [0, 60, -80, -20, 0],
+    dur: 34,
   },
-  {
-    // Soft violet — lower-center, slowest rotation, creates bottom warmth
-    style: {
-      width: 500,
-      height: 500,
-      bottom: "6%",
-      left: "26%",
-      background:
-        "radial-gradient(circle, rgba(139,92,246,0.16) 0%, rgba(124,58,237,0.05) 50%, transparent 70%)",
-      filter: "blur(110px)",
-    },
-    animate: {
-      x: [0, 70, -60, 100, -20, 0],
-      y: [0, -90, 70, -50, 80, 0],
-    },
-    duration: 20,
-  },
-] as const;
-
-// Per-segment easing applied across every keyframe gap — gives organic,
-// breath-like acceleration and deceleration rather than robotic constant speed.
-const EASE_CURVE: ("easeInOut")[] = [
-  "easeInOut",
-  "easeInOut",
-  "easeInOut",
-  "easeInOut",
-  "easeInOut",
 ];
 
-const KEYFRAME_TIMES: number[] = [0, 0.2, 0.4, 0.6, 0.8, 1];
-
-// ────────────────────────────────────────────────────────────────────────────
+const EASE: ("easeInOut")[] = ["easeInOut", "easeInOut", "easeInOut", "easeInOut"];
+const TIMES: number[] = [0, 0.25, 0.5, 0.75, 1];
 
 export function AnimatedBackground() {
-  // Start spotlight far off-screen so it doesn't flash at 0,0 before first mousemove
   const rawX = useMotionValue(-9999);
   const rawY = useMotionValue(-9999);
 
-  // Spring parameters: low stiffness + moderate damping = buttery trailing lag
-  const x = useSpring(rawX, { stiffness: 38, damping: 26, mass: 0.9 });
-  const y = useSpring(rawY, { stiffness: 38, damping: 26, mass: 0.9 });
+  const x = useSpring(rawX, { stiffness: 42, damping: 28, mass: 1 });
+  const y = useSpring(rawY, { stiffness: 42, damping: 28, mass: 1 });
 
-  // Reactive CSS value — updates every frame without triggering a React re-render
-  const spotlight = useMotionTemplate`radial-gradient(700px circle at ${x}px ${y}px, rgba(124,58,237,0.075), rgba(99,102,241,0.03) 45%, transparent 75%)`;
+  const spotlight = useMotionTemplate`radial-gradient(600px circle at ${x}px ${y}px, rgba(109,40,217,0.055), rgba(79,70,229,0.02) 50%, transparent 72%)`;
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -103,81 +58,63 @@ export function AnimatedBackground() {
   }, [rawX, rawY]);
 
   return (
-    <div
-      aria-hidden="true"
-      className="fixed inset-0 overflow-hidden pointer-events-none"
-      style={{ zIndex: -1 }}
-    >
-      {/* ── Layer 1: True black base ──────────────────────────────────────── */}
-      <div className="absolute inset-0 bg-black" />
+    <div aria-hidden="true" className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: -1 }}>
 
-      {/* ── Layer 2: Dot matrix grid, radially masked to black at the edges ─ */}
+      {/* Base */}
+      <div className="absolute inset-0 bg-[#09090b]" />
+
+      {/* Dot grid — very subtle */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "radial-gradient(#27272a 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          // Mask: opaque in the upper-center where content lives, transparent at edges
-          maskImage:
-            "radial-gradient(ellipse 90% 65% at 50% 18%, black 25%, transparent 85%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 90% 65% at 50% 18%, black 25%, transparent 85%)",
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.028) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          maskImage: "radial-gradient(ellipse 85% 60% at 50% 15%, black 20%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse 85% 60% at 50% 15%, black 20%, transparent 80%)",
         }}
       />
 
-      {/* ── Layer 3: Animated ambient orbs ───────────────────────────────── */}
+      {/* Orbs */}
       {ORBS.map((orb, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
           style={{
-            width: orb.style.width,
-            height: orb.style.height,
-            // Positional keys are typed as `top | bottom | left | right`
-            ...("top" in orb.style && { top: orb.style.top }),
-            ...("bottom" in orb.style && { bottom: orb.style.bottom }),
-            ...("left" in orb.style && { left: orb.style.left }),
-            ...("right" in orb.style && { right: orb.style.right }),
-            background: orb.style.background,
-            filter: orb.style.filter,
-            // willChange keeps the orb on its own compositor layer — zero layout thrash
+            width: orb.w,
+            height: orb.h,
+            top:    orb.top,
+            bottom: orb.bottom,
+            left:   orb.left,
+            right:  orb.right,
+            background: orb.bg,
+            filter: orb.blur,
             willChange: "transform",
           }}
-          animate={{ x: [...orb.animate.x], y: [...orb.animate.y] }}
+          animate={{ x: [...orb.ax], y: [...orb.ay] }}
           transition={{
-            duration: orb.duration,
-            ease: EASE_CURVE,
-            times: KEYFRAME_TIMES,
+            duration: orb.dur,
+            ease: EASE,
+            times: TIMES,
             repeat: Infinity,
             repeatType: "loop",
-            // Offset each orb so they never all reach waypoints simultaneously
-            delay: i * -7,
+            delay: i * -10,
           }}
         />
       ))}
 
-      {/* ── Layer 4: Mouse spotlight — follows cursor with spring lag ─────── */}
-      <motion.div
-        className="absolute inset-0"
-        style={{ background: spotlight }}
+      {/* Mouse spotlight */}
+      <motion.div className="absolute inset-0" style={{ background: spotlight }} />
+
+      {/* Top vignette */}
+      <div
+        className="absolute inset-x-0 top-0 h-32 pointer-events-none"
+        style={{ background: "linear-gradient(to bottom, rgba(9,9,11,0.7) 0%, transparent 100%)" }}
       />
 
-      {/* ── Layer 5: Top vignette — keeps navbar area clean ──────────────── */}
+      {/* Bottom vignette */}
       <div
-        className="absolute inset-x-0 top-0 h-40 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%)",
-        }}
-      />
-
-      {/* ── Layer 6: Bottom vignette — grounds sections in true black ─────── */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)",
-        }}
+        className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
+        style={{ background: "linear-gradient(to top, rgba(9,9,11,0.8) 0%, transparent 100%)" }}
       />
     </div>
   );
